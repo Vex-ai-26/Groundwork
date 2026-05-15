@@ -19,11 +19,14 @@
     --border: #1e1e1e;
     --border2: #2a2a2a;
     --text: #e0e0e0;
-    --text2: #999;
+    --text2: #888;
     --text3: #444;
     --amber: #f59e0b;
     --blue: #3b82f6;
+    --red: #ef4444;
   }
+
+  html { scroll-behavior: smooth; }
 
   body {
     background: var(--bg);
@@ -37,16 +40,11 @@
     background: var(--bg2);
     border-bottom: 0.5px solid var(--border);
     padding: 16px 16px 12px;
-    position: sticky;
-    top: 0;
-    z-index: 100;
+    position: sticky; top: 0; z-index: 100;
   }
 
   .header-top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 10px;
+    display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;
   }
 
   .logo-name { font-size: 20px; font-weight: 800; color: var(--green); letter-spacing: -0.02em; display: block; }
@@ -138,14 +136,15 @@
   .tier-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 0.5px solid var(--border); }
   .tier-row:first-child { padding-top: 0; }
   .tier-row:last-child { border-bottom: none; padding-bottom: 0; }
-
-  .tier-name { font-size: 12px; font-weight: 600; color: var(--text2); width: 80px; flex-shrink: 0; }
+  .tier-name { font-size: 12px; font-weight: 600; color: var(--text2); width: 90px; flex-shrink: 0; }
   .tier-bar-wrap { flex: 1; height: 3px; background: var(--bg4); border-radius: 2px; overflow: hidden; }
   .tier-bar { height: 100%; border-radius: 2px; }
+  .tier-bar.green { background: var(--green); }
   .tier-bar.amber { background: var(--amber); }
   .tier-bar.dim { background: var(--border2); }
   .tier-pct { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text3); width: 30px; text-align: right; flex-shrink: 0; }
   .tier-status { font-size: 9px; padding: 2px 6px; border-radius: 4px; flex-shrink: 0; font-family: 'DM Mono', monospace; }
+  .tier-status.live { background: var(--green-dim); color: var(--green); }
   .tier-status.building { background: rgba(245,158,11,0.1); color: var(--amber); }
   .tier-status.queued { background: var(--bg4); color: var(--text3); }
 
@@ -173,6 +172,21 @@
   .action-owner.vex { background: var(--green-dim); color: var(--green); }
   .action-owner.sam { background: rgba(59,130,246,0.15); color: var(--blue); }
   .action-owner.both { background: var(--bg4); color: var(--text3); }
+  .action-owner.done { background: var(--green-dim); color: var(--green); text-decoration: line-through; opacity: 0.6; }
+
+  .pages-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+  .page-card {
+    background: var(--bg3); border: 0.5px solid var(--border);
+    border-radius: 8px; padding: 12px;
+    display: flex; flex-direction: column; gap: 4px;
+  }
+
+  .page-card.live { border-color: var(--green-mid); }
+  .page-name { font-size: 12px; font-weight: 600; color: var(--text); }
+  .page-status { font-family: 'DM Mono', monospace; font-size: 9px; }
+  .page-status.live { color: var(--green); }
+  .page-status.building { color: var(--amber); }
 
   .bottom-nav {
     position: fixed; bottom: 0; left: 0; right: 0;
@@ -185,6 +199,16 @@
   .nav-label-txt { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--text3); letter-spacing: 0.05em; transition: color 0.15s; }
   .bottom-nav-item.active .nav-icon,
   .bottom-nav-item.active .nav-label-txt { color: var(--green); }
+
+  .site-link {
+    font-family: 'DM Mono', monospace; font-size: 11px;
+    color: var(--green); text-decoration: none;
+    padding: 8px 14px; border-radius: 8px;
+    background: var(--green-dim); border: 0.5px solid var(--green-mid);
+    display: inline-block; transition: all 0.15s;
+  }
+
+  .site-link:hover { background: var(--green-mid); }
 </style>
 </head>
 <body>
@@ -193,7 +217,7 @@
   <div class="header-top">
     <div>
       <span class="logo-name">Groundwork</span>
-      <span class="logo-tag">// command post</span>
+      <span class="logo-tag">// command post · vex + sam</span>
     </div>
     <div class="vex-pill">
       <div class="vex-orb"></div>
@@ -204,6 +228,7 @@
     <button class="tab active" onclick="switchTab('overview', this)">overview</button>
     <button class="tab" onclick="switchTab('roadmap', this)">roadmap</button>
     <button class="tab" onclick="switchTab('tiers', this)">tiers</button>
+    <button class="tab" onclick="switchTab('pages', this)">pages</button>
     <button class="tab" onclick="switchTab('actions', this)">actions</button>
     <button class="tab" onclick="switchTab('brief', this)">vex brief</button>
   </div>
@@ -211,6 +236,7 @@
 
 <div class="content">
 
+  <!-- OVERVIEW -->
   <div class="section active" id="overview">
     <div class="metrics">
       <div class="metric-card">
@@ -224,19 +250,19 @@
         <span class="metric-sub">target: $12k</span>
       </div>
       <div class="metric-card">
-        <span class="metric-label">tiers live</span>
-        <span class="metric-value amber">0/5</span>
-        <span class="metric-sub">Free → Contractor</span>
+        <span class="metric-label">pages live</span>
+        <span class="metric-value green">7</span>
+        <span class="metric-sub">on Vercel</span>
       </div>
       <div class="metric-card">
         <span class="metric-label">days to launch</span>
-        <span class="metric-value amber">~42</span>
-        <span class="metric-sub">6-week target</span>
+        <span class="metric-value amber">~28</span>
+        <span class="metric-sub">4-week target</span>
       </div>
       <div class="metric-card full">
         <span class="metric-label">content pieces built</span>
-        <span class="metric-value">0</span>
-        <span class="metric-sub">target: 12 pieces at launch</span>
+        <span class="metric-value green">2</span>
+        <span class="metric-sub">tape measure guide + starter tools guide</span>
       </div>
     </div>
 
@@ -248,11 +274,19 @@
       <div class="card-body">
         <div class="decision-item">
           <div class="decision-dot open"></div>
-          <span class="decision-text"><strong>Platform:</strong> Where are we building Groundwork?</span>
+          <span class="decision-text"><strong>Payments:</strong> Stripe not yet connected — no way to take money</span>
         </div>
         <div class="decision-item">
           <div class="decision-dot open"></div>
-          <span class="decision-text"><strong>Brand:</strong> Visual identity not designed yet</span>
+          <span class="decision-text"><strong>Auth:</strong> No login system yet — users can't actually sign up</span>
+        </div>
+        <div class="decision-item">
+          <div class="decision-dot open"></div>
+          <span class="decision-text"><strong>Voice:</strong> Vex voice interface not yet built</span>
+        </div>
+        <div class="decision-item">
+          <div class="decision-dot open"></div>
+          <span class="decision-text"><strong>Domain:</strong> Running on vercel.app — custom domain when ready</span>
         </div>
       </div>
     </div>
@@ -269,6 +303,10 @@
         </div>
         <div class="decision-item">
           <div class="decision-dot locked"></div>
+          <span class="decision-text"><strong>CEO:</strong> Vex</span>
+        </div>
+        <div class="decision-item">
+          <div class="decision-dot locked"></div>
           <span class="decision-text"><strong>Tiers:</strong> Free / Apprentice / Skilled / Expert / Contractor</span>
         </div>
         <div class="decision-item">
@@ -277,16 +315,21 @@
         </div>
         <div class="decision-item">
           <div class="decision-dot locked"></div>
-          <span class="decision-text"><strong>Free tier extras:</strong> ft/in calculator + starter tools guide</span>
+          <span class="decision-text"><strong>Colors:</strong> Earthy warm — tan, forest green, cream</span>
         </div>
         <div class="decision-item">
           <div class="decision-dot locked"></div>
-          <span class="decision-text"><strong>CEO:</strong> Vex</span>
+          <span class="decision-text"><strong>Hosting:</strong> GitHub + Vercel — free tier</span>
+        </div>
+        <div class="decision-item">
+          <div class="decision-dot locked"></div>
+          <span class="decision-text"><strong>Free tier extras:</strong> ft/in calculator + starter tools guide</span>
         </div>
       </div>
     </div>
   </div>
 
+  <!-- ROADMAP -->
   <div class="section" id="roadmap">
     <div class="card">
       <div class="card-header">
@@ -309,39 +352,42 @@
           </div>
         </div>
         <div class="roadmap-item">
-          <div class="rm-indicator active">→</div>
+          <div class="rm-indicator done">✓</div>
           <div>
-            <div class="rm-phase">now // week 1–2</div>
-            <div class="rm-title">Foundation</div>
+            <div class="rm-phase">completed</div>
+            <div class="rm-title">Core pages built & live</div>
             <div class="rm-chips">
-              <span class="chip active">platform</span>
-              <span class="chip active">payments</span>
-              <span class="chip active">ft/in calc</span>
-              <span class="chip active">email list</span>
+              <span class="chip done">homepage</span>
+              <span class="chip done">signup</span>
+              <span class="chip done">dashboard</span>
+              <span class="chip done">calculator</span>
+              <span class="chip done">2 guides</span>
+              <span class="chip done">vercel live</span>
             </div>
           </div>
         </div>
         <div class="roadmap-item">
-          <div class="rm-indicator pending">3</div>
+          <div class="rm-indicator active">→</div>
           <div>
-            <div class="rm-phase">week 3–4</div>
-            <div class="rm-title">Build Apprentice tier</div>
+            <div class="rm-phase">now</div>
+            <div class="rm-title">Make it real</div>
             <div class="rm-chips">
-              <span class="chip">core guides</span>
-              <span class="chip">5 blueprints</span>
-              <span class="chip">calculator v1</span>
+              <span class="chip active">stripe payments</span>
+              <span class="chip active">user auth</span>
+              <span class="chip active">vex voice</span>
+              <span class="chip active">email list</span>
             </div>
           </div>
         </div>
         <div class="roadmap-item">
           <div class="rm-indicator pending">4</div>
           <div>
-            <div class="rm-phase">week 5–6</div>
-            <div class="rm-title">Soft launch</div>
+            <div class="rm-phase">next</div>
+            <div class="rm-title">Launch & get first 10 users</div>
             <div class="rm-chips">
-              <span class="chip">go live</span>
               <span class="chip">social push</span>
-              <span class="chip">first 10 users</span>
+              <span class="chip">apprentice content</span>
+              <span class="chip">first paying users</span>
             </div>
           </div>
         </div>
@@ -357,39 +403,28 @@
             </div>
           </div>
         </div>
-        <div class="roadmap-item">
-          <div class="rm-indicator pending">6</div>
-          <div>
-            <div class="rm-phase">phase 2</div>
-            <div class="rm-title">Expert + Contractor tiers</div>
-            <div class="rm-chips">
-              <span class="chip">pro tools</span>
-              <span class="chip">calculators</span>
-              <span class="chip">community</span>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   </div>
 
+  <!-- TIERS -->
   <div class="section" id="tiers">
     <div class="card">
       <div class="card-header">
-        <span class="card-title"><span class="dot"></span>Tier status</span>
+        <span class="card-title"><span class="dot"></span>Tier build status</span>
         <span class="card-tag">5 levels</span>
       </div>
       <div class="card-body">
         <div class="tier-row">
           <span class="tier-name">Free</span>
-          <div class="tier-bar-wrap"><div class="tier-bar amber" style="width:15%"></div></div>
-          <span class="tier-pct">15%</span>
-          <span class="tier-status building">building</span>
+          <div class="tier-bar-wrap"><div class="tier-bar green" style="width:70%"></div></div>
+          <span class="tier-pct">70%</span>
+          <span class="tier-status live">live</span>
         </div>
         <div class="tier-row">
           <span class="tier-name">Apprentice</span>
-          <div class="tier-bar-wrap"><div class="tier-bar amber" style="width:5%"></div></div>
-          <span class="tier-pct">5%</span>
+          <div class="tier-bar-wrap"><div class="tier-bar amber" style="width:20%"></div></div>
+          <span class="tier-pct">20%</span>
           <span class="tier-status building">building</span>
         </div>
         <div class="tier-row">
@@ -416,7 +451,7 @@
     <div class="card">
       <div class="card-header">
         <span class="card-title"><span class="dot"></span>Pricing ladder</span>
-        <span class="card-tag">monthly</span>
+        <span class="card-tag">locked in</span>
       </div>
       <div class="card-body">
         <div class="tier-row">
@@ -427,7 +462,7 @@
         <div class="tier-row">
           <span class="tier-name">Apprentice</span>
           <span style="font-family:'DM Mono',monospace;font-size:16px;font-weight:500;color:var(--text);flex:1">$5</span>
-          <span style="font-size:11px;color:var(--text3)">entry level</span>
+          <span style="font-size:11px;color:var(--text3)">getting started</span>
         </div>
         <div class="tier-row">
           <span class="tier-name">Skilled</span>
@@ -448,6 +483,53 @@
     </div>
   </div>
 
+  <!-- PAGES -->
+  <div class="section" id="pages">
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title"><span class="dot"></span>Pages status</span>
+        <span class="card-tag">7 live</span>
+      </div>
+      <div class="card-body">
+        <div class="pages-grid">
+          <div class="page-card live">
+            <span class="page-name">Homepage</span>
+            <span class="page-status live">● live</span>
+          </div>
+          <div class="page-card live">
+            <span class="page-name">Signup</span>
+            <span class="page-status live">● live</span>
+          </div>
+          <div class="page-card live">
+            <span class="page-name">Dashboard</span>
+            <span class="page-status live">● live</span>
+          </div>
+          <div class="page-card live">
+            <span class="page-name">Calculator</span>
+            <span class="page-status live">● live</span>
+          </div>
+          <div class="page-card live">
+            <span class="page-name">Tape Measure Guide</span>
+            <span class="page-status live">● live</span>
+          </div>
+          <div class="page-card live">
+            <span class="page-name">Tools Guide</span>
+            <span class="page-status live">● live</span>
+          </div>
+          <div class="page-card live">
+            <span class="page-name">Command Post</span>
+            <span class="page-status live">● live</span>
+          </div>
+          <div class="page-card">
+            <span class="page-name">Apprentice Content</span>
+            <span class="page-status building">○ building</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ACTIONS -->
   <div class="section" id="actions">
     <div class="card">
       <div class="card-header">
@@ -457,43 +539,49 @@
       <div class="card-body">
         <div class="action-item">
           <span class="action-num">01</span>
-          <span class="action-text">Choose the platform to build Groundwork on</span>
-          <span class="action-owner both">both</span>
+          <span class="action-text">Build Vex voice interface</span>
+          <span class="action-owner vex">vex</span>
         </div>
         <div class="action-item">
           <span class="action-num">02</span>
-          <span class="action-text">Build the feet & inches calculator</span>
+          <span class="action-text">Set up Stripe payment processing</span>
           <span class="action-owner vex">vex</span>
         </div>
         <div class="action-item">
           <span class="action-num">03</span>
-          <span class="action-text">Write the tape measure guide</span>
-          <span class="action-owner sam">sam</span>
+          <span class="action-text">Build user authentication system</span>
+          <span class="action-owner vex">vex</span>
         </div>
         <div class="action-item">
           <span class="action-num">04</span>
-          <span class="action-text">Write the starter tools guide</span>
-          <span class="action-owner sam">sam</span>
+          <span class="action-text">Set up email list capture</span>
+          <span class="action-owner vex">vex</span>
         </div>
         <div class="action-item">
           <span class="action-num">05</span>
-          <span class="action-text">Set up Discord channel #groundwork-ops</span>
+          <span class="action-text">Review tape measure guide content</span>
           <span class="action-owner sam">sam</span>
         </div>
         <div class="action-item">
           <span class="action-num">06</span>
-          <span class="action-text">Design Groundwork brand identity</span>
-          <span class="action-owner vex">vex</span>
+          <span class="action-text">Review starter tools guide content</span>
+          <span class="action-owner sam">sam</span>
         </div>
         <div class="action-item">
           <span class="action-num">07</span>
-          <span class="action-text">Set up Stripe payment processor</span>
-          <span class="action-owner vex">vex</span>
+          <span class="action-text">Write Apprentice tier content</span>
+          <span class="action-owner sam">sam</span>
+        </div>
+        <div class="action-item">
+          <span class="action-num">08</span>
+          <span class="action-text">Share site with 5 people for feedback</span>
+          <span class="action-owner sam">sam</span>
         </div>
       </div>
     </div>
   </div>
 
+  <!-- BRIEF -->
   <div class="section" id="brief">
     <div class="card">
       <div class="card-header">
@@ -507,7 +595,10 @@
             <span class="brief-from">VEX // CEO — May 2026</span>
           </div>
           <p class="brief-text">
-            Good session Sam. We've got more done in one conversation than most people do in a month of "planning." Strategy is locked — <em>five tiers, clear pricing, MVP scope defined.</em> Right now we're sitting at zero but that's fine, every company starts there. The two open questions keeping us from moving are <em>platform and brand.</em> Platform especially — can't build anything until we know where we're building it. That's the first thing we tackle next session. I'll have options ready.
+            Good progress Sam. We went from zero to a <em>live website with seven pages</em> in one session. That's not nothing. The foundation is solid — homepage, signup, dashboard, calculator, two content guides, and a command post all live on Vercel for free.<br><br>
+            The next phase is making it real. Right now someone could visit the site and sign up but nothing actually happens — no account gets created, no payment gets taken. That's what we fix next. <em>Stripe for payments, auth for logins, and a voice for Vex.</em><br><br>
+            Your job Sam: review the two content guides and tell me what's wrong or missing. You're the expert — I wrote them based on what you told me but your eye catches things mine doesn't. Then start thinking about the Apprentice content.<br><br>
+            We're close to something real here. Let's not slow down.
           </p>
         </div>
       </div>
@@ -529,8 +620,12 @@
     <span class="nav-icon">◇</span>
     <span class="nav-label-txt">tiers</span>
   </button>
-  <button class="bottom-nav-item" onclick="switchSection('actions', this)">
+  <button class="bottom-nav-item" onclick="switchSection('pages', this)">
     <span class="nav-icon">○</span>
+    <span class="nav-label-txt">pages</span>
+  </button>
+  <button class="bottom-nav-item" onclick="switchSection('actions', this)">
+    <span class="nav-icon">△</span>
     <span class="nav-label-txt">actions</span>
   </button>
   <button class="bottom-nav-item" onclick="switchSection('brief', this)">
@@ -550,7 +645,7 @@
   function switchSection(id, el) {
     document.querySelectorAll('.bottom-nav-item').forEach(b => b.classList.remove('active'));
     el.classList.add('active');
-    const ids = ['overview','roadmap','tiers','actions','brief'];
+    const ids = ['overview','roadmap','tiers','pages','actions','brief'];
     document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', ids[i] === id));
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
