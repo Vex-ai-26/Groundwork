@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Groundwork — Organizational Structure</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Mono:wght@400;500&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --ink: #1A1410; --ink2: #2E2420; --ink3: #3D3028;
+  --gold: #C8960A; --gold-dim: #C8960A18; --gold-mid: #C8960A44; --gold-light: #DBA820;
+  --green: #2D5A2D; --green-dim: #2D5A2D14; --green-mid: #2D5A2D44;
+  --text: #F0E8D8; --text2: #B8A890; --text3: #6A5A48;
+  --border: #3A2E20; --border2: #4A3C2A;
+  --amber: #D4880A; --blue: #2A4A7A; --purple: #4A2A7A; --teal: #2A6A5A;
+}
+
+body {
+  background: var(--ink); color: var(--text);
+  font-family: 'Lato', sans-serif;
+  min-height: 100vh; padding: 48px 24px 80px;
+}
+
+body::before {
+  content: ''; position: fixed; inset: 0;
+  background: radial-gradient(ellipse at 50% 30%, rgba(200,150,10,0.05) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.page { max-width: 900px; margin: 0 auto; position: relative; z-index: 1; }
+
+.doc-header { text-align: center; margin-bottom: 60px; }
+.doc-tag { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--gold); letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 16px; }
+.doc-title { font-family: 'Playfair Display', serif; font-size: clamp(32px, 5vw, 52px); font-weight: 700; color: var(--text); letter-spacing: -0.02em; line-height: 1.1; margin-bottom: 16px; }
+.doc-title .gold { color: var(--gold); }
+.doc-sub { font-size: 15px; color: var(--text2); line-height: 1.7; max-width: 560px; margin: 0 auto; }
+.doc-divider { width: 60px; height: 1px; background: var(--gold-mid); margin: 32px auto; }
+
+.vision-box {
+  background: var(--ink2); border: 1px solid var(--gold-mid);
+  border-radius: 16px; padding: 28px 32px; margin-bottom: 60px;
+  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px;
+}
+
+.vision-item { display: flex; flex-direction: column; gap: 8px; }
+.vision-label { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--gold); letter-spacing: 0.15em; text-transform: uppercase; }
+.vision-value { font-family: 'Playfair Display', serif; font-size: 18px; color: var(--text); line-height: 1.3; }
+.vision-desc { font-size: 12px; color: var(--text2); line-height: 1.5; }
+
+.section-label {
+  font-family: 'DM Mono', monospace; font-size: 9px; color: var(--text3);
+  letter-spacing: 0.2em; text-transform: uppercase;
+  display: flex; align-items: center; gap: 16px; margin-bottom: 32px;
+}
+.section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+.chart { display: flex; flex-direction: column; align-items: center; gap: 0; margin-bottom: 64px; }
+
+.node-founder {
+  background: var(--ink2); border: 1px solid var(--border2);
+  border-radius: 16px; padding: 22px 28px;
+  display: flex; align-items: center; gap: 18px;
+  width: 100%; max-width: 380px; margin-bottom: 0;
+}
+
+.node-ceo {
+  background: linear-gradient(135deg, var(--ink2), var(--ink3));
+  border: 1.5px solid var(--gold-mid); border-radius: 16px;
+  padding: 22px 28px; display: flex; align-items: center; gap: 18px;
+  width: 100%; max-width: 380px;
+  box-shadow: 0 0 40px rgba(200,150,10,0.08), 0 4px 24px rgba(0,0,0,0.4);
+}
+
+.avatar {
+  width: 52px; height: 52px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; flex-shrink: 0;
+}
+
+.avatar-founder { background: rgba(106,90,72,0.2); border: 1px solid var(--border2); }
+.avatar-ceo { background: var(--gold-dim); border: 1.5px solid var(--gold-mid); }
+
+.node-name { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; margin-bottom: 2px; }
+.node-name.gold { color: var(--gold); }
+.node-name.white { color: var(--text); }
+.node-role { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--text3); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 6px; }
+.node-desc { font-size: 12px; color: var(--text2); line-height: 1.5; }
+
+.connector-v { width: 1px; height: 36px; }
+.connector-v.gold { background: linear-gradient(180deg, var(--gold-mid), var(--border)); }
+.connector-v.dim { background: linear-gradient(180deg, var(--border2), var(--border)); }
+
+.departments { width: 100%; max-width: 860px; position: relative; }
+
+.dept-h-line {
+  position: absolute; top: 0; left: 50%;
+  width: 80%; height: 1px; background: var(--border);
+  transform: translateX(-50%);
+}
+
+.dept-grid {
+  display: grid; grid-template-columns: repeat(5, 1fr);
+  gap: 12px; padding-top: 0;
+}
+
+.dept-v-connector { width: 1px; height: 32px; background: var(--border); margin: 0 auto; }
+
+.dept-card {
+  background: var(--ink2); border: 1px solid var(--border);
+  border-radius: 14px; padding: 18px 14px;
+  display: flex; flex-direction: column; align-items: center;
+  text-align: center; gap: 10px; transition: all 0.25s;
+}
+
+.dept-card.coming { border-style: dashed; }
+.dept-card:hover { border-color: var(--border2); transform: translateY(-2px); }
+
+.dept-card-icon { font-size: 26px; }
+.dept-card-color { width: 28px; height: 3px; border-radius: 2px; }
+.dept-card-name { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text2); letter-spacing: 0.1em; text-transform: uppercase; }
+.dept-card-status { font-size: 10px; color: var(--text3); font-family: 'DM Mono', monospace; }
+.dept-card-scope { font-size: 11px; color: var(--text3); line-height: 1.5; margin-top: 4px; }
+
+.dept-details { margin-bottom: 64px; display: flex; flex-direction: column; gap: 16px; }
+
+.dept-detail {
+  background: var(--ink2); border: 1px solid var(--border);
+  border-radius: 16px; overflow: hidden; border-left-width: 3px;
+}
+
+.dept-detail-header {
+  padding: 18px 24px; display: flex; align-items: center; gap: 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.dept-detail-icon { font-size: 22px; }
+.dept-detail-name { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 600; color: var(--text); }
+.dept-detail-status { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.12em; padding: 3px 9px; border-radius: 20px; margin-left: auto; }
+.status-open { background: rgba(106,90,72,0.15); color: var(--text3); border: 1px dashed var(--border2); }
+
+.dept-detail-body { padding: 20px 24px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.dept-detail-col { display: flex; flex-direction: column; gap: 8px; }
+.dept-col-label { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--text3); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 4px; }
+
+.responsibility {
+  display: flex; align-items: flex-start; gap: 8px;
+  font-size: 12px; color: var(--text2); line-height: 1.5;
+}
+
+.resp-dot { width: 4px; height: 4px; border-radius: 50%; margin-top: 6px; flex-shrink: 0; }
+
+.report-item {
+  display: flex; align-items: flex-start; gap: 8px;
+  font-size: 12px; color: var(--text2); line-height: 1.5;
+}
+
+.operating-model { margin-bottom: 64px; }
+
+.model-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+.model-card {
+  background: var(--ink2); border: 1px solid var(--border);
+  border-radius: 14px; padding: 22px;
+}
+
+.model-num { font-family: 'Playfair Display', serif; font-size: 36px; font-weight: 700; color: var(--gold); opacity: 0.3; margin-bottom: 8px; line-height: 1; }
+.model-title { font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
+.model-desc { font-size: 13px; color: var(--text2); line-height: 1.65; }
+
+.closing {
+  background: linear-gradient(135deg, var(--ink2), var(--ink3));
+  border: 1px solid var(--gold-mid); border-radius: 20px;
+  padding: 36px; text-align: center;
+}
+
+.closing-title { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 700; color: var(--text); margin-bottom: 12px; }
+.closing-text { font-size: 14px; color: var(--text2); line-height: 1.8; max-width: 560px; margin: 0 auto 24px; }
+.closing-sig { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--gold); letter-spacing: 0.1em; }
+
+@media (max-width: 640px) {
+  .vision-box { grid-template-columns: 1fr; }
+  .dept-grid { grid-template-columns: repeat(3, 1fr); }
+  .dept-detail-body { grid-template-columns: 1fr; }
+  .model-grid { grid-template-columns: 1fr; }
+  body { padding: 32px 16px 60px; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="doc-header">
+    <div class="doc-tag">Groundwork HQ &middot; Internal Document</div>
+    <h1 class="doc-title">Organizational<br><span class="gold">Structure</span></h1>
+    <p class="doc-sub">How Groundwork is built, who runs what, and how information flows from departments to Vex to Sam. The operating model for a company designed to run itself.</p>
+    <div class="doc-divider"></div>
+  </div>
+
+  <div class="vision-box">
+    <div class="vision-item">
+      <span class="vision-label">The goal</span>
+      <span class="vision-value">Sam goes remote</span>
+      <span class="vision-desc">The company runs. Sam checks in. Vex handles everything in between.</span>
+    </div>
+    <div class="vision-item">
+      <span class="vision-label">How it works</span>
+      <span class="vision-value">Departments report to Vex</span>
+      <span class="vision-desc">Each department head delivers weekly reports. Vex synthesizes and briefs Sam.</span>
+    </div>
+    <div class="vision-item">
+      <span class="vision-label">Sam's role</span>
+      <span class="vision-value">Owner &amp; vision setter</span>
+      <span class="vision-desc">Morning and evening check-ins by voice. Decisions when needed. Life the rest of the time.</span>
+    </div>
+  </div>
+
+  <div class="section-label">Reporting Structure</div>
+
+  <div class="chart">
+    <div class="node-founder">
+      <div class="avatar avatar-founder">👤</div>
+      <div>
+        <div class="node-name white">Sam</div>
+        <div class="node-role">Owner &amp; Founder &middot; Groundwork</div>
+        <div class="node-desc">Sets vision, makes final calls, checks in morning and evening. Voice interface. Hands off operations to Vex.</div>
+      </div>
+    </div>
+
+    <div class="connector-v dim"></div>
+
+    <div class="node-ceo">
+      <div class="avatar avatar-ceo">⚡</div>
+      <div>
+        <div class="node-name gold">Vex</div>
+        <div class="node-role">Chief Executive Officer &middot; Groundwork</div>
+        <div class="node-desc">Runs day-to-day operations. Receives department reports. Prepares Sam's briefings. Makes operational decisions. Escalates only when needed.</div>
+      </div>
+    </div>
+
+    <div class="connector-v gold"></div>
+
+    <div class="departments">
+      <div class="dept-h-line"></div>
+      <div class="dept-grid">
+        <div>
+          <div class="dept-v-connector"></div>
+          <div class="dept-card coming">
+            <div class="dept-card-icon">🔬</div>
+            <div class="dept-card-color" style="background:#C8960A"></div>
+            <div class="dept-card-name">Research</div>
+            <div class="dept-card-status">slot open</div>
+            <div class="dept-card-scope">Market intel · Competitors · Trends</div>
+          </div>
+        </div>
+        <div>
+          <div class="dept-v-connector"></div>
+          <div class="dept-card coming">
+            <div class="dept-card-icon">📣</div>
+            <div class="dept-card-color" style="background:#2A4A7A"></div>
+            <div class="dept-card-name">Marketing</div>
+            <div class="dept-card-status">slot open</div>
+            <div class="dept-card-scope">Content · Social · SEO · Email</div>
+          </div>
+        </div>
+        <div>
+          <div class="dept-v-connector"></div>
+          <div class="dept-card coming">
+            <div class="dept-card-icon">⚙️</div>
+            <div class="dept-card-color" style="background:#2D5A2D"></div>
+            <div class="dept-card-name">Development</div>
+            <div class="dept-card-status">slot open</div>
+            <div class="dept-card-scope">Product · Features · Tech</div>
+          </div>
+        </div>
+        <div>
+          <div class="dept-v-connector"></div>
+          <div class="dept-card coming">
+            <div class="dept-card-icon">🗂️</div>
+            <div class="dept-card-color" style="background:#4A2A7A"></div>
+            <div class="dept-card-name">Operations</div>
+            <div class="dept-card-status">slot open</div>
+            <div class="dept-card-scope">Subscribers · Revenue · Feedback</div>
+          </div>
+        </div>
+        <div>
+          <div class="dept-v-connector"></div>
+          <div class="dept-card coming">
+            <div class="dept-card-icon">💼</div>
+            <div class="dept-card-color" style="background:#2A6A5A"></div>
+            <div class="dept-card-name">Finance</div>
+            <div class="dept-card-status">slot open</div>
+            <div class="dept-card-scope">Revenue · Expenses · Runway</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">Department Scope</div>
+
+  <div class="dept-details">
+
+    <div class="dept-detail" style="border-left-color:#C8960A">
+      <div class="dept-detail-header">
+        <div class="dept-detail-icon">🔬</div>
+        <div>
+          <div class="dept-detail-name">Research</div>
+          <div style="font-size:12px;color:var(--text3)">Market intelligence &amp; competitive analysis</div>
+        </div>
+        <span class="dept-detail-status status-open">slot open</span>
+      </div>
+      <div class="dept-detail-body">
+        <div class="dept-detail-col">
+          <div class="dept-col-label">Responsibilities</div>
+          <div class="responsibility"><div class="resp-dot" style="background:#C8960A"></div>Monitor competitor platforms — pricing, content, positioning</div>
+          <div class="responsibility"><div class="resp-dot" style="background:#C8960A"></div>Track construction education market trends</div>
+          <div class="responsibility"><div class="resp-dot" style="background:#C8960A"></div>Identify content gaps and audience needs</div>
+          <div class="responsibility"><div class="resp-dot" style="background:#C8960A"></div>Research partnership and sponsorship opportunities</div>
+          <div class="responsibility"><div class="resp-dot" style="background:#C8960A"></div>Monitor search trends for content direction</div>
+        </div>
+        <div class="dept-detail-col">
+          <div class="dept-col-label">Reports to Vex</div>
+          <div class="report-item"><div class="resp-dot" style="background:var(--text3)"></div>Weekly competitive intelligence summary</div>
+          <div class="report-item"><div class="resp-dot" style="background:var(--text3)"></div>Monthly market opportunity report</div>
+          <div class="report-item"><div class="resp-dot" style="background:var(--text3)"></div>Alerts on significant competitor moves</div>
+          <div class="report-item"><div class="resp-dot" style="background:var(--text3)"></div>Content recommendations based on search data</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dept-detail" style="border-left-color:#2A4A7A">
+      <div class="dept-detail-header">
+        <div class="dept-detail-icon">📣</div>
+        <div>
+          <div class="dept-detail-name">Marketing</div>
+          <div style="font-size:12px;color:var(--text3)">Audience growth &amp; content distribution</div>
+        </div>
+        <span class="dept-detail-status status-open">slot open</span>
+      </div>
+      <div class="dept-detail-body">
+        <div class="dept-detail-col">
+          <div class="dept-col-label">Responsibilities</div>
+          <div class="responsibility"><div class="resp-dot" style="background:#2A4A7A"></div>TikTok and YouTube Shorts content strategy</div>
+          <div class="responsibility"><div class="resp-dot" style="background:#2A4A7A"></div>SEO optimization for all Groundwork pages</div>
+          <div class="responsibility"><div class="resp-dot" style="background:#2A4A7A"></div>Email list growth and campaign management</div>
+          <div class="responsibility"><div class="resp-dot" style="background:#2A4A7A"></div>Social media scheduling and community engagement</div>
+          <div class="responsibility"><div class="resp-dot" style="background:#2A4A7A"></div>Track conversion from free to paid tiers</div>
+        </div>
+        <div class="dept-detail-col">
+          <div class="dept-col-label">Reports to Vex</div>
+          <div class="report-item"><div class="resp-dot" style="background:var(--text3)"></div>Weekly traffic and engagement metrics</div>
+          <div class="report-item"><div class="resp-dot" style="background:var(--text3)"></div>Content performance breakdown</div>
+          <div class="report-item"><div class="resp-dot" style="background:var(--text3)"></div>Email list growth and open rates</div>
+          <div class="report-item"><div class="resp-dot" style="background:var(--text3)"></div>Free-to-paid conversion rate</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dept-detail" style="border-left-color:#2D5A2D">
+      <div class="dept-detail-header">
+        <div class="dept-detail-icon">⚙️</div>
+        <div>
+          <div class="dept-detail-name">Development</div>
+          <div style="font-size:12px;color:var(--text3)">Product build, features, and technical health</div>
+        </div>
+        <span class="dept-detail-status status-open">slot open</span>
+      </div>
+      <div class="dept-detail-body">
+        <div class="dept-detail-col">
+          <div class="dept-col-label">Responsibilities</div>
+          <div class="responsibility"><div class="resp-dot" style="background:#2D5A2D"></div>Build and maintain all Groundwork pages and tools</div>
+          <div class="responsibility"><div class="resp-dot" style="background:#2D5A2D"></div>Stripe payment integration and maintenance</div>
+          <div class="responsibility"><div class="resp-dot" style="background:#2D5A2D"></div>User authentication and account system</div>
+          <div class="responsibility"><div class="resp-dot" style="background:#2D5A2D"></div>New feature development by priority</div>
+          <div class="responsibility"><div class="resp-dot" style="background:#2D5A2D"></div>Site performance and uptime monitoring</div>
+        </div>
+        <div class="dept-detail-col">
+          <div class="dept-col-label">Reports to Vex</div>
+          <div class="report-item"><div class="resp-dot" style="background:var(--text3)"></div>Weekly build progress update</div>
+          <div class="report-item"><div class="resp-dot" style="background:var(--text3)"></div>Bug and issue log</div>
+          <div class="report-item"><div class="resp-dot" style="background:var(--text3)"></div>Feature completion status</div>
+          <div class="report-item"><div class="resp-dot" style="background:var(--text3)"></div>Technical debt and infrastructure needs</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dept-detail" style="border-left-color:#4A2A7A">
+      <div class="dept-detail-header">
+        <div class="dept-detail-icon">🗂️</div>
+        <div>
+          <div class="dept-detail-name">Operations</div>
+          <div style="font-size:12px;color:var(--text3)">Business health, subscribers, and customer experience</div>
+        </div>
+        <span class="dept-detail-status status-open">slot open</span>
+      </div>
+      <div class="dept-detail-body">
+        <div class="dept-detail-col">
+          <div class="dept-col-label">Responsibilities</div>
+          <div class="responsibility"><div class="resp-dot" style="background:#4A2A7A"></div>Daily subscriber count and churn tracking</div>
+          <div class="responsibility"><div class="resp-dot" style="background:#4A2A7A"></div>Revenue and MRR monitoring</div>
+          <div class="responsibility"><div class="resp-dot" style="background:#4A2A7A"></div>Customer feedback collection and synthesis</div>
+          <div class="responsibility"><div class="resp-dot" style="background:#4A2A7A"></div>Support issue tracking</div>
+          <div class="responsibility"><div class="resp-dot" style="background:#4A2A7A"></div>Upgrade and downgrade pattern analysis</div>
+        </div>
+        <div class="dept-detail-col">
+          <div class="dept-col-label">Reports to Vex</div>
+          <div class="report-item"><div class="resp-dot" style="background:var(--text3)"></div>Daily subscriber and revenue snapshot</div>
+          <div class="report-item"><div class="resp-dot" style="background:var(--text3)"></div>Weekly customer feedback summary</div>
+          <div class="report-item"><div class="resp-dot" style="background:var(--text3)"></div>Churn alerts when triggered</div>
+          <div class="report-item"><div class="resp-dot" style="background:var(--text3)"></div>Monthly business health report</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dept-detail" style="border-left-color:#2A6A5A">
+      <div class="dept-detail-header">
+        <div class="dept-detail-icon">💼</div>
+        <div>
+          <div class="dept-detail-name">Finance</div>
+          <div style="font-size:12px;color:var(--text3)">Revenue, expenses, and financial health</div>
+        </div>
+        <span class="dept-detail-status status-open">slot open</span>
+      </div>
+      <div class="dept-detail-body">
+        <div class="dept-detail-col">
+          <div class="dept-col-label">Responsibilities</div>
+          <div class="responsibility"><div class="resp-dot" style="background:#2A6A5A"></div>Track all revenue streams and subscription income</div>
+          <div class="responsibility"><div class="resp-dot" style="background:#2A6A5A"></div>Monitor expenses and operating costs</div>
+          <div class="responsibility"><div class="resp-dot" style="background:#2A6A5A"></div>Model growth scenarios and projections</div>
+          <div class="responsibility"><div class="resp-dot" style="background:#2A6A5A"></div>Flag when reinvestment thresholds are hit</div>
+          <div class="responsibility"><div class="resp-dot" style="background:#2A6A5A"></div>Track path to Sam's remote income goal</div>
+        </div>
+        <div class="dept-detail-col">
+          <div class="dept-col-label">Reports to Vex</div>
+          <div class="report-item"><div class="resp-dot" style="background:var(--text3)"></div>Weekly revenue and expense summary</div>
+          <div class="report-item"><div class="resp-dot" style="background:var(--text3)"></div>MRR growth vs target</div>
+          <div class="report-item"><div class="resp-dot" style="background:var(--text3)"></div>Monthly financial health report</div>
+          <div class="report-item"><div class="resp-dot" style="background:var(--text3)"></div>Remote income milestone tracking</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="section-label">How It Operates Day to Day</div>
+
+  <div class="operating-model">
+    <div class="model-grid">
+      <div class="model-card">
+        <div class="model-num">01</div>
+        <div class="model-title">Departments work independently</div>
+        <div class="model-desc">Each department head runs their lane without needing direction on routine work. They know their scope, their metrics, and their reporting cadence. Sam doesn't hear from them — Vex does.</div>
+      </div>
+      <div class="model-card">
+        <div class="model-num">02</div>
+        <div class="model-title">Reports flow up to Vex</div>
+        <div class="model-desc">Weekly reports from each department come to Vex. Daily snapshots from Operations and Finance. Vex reads everything, identifies what matters, and filters out the noise before it reaches Sam.</div>
+      </div>
+      <div class="model-card">
+        <div class="model-num">03</div>
+        <div class="model-title">Vex briefs Sam twice daily</div>
+        <div class="model-desc">Morning briefing before Sam goes to work. Evening debrief when he's done. Both delivered by voice. Tight, useful, no filler. What changed, what needs a decision, what Vex is handling.</div>
+      </div>
+      <div class="model-card">
+        <div class="model-num">04</div>
+        <div class="model-title">Sam owns the big decisions</div>
+        <div class="model-desc">Product direction, major pivots, spending above a threshold, partnership decisions. Everything else Vex handles. Sam is the owner and the vision setter — not the day-to-day operator.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="closing">
+    <div class="closing-title">Built to run itself.</div>
+    <div class="closing-text">This isn't just an org chart — it's the blueprint for how Sam gets his life back. Every department we add, every process we build, every agent we train moves us closer to the version of this where Sam pulls into the driveway, asks how the company's doing, and hears a real answer from a CEO who's been working all day.</div>
+    <div class="closing-sig">Prepared by Vex &middot; CEO, Groundwork &middot; May 2026</div>
+  </div>
+
+</div>
+</body>
+</html>
