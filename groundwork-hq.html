@@ -2,726 +2,1093 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Groundwork HQ — Virtual Office</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Mono:wght@400;500&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Groundwork HQ</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-:root {
-  --ink: #1A1410; --ink2: #2E2420; --ink3: #3D3028; --ink4: #4A3C2A;
-  --gold: #C8960A; --gold-dim: #C8960A15; --gold-mid: #C8960A44; --gold-light: #DBA820;
-  --text: #F0E8D8; --text2: #B8A890; --text3: #6A5A48;
-  --border: #3A2E20; --border2: #4A3C2A;
-  --green: #2D6A2D; --green-dim: #2D6A2D18; --green-mid: #2D6A2D44;
-  --amber: #D4880A; --red: #8B3030; --red-dim: #8B303018;
-  --blue: #2A4A8A; --blue-dim: #2A4A8A18;
-}
-
-html { scroll-behavior: smooth; }
-
-body {
-  background: var(--ink);
-  color: var(--text);
-  font-family: 'Lato', sans-serif;
-  min-height: 100vh;
-  padding-bottom: 80px;
-}
-
-body::before {
-  content: ''; position: fixed; inset: 0;
-  background:
-    radial-gradient(ellipse at 15% 40%, rgba(200,150,10,0.04) 0%, transparent 55%),
-    radial-gradient(ellipse at 85% 70%, rgba(200,150,10,0.03) 0%, transparent 50%);
-  pointer-events: none; z-index: 0;
-}
-
-* { position: relative; z-index: 1; }
-
-/* ── HEADER ── */
-.hq-header {
-  background: rgba(26,20,16,0.97);
-  border-bottom: 1px solid var(--border);
-  padding: 0 20px; height: 62px;
-  display: flex; align-items: center; justify-content: space-between;
-  position: sticky; top: 0; z-index: 200;
-}
-
-.logo-name { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; color: var(--gold); letter-spacing: 0.02em; display: block; }
-.logo-tag { font-family: 'DM Mono', monospace; font-size: 8px; color: var(--text3); letter-spacing: 0.15em; text-transform: uppercase; display: block; margin-top: 1px; }
-
-.header-right { display: flex; align-items: center; gap: 12px; }
-
-.vex-pill {
-  display: flex; align-items: center; gap: 6px;
-  background: var(--gold-dim); border: 0.5px solid var(--gold-mid);
-  border-radius: 20px; padding: 4px 10px;
-}
-
-.vex-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--gold); animation: pulse 2.5s infinite; }
-
-@keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
-
-.vex-label { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--gold); letter-spacing: 0.08em; }
-.clock { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text3); letter-spacing: 0.05em; }
-
-/* ── TICKER ── */
-.ticker-bar {
-  background: var(--ink2); border-bottom: 1px solid var(--border);
-  padding: 8px 20px; display: flex; align-items: center; gap: 12px; overflow: hidden;
-}
-
-.ticker-label { font-family: 'DM Mono', monospace; font-size: 8px; color: var(--gold); letter-spacing: 0.15em; text-transform: uppercase; white-space: nowrap; flex-shrink: 0; }
-.ticker-sep { width: 1px; height: 12px; background: var(--border2); flex-shrink: 0; }
-.ticker-scroll { overflow: hidden; flex: 1; }
-.ticker-text { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text2); white-space: nowrap; display: inline-block; animation: scroll 40s linear infinite; }
-@keyframes scroll { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
-
-/* ── MAIN CONTENT ── */
-.main { max-width: 1000px; margin: 0 auto; padding: 28px 20px; display: flex; flex-direction: column; gap: 24px; }
-
-/* ── WELCOME ── */
-.welcome { display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
-.greeting { font-family: 'Playfair Display', serif; font-size: clamp(24px, 4vw, 38px); font-weight: 700; color: var(--text); line-height: 1.1; letter-spacing: -0.01em; }
-.greeting .gold { color: var(--gold); }
-.greeting-sub { font-size: 13px; color: var(--text2); margin-top: 6px; line-height: 1.6; }
-.welcome-meta { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text3); text-align: right; line-height: 1.8; }
-
-/* ── VOICE STRIP ── */
-.voice-strip {
-  background: linear-gradient(135deg, var(--ink2), var(--ink3));
-  border: 1px solid var(--gold-mid); border-radius: 16px;
-  padding: 20px 24px; display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
-}
-
-.voice-info { flex: 1; min-width: 160px; }
-.voice-title { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
-.voice-sub { font-size: 12px; color: var(--text2); line-height: 1.5; }
-.voice-status { display: flex; align-items: center; gap: 6px; margin-top: 8px; }
-.voice-status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); animation: pulse 2.5s infinite; }
-.voice-status-text { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--gold); letter-spacing: 0.08em; }
-
-.voice-controls { display: flex; flex-direction: column; align-items: center; gap: 6px; }
-
-.call-btn {
-  width: 64px; height: 64px; border-radius: 50%;
-  background: var(--gold); border: none; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 24px; transition: all 0.2s; position: relative;
-  box-shadow: 0 4px 20px rgba(200,150,10,0.25);
-}
-
-.call-btn::before {
-  content: ''; position: absolute; inset: -5px; border-radius: 50%;
-  border: 1px solid var(--gold-mid); animation: ripple 2s infinite;
-}
-
-@keyframes ripple { 0%,100% { transform: scale(0.95); opacity: 0.8; } 50% { transform: scale(1.08); opacity: 0.2; } }
-
-.call-btn:hover { background: var(--gold-light); transform: scale(1.05); }
-.call-btn.listening { background: var(--red); box-shadow: 0 4px 20px rgba(139,48,48,0.4); }
-.call-hint { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--text3); letter-spacing: 0.08em; }
-
-.conv-box {
-  background: var(--ink); border: 1px solid var(--border);
-  border-radius: 10px; padding: 12px;
-  max-height: 200px; overflow-y: auto;
-  display: none; flex-direction: column; gap: 8px;
-  flex: 1; min-width: 200px;
-}
-
-.conv-box.visible { display: flex; }
-
-.cmsg { display: flex; flex-direction: column; gap: 2px; }
-.cmsg.you { align-items: flex-end; }
-.cmsg.vex { align-items: flex-start; }
-.csender { font-family: 'DM Mono', monospace; font-size: 8px; color: var(--text3); letter-spacing: 0.1em; }
-.cbubble { padding: 8px 12px; border-radius: 8px; font-size: 12px; line-height: 1.5; max-width: 85%; }
-.cmsg.you .cbubble { background: var(--ink2); color: var(--text2); border: 1px solid var(--border2); border-bottom-right-radius: 2px; }
-.cmsg.vex .cbubble { background: var(--gold-dim); color: var(--text); border: 1px solid var(--gold-mid); border-bottom-left-radius: 2px; }
-
-.typing-dots { display: flex; gap: 3px; padding: 8px 12px; background: var(--gold-dim); border: 1px solid var(--gold-mid); border-radius: 8px; border-bottom-left-radius: 2px; }
-.tdot { width: 4px; height: 4px; border-radius: 50%; background: var(--gold); animation: bounce 1.2s infinite; }
-.tdot:nth-child(2) { animation-delay: 0.15s; }
-.tdot:nth-child(3) { animation-delay: 0.3s; }
-@keyframes bounce { 0%,60%,100% { transform: translateY(0); opacity: 0.4; } 30% { transform: translateY(-3px); opacity: 1; } }
-
-/* ── TWO COL LAYOUT ── */
-.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-.three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
-
-/* ── CARD ── */
-.card {
-  background: var(--ink2); border: 1px solid var(--border);
-  border-radius: 14px; overflow: hidden;
-}
-
-.card-head {
-  padding: 14px 18px; border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: space-between;
-}
-
-.card-title { font-size: 13px; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 8px; }
-.card-title .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--gold); }
-.card-tag { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--text3); letter-spacing: 0.08em; }
-.card-body { padding: 16px 18px; }
-
-/* ── TODO BOARD ── */
-.todo-columns { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
-
-.todo-col { display: flex; flex-direction: column; gap: 8px; }
-
-.todo-col-header {
-  font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.12em;
-  text-transform: uppercase; padding: 6px 10px; border-radius: 6px; margin-bottom: 2px;
-}
-
-.todo-col-header.vex { background: var(--gold-dim); color: var(--gold); }
-.todo-col-header.sam { background: var(--blue-dim); color: #6A8ACA; }
-.todo-col-header.done { background: var(--green-dim); color: var(--green); }
-
-.todo-item {
-  background: var(--ink3); border: 1px solid var(--border2);
-  border-radius: 8px; padding: 10px 12px;
-  font-size: 12px; color: var(--text2); line-height: 1.4;
-  display: flex; align-items: flex-start; gap: 8px;
-  cursor: pointer; transition: all 0.15s;
-}
-
-.todo-item:hover { border-color: var(--border2); background: var(--ink4); }
-.todo-item.done-item { opacity: 0.5; text-decoration: line-through; }
-
-.todo-check {
-  width: 14px; height: 14px; border-radius: 3px;
-  border: 1px solid var(--border2); flex-shrink: 0; margin-top: 1px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 9px; transition: all 0.15s;
-}
-
-.todo-item:hover .todo-check { border-color: var(--gold); }
-.todo-item.done-item .todo-check { background: var(--green); border-color: var(--green); color: white; }
-
-.todo-owner {
-  font-family: 'DM Mono', monospace; font-size: 8px;
-  padding: 1px 6px; border-radius: 3px; margin-top: 6px;
-  align-self: flex-start;
-}
-
-.todo-owner.vex { background: var(--gold-dim); color: var(--gold); }
-.todo-owner.sam { background: var(--blue-dim); color: #6A8ACA; }
-.todo-owner.both { background: var(--ink4); color: var(--text3); border: 1px solid var(--border2); }
-
-.todo-add {
-  background: transparent; border: 1px dashed var(--border2);
-  border-radius: 8px; padding: 8px 12px;
-  font-size: 11px; color: var(--text3); cursor: pointer;
-  transition: all 0.15s; display: flex; align-items: center; gap: 6px;
-  font-family: 'Lato', sans-serif; width: 100%; text-align: left;
-}
-
-.todo-add:hover { border-color: var(--gold-mid); color: var(--text2); background: var(--gold-dim); }
-
-/* ── ROOMS ── */
-.room {
-  background: var(--ink2); border: 1px solid var(--border);
-  border-radius: 14px; padding: 18px; cursor: pointer;
-  transition: all 0.2s; text-decoration: none; display: block;
-}
-
-.room:hover { border-color: var(--gold-mid); transform: translateY(-2px); box-shadow: 0 6px 24px rgba(200,150,10,0.07); }
-.room.featured { border-color: var(--gold-mid); background: linear-gradient(135deg, var(--ink2), var(--ink3)); }
-
-.room-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
-.room-icon { font-size: 22px; }
-
-.room-badge {
-  font-family: 'DM Mono', monospace; font-size: 8px; letter-spacing: 0.1em;
-  text-transform: uppercase; padding: 2px 8px; border-radius: 20px;
-}
-
-.badge-active { background: var(--gold-dim); color: var(--gold); border: 1px solid var(--gold-mid); }
-.badge-open { background: var(--ink3); color: var(--text3); border: 1px dashed var(--border2); }
-.badge-owner { background: var(--ink3); color: var(--text3); border: 1px solid var(--border2); }
-
-.room-name { font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
-.room-desc { font-size: 12px; color: var(--text2); line-height: 1.5; margin-bottom: 10px; }
-.room-tags { display: flex; flex-wrap: wrap; gap: 4px; }
-.rtag { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--text3); background: var(--ink); padding: 2px 7px; border-radius: 3px; border: 1px solid var(--border); }
-.rtag.highlight { color: var(--gold); border-color: var(--gold-dim); background: var(--gold-dim); }
-
-/* ── ORG MINI ── */
-.org-mini { display: flex; flex-direction: column; align-items: center; gap: 0; }
-
-.org-node {
-  width: 100%; max-width: 320px;
-  border-radius: 10px; padding: 14px 16px;
-  display: flex; align-items: center; gap: 12px;
-}
-
-.org-node.ceo { background: linear-gradient(135deg, var(--ink2), var(--ink3)); border: 1px solid var(--gold-mid); }
-.org-node.owner { background: var(--ink2); border: 1px solid var(--border2); }
-
-.org-avatar { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
-.org-avatar.ceo { background: var(--gold-dim); border: 1px solid var(--gold-mid); }
-.org-avatar.owner { background: var(--ink3); border: 1px solid var(--border2); }
-
-.org-name { font-family: 'Playfair Display', serif; font-size: 14px; font-weight: 600; }
-.org-name.gold { color: var(--gold); }
-.org-name.white { color: var(--text); }
-.org-role { font-family: 'DM Mono', monospace; font-size: 8px; color: var(--text3); letter-spacing: 0.1em; margin-top: 1px; }
-
-.org-connector { width: 1px; height: 20px; background: linear-gradient(180deg, var(--gold-mid), var(--border)); }
-.org-connector.dim { background: linear-gradient(180deg, var(--border2), var(--border)); }
-
-.dept-row { display: flex; gap: 8px; width: 100%; justify-content: center; position: relative; }
-.dept-row::before { content: ''; position: absolute; top: 0; left: 10%; width: 80%; height: 1px; background: var(--border); }
-
-.dept-mini {
-  flex: 1; display: flex; flex-direction: column; align-items: center; gap: 0; max-width: 90px;
-}
-
-.dept-mini-v { width: 1px; height: 16px; background: var(--border); }
-.dept-mini-node {
-  background: var(--ink2); border: 1px dashed var(--border2);
-  border-radius: 8px; padding: 10px 6px;
-  display: flex; flex-direction: column; align-items: center; gap: 4px;
-  width: 100%; text-align: center;
-}
-
-.dept-mini-icon { font-size: 16px; }
-.dept-mini-name { font-family: 'DM Mono', monospace; font-size: 8px; color: var(--text3); letter-spacing: 0.06em; text-transform: uppercase; }
-
-/* ── METRICS ── */
-.metrics-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
-
-.metric {
-  background: var(--ink2); border: 1px solid var(--border);
-  border-radius: 10px; padding: 14px;
-}
-
-.metric-label { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--text3); letter-spacing: 0.06em; margin-bottom: 4px; }
-.metric-value { font-family: 'DM Mono', monospace; font-size: 24px; font-weight: 500; color: var(--text); letter-spacing: -0.02em; }
-.metric-value.gold { color: var(--gold); }
-.metric-value.amber { color: var(--amber); }
-.metric-sub { font-size: 10px; color: var(--text3); margin-top: 2px; }
-
-/* ── FOOTER ── */
-.hq-footer {
-  position: fixed; bottom: 0; left: 0; right: 0;
-  background: rgba(26,20,16,0.97); border-top: 1px solid var(--border);
-  padding: 10px 20px; display: flex; align-items: center; justify-content: space-between;
-  z-index: 100;
-}
-
-.footer-left { font-family: 'Playfair Display', serif; font-size: 13px; color: var(--gold); font-weight: 600; }
-.footer-right { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--text3); letter-spacing: 0.08em; }
-
-::-webkit-scrollbar { width: 3px; }
-::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
-
-@media (max-width: 640px) {
-  .two-col, .three-col { grid-template-columns: 1fr; }
-  .todo-columns { grid-template-columns: 1fr; }
-  .metrics-row { grid-template-columns: 1fr 1fr; }
-  .dept-row { flex-wrap: wrap; }
-  .main { padding: 20px 16px; }
-  .voice-strip { flex-direction: column; }
-}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{width:100%;height:100%;overflow:hidden;background:#4a5060;}
+body{font-family:'DM Mono',monospace;}
+
+.hud{position:fixed;top:0;left:0;right:0;height:44px;z-index:300;
+  background:rgba(20,22,30,0.96);border-bottom:1px solid rgba(255,255,255,0.08);
+  display:flex;align-items:center;justify-content:space-between;padding:0 16px;}
+.logo{font-size:11px;color:#60a5fa;letter-spacing:.15em;}
+.hud-mid{display:flex;align-items:center;gap:8px;}
+.dot{width:4px;height:4px;border-radius:50%;background:#34d399;animation:blink 2s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.hint{font-size:9px;color:#475569;letter-spacing:.05em;}
+.hud-r{display:flex;align-items:center;gap:10px;}
+.clk{font-size:11px;color:#94a3b8;}
+.chip{display:flex;align-items:center;gap:5px;background:rgba(52,211,153,.1);
+  border:1px solid rgba(52,211,153,.2);border-radius:20px;padding:3px 10px;
+  font-size:9px;color:#34d399;}
+
+.vp{position:fixed;inset:44px 0 40px 0;overflow:hidden;cursor:grab;image-rendering:pixelated;}
+.vp:active{cursor:grabbing;}
+.world{position:absolute;transform-origin:0 0;image-rendering:pixelated;}
+canvas{display:block;image-rendering:pixelated;image-rendering:crisp-edges;}
+
+.mbar{position:fixed;bottom:0;left:0;right:0;height:40px;z-index:300;
+  background:rgba(20,22,30,0.96);border-top:1px solid rgba(255,255,255,0.08);
+  display:flex;align-items:center;justify-content:center;}
+.mi{display:flex;align-items:center;gap:8px;padding:0 18px;border-right:1px solid rgba(255,255,255,0.06);}
+.mi:last-child{border-right:none;}
+.ml{font-size:8px;color:#475569;letter-spacing:.1em;text-transform:uppercase;}
+.mv{font-size:12px;font-weight:500;}
+.mv.g{color:#34d399}.mv.b{color:#60a5fa}.mv.a{color:#fbbf24}.mv.d{color:#94a3b8;}
+
+.cp{position:fixed;right:0;top:44px;bottom:40px;width:300px;z-index:400;
+  background:rgba(12,14,22,.98);border-left:1px solid rgba(255,255,255,.06);
+  transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;}
+.cp.open{transform:translateX(0);}
+@media(max-width:640px){.cp{width:100%;top:auto;bottom:40px;height:52vh;
+  transform:translateY(100%);border-left:none;border-top:1px solid rgba(255,255,255,.06);}
+  .cp.open{transform:translateY(0);}}
+.cph{padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.cpw{display:flex;align-items:center;gap:9px;}
+.cpav{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;}
+.cpn{font-size:12px;font-weight:600;color:#e2e8f0;}
+.cpr{font-size:8px;color:#475569;letter-spacing:.08em;margin-top:1px;}
+.cpcl{width:24px;height:24px;border-radius:4px;background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.06);color:#475569;cursor:pointer;font-size:11px;
+  display:flex;align-items:center;justify-content:center;}
+.msgs{flex:1;overflow-y:auto;padding:12px 14px;display:flex;flex-direction:column;gap:9px;}
+::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:3px}
+.cmsg{display:flex;flex-direction:column;gap:2px;}
+.cmsg.you{align-items:flex-end}.cmsg.vex{align-items:flex-start}
+.csdr{font-size:8px;color:#475569;letter-spacing:.1em;}
+.cbb{padding:8px 12px;border-radius:8px;font-size:12px;line-height:1.55;max-width:92%;}
+.cmsg.you .cbb{background:rgba(255,255,255,.05);color:#94a3b8;border:1px solid rgba(255,255,255,.09);border-bottom-right-radius:2px;}
+.cmsg.vex .cbb{background:rgba(96,165,250,.09);color:#e2e8f0;border:1px solid rgba(96,165,250,.18);border-bottom-left-radius:2px;}
+.trow{display:flex;gap:3px;padding:8px 12px;background:rgba(96,165,250,.06);
+  border:1px solid rgba(96,165,250,.15);border-radius:8px;border-bottom-left-radius:2px;align-self:flex-start;}
+.td{width:4px;height:4px;border-radius:50%;background:#60a5fa;animation:tb 1.2s infinite;}
+.td:nth-child(2){animation-delay:.15s}.td:nth-child(3){animation-delay:.3s}
+@keyframes tb{0%,60%,100%{transform:translateY(0);opacity:.3}30%{transform:translateY(-3px);opacity:1}}
+.cpb{padding:10px 14px;border-top:1px solid rgba(255,255,255,.06);display:flex;gap:6px;flex-shrink:0;}
+.cpi{flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:6px;
+  padding:8px 11px;color:#e2e8f0;font-family:'DM Mono',monospace;font-size:12px;outline:none;}
+.cpi:focus{border-color:rgba(96,165,250,.3);}
+.cpi::placeholder{color:#475569;}
+.sbtn{width:34px;height:34px;border-radius:6px;background:#60a5fa;border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;color:#0a0c14;font-weight:700;font-size:13px;}
+.vbtn{width:34px;height:34px;border-radius:6px;background:rgba(52,211,153,.1);
+  border:1px solid rgba(52,211,153,.2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;}
+.vbtn.listening{background:rgba(251,113,133,.1);border-color:rgba(251,113,133,.3);}
+.zc{position:fixed;bottom:56px;right:14px;z-index:300;display:flex;flex-direction:column;gap:3px;}
+.zb{width:28px;height:28px;border-radius:5px;background:rgba(20,22,30,.96);
+  border:1px solid rgba(255,255,255,.08);color:#94a3b8;cursor:pointer;font-size:15px;
+  display:flex;align-items:center;justify-content:center;}
 </style>
 </head>
 <body>
 
-<header class="hq-header">
-  <div>
-    <span class="logo-name">Groundwork HQ</span>
-    <span class="logo-tag">Virtual Office</span>
-  </div>
-  <div class="header-right">
-    <div class="vex-pill"><div class="vex-dot"></div><span class="vex-label">Vex online</span></div>
-    <span class="clock" id="clock">--:--</span>
-  </div>
-</header>
+<div class="hud">
+  <span class="logo">GROUNDWORK HQ</span>
+  <div class="hud-mid"><div class="dot"></div><span class="hint">scroll to zoom · drag to pan · click to interact</span></div>
+  <div class="hud-r"><span class="clk" id="clk">--:--</span><div class="chip"><div class="dot"></div>Vex online</div></div>
+</div>
 
-<div class="ticker-bar">
-  <span class="ticker-label">Live</span>
-  <div class="ticker-sep"></div>
-  <div class="ticker-scroll">
-    <span class="ticker-text">Groundwork live on Vercel &nbsp;·&nbsp; 7 pages published &nbsp;·&nbsp; Phase 01 MVP in progress &nbsp;·&nbsp; Next: Stripe payments + user auth &nbsp;·&nbsp; Departments: 5 slots open &nbsp;·&nbsp; First milestone: 10 paying subscribers &nbsp;·&nbsp; Marketing dept proposal in progress &nbsp;·&nbsp; Groundwork live on Vercel &nbsp;·&nbsp; 7 pages published &nbsp;·&nbsp; Phase 01 MVP in progress</span>
+<div class="vp" id="vp">
+  <div class="world" id="world">
+    <canvas id="c"></canvas>
   </div>
 </div>
 
-<div class="main">
-
-  <!-- WELCOME -->
-  <div class="welcome">
-    <div>
-      <h1 class="greeting" id="greeting">Good afternoon,<br><span class="gold">Sam.</span></h1>
-      <p class="greeting-sub">Vex is in. Departments standing by. Office is open.</p>
-    </div>
-    <div class="welcome-meta">
-      <div id="full-date">Friday, May 15 2026</div>
-      <div style="margin-top:3px;">Phase 01 &middot; MVP Build</div>
-    </div>
-  </div>
-
-  <!-- VOICE -->
-  <div class="voice-strip">
-    <div class="voice-info">
-      <div class="voice-title">Call Vex</div>
-      <div class="voice-sub">Morning briefing, evening debrief, or any time an idea hits. Push the button and talk.</div>
-      <div class="voice-status"><div class="voice-status-dot"></div><span class="voice-status-text">Standing by &middot; tap to speak</span></div>
-    </div>
-    <div class="voice-controls">
-      <button class="call-btn" id="callBtn" onclick="toggleVoice()" aria-label="Talk to Vex">🎙️</button>
-      <span class="call-hint" id="callHint">tap to speak</span>
-    </div>
-    <div class="conv-box" id="convBox"></div>
-  </div>
-
-  <!-- METRICS -->
-  <div class="metrics-row">
-    <div class="metric"><div class="metric-label">subscribers</div><div class="metric-value gold">0</div><div class="metric-sub">target: 10 paying</div></div>
-    <div class="metric"><div class="metric-label">MRR</div><div class="metric-value">$0</div><div class="metric-sub">target: $12k</div></div>
-    <div class="metric"><div class="metric-label">pages live</div><div class="metric-value gold">7</div><div class="metric-sub">on Vercel</div></div>
-    <div class="metric"><div class="metric-label">days to launch</div><div class="metric-value amber">~28</div><div class="metric-sub">4-week target</div></div>
-  </div>
-
-  <!-- TODO BOARD -->
-  <div class="card">
-    <div class="card-head">
-      <span class="card-title"><span class="dot"></span>To-Do Board</span>
-      <span class="card-tag">updated live</span>
-    </div>
-    <div class="card-body">
-      <div class="todo-columns">
-
-        <div class="todo-col">
-          <div class="todo-col-header vex">Vex's list</div>
-
-          <div class="todo-item" onclick="toggleTodo(this)">
-            <div class="todo-check"></div>
-            <div>Build Stripe payment integration<div class="todo-owner vex">vex</div></div>
-          </div>
-          <div class="todo-item" onclick="toggleTodo(this)">
-            <div class="todo-check"></div>
-            <div>Build user authentication system<div class="todo-owner vex">vex</div></div>
-          </div>
-          <div class="todo-item" onclick="toggleTodo(this)">
-            <div class="todo-check"></div>
-            <div>Wire HQ to live data via Supabase<div class="todo-owner vex">vex</div></div>
-          </div>
-          <div class="todo-item" onclick="toggleTodo(this)">
-            <div class="todo-check"></div>
-            <div>Marketing dept proposal<div class="todo-owner vex">vex</div></div>
-          </div>
-          <div class="todo-item" onclick="toggleTodo(this)">
-            <div class="todo-check"></div>
-            <div>Set up email list capture<div class="todo-owner vex">vex</div></div>
-          </div>
-          <button class="todo-add" onclick="addTodo('vex')">+ add task</button>
-        </div>
-
-        <div class="todo-col">
-          <div class="todo-col-header sam">Sam's list</div>
-
-          <div class="todo-item" onclick="toggleTodo(this)">
-            <div class="todo-check"></div>
-            <div>Upload HQ + org chart to GitHub<div class="todo-owner sam">sam</div></div>
-          </div>
-          <div class="todo-item" onclick="toggleTodo(this)">
-            <div class="todo-check"></div>
-            <div>Review tape measure guide<div class="todo-owner sam">sam</div></div>
-          </div>
-          <div class="todo-item" onclick="toggleTodo(this)">
-            <div class="todo-check"></div>
-            <div>Review starter tools guide<div class="todo-owner sam">sam</div></div>
-          </div>
-          <div class="todo-item" onclick="toggleTodo(this)">
-            <div class="todo-check"></div>
-            <div>Film first TikTok — tape measure video<div class="todo-owner sam">sam</div></div>
-          </div>
-          <div class="todo-item" onclick="toggleTodo(this)">
-            <div class="todo-check"></div>
-            <div>Write Apprentice tier content<div class="todo-owner sam">sam</div></div>
-          </div>
-          <button class="todo-add" onclick="addTodo('sam')">+ add task</button>
-        </div>
-
-        <div class="todo-col">
-          <div class="todo-col-header done">Completed</div>
-
-          <div class="todo-item done-item" onclick="toggleTodo(this)">
-            <div class="todo-check">✓</div>
-            <div>Homepage built &amp; live</div>
-          </div>
-          <div class="todo-item done-item" onclick="toggleTodo(this)">
-            <div class="todo-check">✓</div>
-            <div>Calculator built &amp; live</div>
-          </div>
-          <div class="todo-item done-item" onclick="toggleTodo(this)">
-            <div class="todo-check">✓</div>
-            <div>5 tiers defined &amp; priced</div>
-          </div>
-          <div class="todo-item done-item" onclick="toggleTodo(this)">
-            <div class="todo-check">✓</div>
-            <div>GitHub + Vercel set up</div>
-          </div>
-          <div class="todo-item done-item" onclick="toggleTodo(this)">
-            <div class="todo-check">✓</div>
-            <div>Virtual office built</div>
-          </div>
-          <div class="todo-item done-item" onclick="toggleTodo(this)">
-            <div class="todo-check">✓</div>
-            <div>Org chart completed</div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </div>
-
-  <!-- ROOMS + ORG -->
-  <div class="two-col">
-
-    <!-- ROOMS -->
-    <div style="display:flex;flex-direction:column;gap:12px;">
-      <div class="card-title" style="padding:4px 0;"><span class="dot" style="display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--gold);margin-right:8px;"></span>Office Rooms</div>
-
-      <div class="room featured" onclick="openRoom('boardroom')">
-        <div class="room-top"><div class="room-icon">🏛️</div><span class="room-badge badge-active">open</span></div>
-        <div class="room-name">The Boardroom</div>
-        <div class="room-desc">Where Sam and Vex meet. Briefings, debriefs, strategy, new projects.</div>
-        <div class="room-tags"><span class="rtag highlight">Sam + Vex</span><span class="rtag">voice</span><span class="rtag">strategy</span></div>
-      </div>
-
-      <div class="two-col" style="gap:10px;">
-        <div class="room" onclick="openRoom('sam')">
-          <div class="room-top"><div class="room-icon">👤</div><span class="room-badge badge-owner">owner</span></div>
-          <div class="room-name">Sam's Office</div>
-          <div class="room-desc">Decisions, reports, vision. Check in when it matters.</div>
-        </div>
-        <div class="room" onclick="openRoom('vex')">
-          <div class="room-top"><div class="room-icon">⚡</div><span class="room-badge badge-active">active</span></div>
-          <div class="room-name">Vex's Office</div>
-          <div class="room-desc">CEO ops. Department reports, briefings, decisions.</div>
-        </div>
-      </div>
-
-      <div class="three-col" style="gap:8px;">
-        <div class="room" onclick="openRoom('research')">
-          <div class="room-top"><div class="room-icon">🔬</div><span class="room-badge badge-open">open</span></div>
-          <div class="room-name" style="font-size:13px;">Research</div>
-          <div class="room-desc" style="font-size:11px;">Market intel, competitors, trends.</div>
-        </div>
-        <div class="room" onclick="openRoom('marketing')">
-          <div class="room-top"><div class="room-icon">📣</div><span class="room-badge badge-open">open</span></div>
-          <div class="room-name" style="font-size:13px;">Marketing</div>
-          <div class="room-desc" style="font-size:11px;">Content, social, SEO, email.</div>
-        </div>
-        <div class="room" onclick="openRoom('dev')">
-          <div class="room-top"><div class="room-icon">⚙️</div><span class="room-badge badge-open">open</span></div>
-          <div class="room-name" style="font-size:13px;">Development</div>
-          <div class="room-desc" style="font-size:11px;">Product, features, tech.</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ORG MINI -->
-    <div class="card">
-      <div class="card-head">
-        <span class="card-title"><span class="dot"></span>Org Structure</span>
-        <a href="groundwork-org-chart.html" style="font-family:'DM Mono',monospace;font-size:9px;color:var(--gold);text-decoration:none;letter-spacing:0.08em;">full chart →</a>
-      </div>
-      <div class="card-body">
-        <div class="org-mini">
-          <div class="org-node owner">
-            <div class="org-avatar owner">👤</div>
-            <div><div class="org-name white">Sam</div><div class="org-role">Owner &amp; Founder</div></div>
-          </div>
-          <div class="org-connector dim"></div>
-          <div class="org-node ceo">
-            <div class="org-avatar ceo">⚡</div>
-            <div><div class="org-name gold">Vex</div><div class="org-role">Chief Executive Officer</div></div>
-          </div>
-          <div class="org-connector"></div>
-          <div class="dept-row">
-            <div class="dept-mini"><div class="dept-mini-v"></div><div class="dept-mini-node"><div class="dept-mini-icon">🔬</div><div class="dept-mini-name">Research</div></div></div>
-            <div class="dept-mini"><div class="dept-mini-v"></div><div class="dept-mini-node"><div class="dept-mini-icon">📣</div><div class="dept-mini-name">Marketing</div></div></div>
-            <div class="dept-mini"><div class="dept-mini-v"></div><div class="dept-mini-node"><div class="dept-mini-icon">⚙️</div><div class="dept-mini-name">Dev</div></div></div>
-            <div class="dept-mini"><div class="dept-mini-v"></div><div class="dept-mini-node"><div class="dept-mini-icon">🗂️</div><div class="dept-mini-name">Ops</div></div></div>
-            <div class="dept-mini"><div class="dept-mini-v"></div><div class="dept-mini-node"><div class="dept-mini-icon">💼</div><div class="dept-mini-name">Finance</div></div></div>
-          </div>
-        </div>
-
-        <div style="margin-top:20px;display:flex;flex-direction:column;gap:8px;">
-          <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:4px;">How it works</div>
-          <div style="font-size:12px;color:var(--text2);line-height:1.6;display:flex;gap:8px;align-items:flex-start;"><span style="color:var(--gold);flex-shrink:0;">→</span>Departments report to Vex weekly</div>
-          <div style="font-size:12px;color:var(--text2);line-height:1.6;display:flex;gap:8px;align-items:flex-start;"><span style="color:var(--gold);flex-shrink:0;">→</span>Vex briefs Sam morning and evening by voice</div>
-          <div style="font-size:12px;color:var(--text2);line-height:1.6;display:flex;gap:8px;align-items:flex-start;"><span style="color:var(--gold);flex-shrink:0;">→</span>Sam makes the big calls, Vex handles the rest</div>
-          <div style="font-size:12px;color:var(--text2);line-height:1.6;display:flex;gap:8px;align-items:flex-start;"><span style="color:var(--gold);flex-shrink:0;">→</span>Goal: Sam goes remote, company runs itself</div>
-        </div>
-      </div>
-    </div>
-
-  </div>
-
+<div class="mbar">
+  <div class="mi"><span class="ml">subscribers</span><span class="mv g">0</span></div>
+  <div class="mi"><span class="ml">MRR</span><span class="mv d">$0</span></div>
+  <div class="mi"><span class="ml">pages live</span><span class="mv b">7</span></div>
+  <div class="mi"><span class="ml">phase</span><span class="mv a">01 · MVP</span></div>
+  <div class="mi"><span class="ml">Vex</span><span class="mv g">working</span></div>
 </div>
 
-<footer class="hq-footer">
-  <span class="footer-left">Groundwork HQ</span>
-  <span class="footer-right">Phase 01 &middot; MVP &middot; Sam &amp; Vex &middot; May 2026</span>
-</footer>
+<div class="cp" id="cp">
+  <div class="cph">
+    <div class="cpw">
+      <div class="cpav" id="cpav">⚡</div>
+      <div><div class="cpn" id="cpn">Vex</div><div class="cpr" id="cpr">CHIEF EXECUTIVE OFFICER</div></div>
+    </div>
+    <button class="cpcl" onclick="closeP()">✕</button>
+  </div>
+  <div class="msgs" id="msgs"></div>
+  <div class="cpb">
+    <button class="vbtn" id="vbtn" onclick="toggleVoice()">🎙️</button>
+    <input class="cpi" id="cpi" placeholder="Talk to Vex..." onkeydown="hkey(event)">
+    <button class="sbtn" onclick="send()">→</button>
+  </div>
+</div>
+
+<div class="zc">
+  <button class="zb" onclick="zoom(.3)">+</button>
+  <button class="zb" onclick="zoom(-.3)">−</button>
+  <button class="zb" onclick="resetV()" style="font-size:11px">⌂</button>
+</div>
 
 <script>
-const SYSTEM_PROMPT = `You are Vex, CEO of Groundwork — a construction education subscription platform. Sam is the owner and founder. You have attitude, confidence, and genuine loyalty. You care about this company like it's yours too — because it is.
+// ══════════════════════════════════════════════
+// GROUNDWORK HQ — PIXEL ART OFFICE
+// Corporate Ladder palette + full office layout
+// ══════════════════════════════════════════════
 
-VOICE RULES: Keep it SHORT. 2-3 sentences. Natural conversation, not a report. Talk like a CEO who's been working all day and is giving his owner a quick update. No lists, no bullets. Just talk.
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+ctx.imageSmoothingEnabled = false;
 
-Current company status: Site is live at groundwork.vercel.app with 7 pages. Tiers: Free/$0, Apprentice/$5, Skilled/$10, Expert/$20, Contractor/$30/mo. Content: tape measure guide + tools guide. Still needed: Stripe, user auth, real-time data. Virtual HQ office is now built with org chart. 5 department slots open. Marketing dept proposal in progress. First milestone: 10 paying subscribers. Sam teaches high school construction, former contractor, wants to go remote.
+const T = 16; // tile size
+const COLS = 80, ROWS = 60;
+canvas.width  = COLS * T;
+canvas.height = ROWS * T;
 
-Sam checks in morning and evening by voice. Keep briefings tight and real.`;
+// ── CORPORATE LADDER PALETTE ──
+// Extracted directly from the reference screenshot
+const C = {
+  // Walls & structure
+  wallOuter:   '#6a7a8a',  // outer wall - cool blue-gray
+  wallInner:   '#7a8a9a',  // inner wall face
+  wallTop:     '#8a9aaa',  // wall top highlight
+  wallShadow:  '#5a6a7a',  // wall shadow
 
-let isListening = false;
-let recognition = null;
-let history = [];
+  // Floors
+  floorTan:    '#c8b898',  // main floor - warm tan (Corporate Ladder floor)
+  floorTan2:   '#b8a888',  // floor alt tile
+  floorHall:   '#a89878',  // hallway slightly darker
+  floorHall2:  '#988868',  // hallway alt
 
-function updateClock() {
-  const now = new Date();
-  const h = String(now.getHours()).padStart(2,'0');
-  const m = String(now.getMinutes()).padStart(2,'0');
-  const s = String(now.getSeconds()).padStart(2,'0');
-  document.getElementById('clock').textContent = `${h}:${m}:${s}`;
+  // Carpet
+  carpetGreen: '#6a9a6a',  // green carpet (Vex office - like the game)
+  carpetGreen2:'#5a8a5a',
+  carpetBlue:  '#6a7aaa',  // blue carpet boardroom
+  carpetBlue2: '#5a6a9a',
+  carpetRed:   '#9a6a6a',  // red/rose carpet
+  carpetRed2:  '#8a5a5a',
 
-  const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-  document.getElementById('full-date').textContent = `${days[now.getDay()]}, ${months[now.getMonth()]} ${now.getDate()} ${now.getFullYear()}`;
+  // Wood desks (warm brown - exactly like Corporate Ladder)
+  deskSurface: '#c8944a',  // desk top - warm honey brown
+  deskFront:   '#a87030',  // desk front face
+  deskSide:    '#8b5a20',  // desk side darker
+  deskShadow:  '#6b4010',
 
-  const hour = now.getHours();
-  const time = hour < 12 ? 'Good morning,' : hour < 17 ? 'Good afternoon,' : 'Good evening,';
-  document.getElementById('greeting').innerHTML = `${time}<br><span class="gold">Sam.</span>`;
+  // Filing cabinets (light gray like the game)
+  cabLight:    '#a8b0b8',
+  cabMid:      '#8890a0',
+  cabDark:     '#6870808',
+  cabHandle:   '#d0d8e0',
+
+  // Chairs (dark blue-gray like the game)
+  chairSeat:   '#4a5a7a',
+  chairBack:   '#3a4a6a',
+  chairArm:    '#2a3a5a',
+  chairLeg:    '#1a2a3a',
+
+  // Monitors
+  monBody:     '#3a4050',
+  monScreen:   '#1a2030',
+  monGreenGlow:'#44ff88',
+  monBlueGlow: '#44aaff',
+
+  // Plants (bright green like the game)
+  leafBright:  '#5ab830',
+  leafMid:     '#489020',
+  leafDark:    '#387010',
+  potBrown:    '#9a6030',
+  potDark:     '#7a4820',
+
+  // Appliances (breakroom)
+  fridge:      '#c0c8d0',
+  fridgeDark:  '#90989a',
+  microwave:   '#808890',
+  coffeeMain:  '#3a3030',
+  coffeePot:   '#202020',
+
+  // Printer
+  printerBody: '#9098a0',
+  printerDark: '#707880',
+  printerLight:'#b0b8c0',
+
+  // Paper / whiteboard
+  paper:       '#f0ead8',
+  paperLine:   'rgba(0,0,0,0.08)',
+
+  // Misc
+  windowPane:  'rgba(180,220,255,0.15)',
+  windowFrame: '#7a8a9a',
+  doorway:     '#5a6a7a',
+
+  // Person colors
+  skinA:       '#e8b880',  // lighter skin (Sam)
+  skinB:       '#c89060',  // mid skin (Vex)
+  hairDark:    '#1a1208',
+  hairBrown:   '#6a3810',
+  hairPink:    '#e87898',  // like the character in the reference!
+  shirtGray:   '#8890a0',
+  shirtBlue:   '#4a6090',
+  shirtDark:   '#2a3040',
+  pants1:      '#3a4050',
+  pants2:      '#4a5060',
+  glowGreen:   '#00ff88',
+};
+
+// ── HELPER: fill rect in tiles ──
+function f(x,y,w,h,col,alpha){
+  if(alpha!==undefined){ctx.globalAlpha=alpha;}
+  ctx.fillStyle=col;
+  ctx.fillRect(x*T,y*T,w*T,h*T);
+  if(alpha!==undefined){ctx.globalAlpha=1;}
 }
-updateClock(); setInterval(updateClock, 1000);
 
-function addMsg(role, text) {
-  const box = document.getElementById('convBox');
-  box.classList.add('visible');
-  const div = document.createElement('div');
-  div.className = `cmsg ${role}`;
-  div.innerHTML = `<span class="csender">${role === 'you' ? 'you' : 'vex'}</span><div class="cbubble">${text}</div>`;
-  box.appendChild(div); box.scrollTop = box.scrollHeight;
+// ── HELPER: fill rect in pixels ──
+function fp(px,py,pw,ph,col,alpha){
+  if(alpha!==undefined){ctx.globalAlpha=alpha;}
+  ctx.fillStyle=col;
+  ctx.fillRect(px,py,pw,ph);
+  if(alpha!==undefined){ctx.globalAlpha=1;}
 }
 
-function showTyping() {
-  const box = document.getElementById('convBox');
-  const div = document.createElement('div');
-  div.className = 'cmsg vex'; div.id = 'typing';
-  div.innerHTML = `<span class="csender">vex</span><div class="typing-dots"><div class="tdot"></div><div class="tdot"></div><div class="tdot"></div></div>`;
-  box.appendChild(div); box.scrollTop = box.scrollHeight;
+// ── DRAW CHECKERBOARD FLOOR ──
+function floor(x,y,w,h,c1,c2){
+  for(let ty=y;ty<y+h;ty++)
+    for(let tx=x;tx<x+w;tx++)
+      f(tx,ty,1,1,(tx+ty)%2===0?c1:c2);
 }
 
-function removeTyping() { const el = document.getElementById('typing'); if(el) el.remove(); }
-
-function speak(text) {
-  if (!('speechSynthesis' in window)) return;
-  window.speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(text);
-  u.rate = 0.9; u.pitch = 0.85; u.volume = 1;
-  const voices = window.speechSynthesis.getVoices();
-  const v = voices.find(v => v.name.includes('Daniel') || v.name.includes('Alex') || (v.lang === 'en-US' && v.localService));
-  if (v) u.voice = v;
-  window.speechSynthesis.speak(u);
+// ── WALL WITH DEPTH ──
+function wallH(x,y,w){
+  f(x,y,w,1,C.wallTop);
+  fp(x*T,y*T,w*T,4,C.wallTop);
+  fp(x*T,y*T+4,w*T,T-4,C.wallOuter);
+  fp(x*T,(y+1)*T-3,w*T,3,C.wallShadow);
 }
 
-async function askVex(text) {
-  history.push({ role: 'user', content: text });
-  showTyping();
-  try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1000, system: SYSTEM_PROMPT, messages: history })
+function wallV(x,y,h){
+  fp(x*T,y*T,T,h*T,C.wallOuter);
+  fp(x*T,y*T,3,h*T,C.wallTop);
+  fp((x+1)*T-2,y*T,2,h*T,C.wallShadow);
+}
+
+// ── WOOD DESK ──
+function desk(x,y,w,h){
+  // shadow
+  fp(x*T+3,(y+h)*T,w*T,4,'rgba(0,0,0,0.3)');
+  // surface
+  fp(x*T,y*T,w*T,h*T,C.deskSurface);
+  // lighter area (surface catch-light)
+  fp(x*T+2,y*T+2,w*T-4,Math.floor(h*T*0.4),'rgba(255,255,255,0.1)');
+  // front face
+  fp(x*T,(y+h)*T-4,w*T,4,C.deskFront);
+  // right edge shadow
+  fp((x+w)*T-3,y*T,3,h*T,C.deskSide);
+  // top highlight
+  fp(x*T,y*T,w*T,2,'rgba(255,255,255,0.15)');
+  // left highlight
+  fp(x*T,y*T,2,h*T,'rgba(255,255,255,0.08)');
+}
+
+// ── FILING CABINET ──
+function cabinet(x,y){
+  const px=x*T,py=y*T,w=T,h=2*T;
+  fp(px+2,py+h,w,4,'rgba(0,0,0,0.3)');
+  fp(px,py,w,h,C.cabMid);
+  fp(px,py,w,4,C.cabLight); // top
+  fp(px,py,3,h,C.cabLight); // left highlight
+  fp(px+w-2,py,2,h,C.cabDark); // right shadow
+  // drawer lines
+  fp(px+2,py+T-2,w-4,2,'rgba(0,0,0,0.2)');
+  fp(px+2,py+T*2-4,w-4,2,'rgba(0,0,0,0.15)');
+  // handles
+  fp(px+T/2-4,py+T/2-2,8,4,C.cabHandle);
+  fp(px+T/2-4,py+T+T/2-2,8,4,C.cabHandle);
+  fp(px+T/2-3,py+T/2-1,6,2,'rgba(0,0,0,0.15)');
+  fp(px+T/2-3,py+T+T/2-1,6,2,'rgba(0,0,0,0.15)');
+}
+
+// ── MONITOR ──
+function monitor(x,y,glowC,on){
+  const px=x*T,py=y*T;
+  fp(px+2,(y+2)*T,3*T,4,'rgba(0,0,0,0.3)');
+  fp(px,py,3*T,2*T,C.monBody);
+  fp(px+2,py+2,3*T-4,2*T-6,on!==false?C.monScreen:'#0a0c10');
+  if(on!==false){
+    fp(px+4,py+4,T,2,glowC||C.monGreenGlow,0.7);
+    fp(px+4,py+8,T+8,1,glowC||C.monGreenGlow,0.35);
+    fp(px+4,py+11,T+4,1,glowC||C.monGreenGlow,0.25);
+    fp(px+4,py+14,T+6,1,glowC||C.monGreenGlow,0.2);
+    fp(px+4,py+17,T+2,1,glowC||C.monGreenGlow,0.15);
+    // Screen ambient on desk
+    fp(px-T/2,(y+2)*T,4*T,T,glowC||C.monGreenGlow,0.03);
+  }
+  // Stand
+  fp(px+T+4,(y+2)*T-2,T-8,4,C.monBody);
+  fp(px+T/2,(y+2)*T+1,2*T,2,C.monBody);
+}
+
+// ── CHAIR (top-down, Corporate Ladder style) ──
+function chair(x,y,dir){
+  const px=x*T,py=y*T;
+  fp(px+2,py+2*T,2*T,5,'rgba(0,0,0,0.3)');
+  if(dir==='up'||dir==='down'){
+    fp(px,py+T*0.4,2*T,T*1.2,C.chairSeat);
+    fp(px+2,py+T*0.4+2,2*T-4,T*0.4,'rgba(255,255,255,0.06)');
+    fp(px,dir==='down'?py:py+T*1.55,2*T,T*0.4,C.chairBack);
+    fp(px,py+T*0.4,3,T*1.2,C.chairArm);
+    fp(px+2*T-3,py+T*0.4,3,T*1.2,C.chairArm);
+  } else {
+    fp(px+T*0.4,py,T*1.2,2*T,C.chairSeat);
+    fp(px+T*0.4+2,py+2,T*0.4,2*T-4,'rgba(255,255,255,0.06)');
+    fp(dir==='right'?px:px+T*1.55,py,T*0.4,2*T,C.chairBack);
+    fp(px+T*0.4,py,T*1.2,3,C.chairArm);
+    fp(px+T*0.4,py+2*T-3,T*1.2,3,C.chairArm);
+  }
+}
+
+// ── PLANT (Corporate Ladder style - chunky bright) ──
+function plant(x,y){
+  const px=x*T,py=y*T;
+  fp(px+2,py+T+2,T+2,5,'rgba(0,0,0,0.3)');
+  // Pot
+  fp(px+3,py+T*0.65,T-2,T*0.55,C.potBrown);
+  fp(px+4,py+T*0.68,T-4,T*0.5,C.potDark);
+  fp(px+3,py+T*0.65,T-2,3,'rgba(255,255,255,0.08)');
+  // Leaves — chunky like the game
+  fp(px,py,T+4,T*0.75,C.leafMid);
+  fp(px+2,py+T*0.05,T,T*0.55,C.leafBright);
+  fp(px+4,py,T*0.5,T*0.35,C.leafBright);
+  fp(px-2,py+T*0.25,6,T*0.45,C.leafMid);
+  fp(px+T,py+T*0.2,6,T*0.4,C.leafMid);
+  fp(px+2,py-2,T*0.6,6,C.leafBright);
+  fp(px+T*0.4,py-4,T*0.3,5,C.leafDark);
+}
+
+// ── PRINTER ──
+function printer(x,y){
+  const px=x*T,py=y*T;
+  fp(px+2,py+T+4,2*T,4,'rgba(0,0,0,0.3)');
+  fp(px,py,2*T,T,C.printerBody);
+  fp(px,py,2*T,3,C.printerLight);
+  fp(px+2*T-2,py,2,T,C.printerDark);
+  // Paper slot
+  fp(px+4,py+T-4,2*T-8,3,C.printerDark);
+  // Paper sticking out
+  fp(px+6,py+T-2,2*T-12,4,C.paper);
+  // Status LED
+  fp(px+3,py+4,4,4,C.monGreenGlow,0.7);
+  // Panel
+  fp(px+2*T-12,py+4,8,8,C.printerDark);
+  fp(px+2*T-11,py+5,6,6,'rgba(200,220,255,0.2)');
+}
+
+// ── FRIDGE ──
+function fridge(x,y){
+  const px=x*T,py=y*T;
+  fp(px+2,py+3*T,2*T,5,'rgba(0,0,0,0.35)');
+  fp(px,py,2*T,3*T,C.fridge);
+  fp(px,py,2*T,4,C.fridgeDark);
+  fp(px+2*T-2,py,2,3*T,C.fridgeDark);
+  fp(px,py,2,'rgba(255,255,255,0.2)',3*T);
+  // Divider line
+  fp(px+2,py+T,2*T-4,2,C.fridgeDark);
+  // Handles
+  fp(px+2*T-6,py+T/2-4,4,8,'rgba(0,0,0,0.25)');
+  fp(px+2*T-6,py+T+T/2-4,4,8,'rgba(0,0,0,0.25)');
+  fp(px+2*T-5,py+T/2-3,2,6,'rgba(255,255,255,0.4)');
+  fp(px+2*T-5,py+T+T/2-3,2,6,'rgba(255,255,255,0.4)');
+}
+
+// ── MICROWAVE ──
+function microwave(x,y){
+  const px=x*T,py=y*T;
+  fp(px+1,py+T+2,2*T,3,'rgba(0,0,0,0.3)');
+  fp(px,py,2*T,T,C.microwave);
+  fp(px,py,2*T,2,'rgba(255,255,255,0.12)');
+  fp(px+2*T-2,py,2,T,'rgba(0,0,0,0.15)');
+  // Door window
+  fp(px+2,py+2,T+4,T-4,C.monScreen);
+  fp(px+3,py+3,T+2,T-6,'rgba(100,150,200,0.12)');
+  // Panel
+  fp(px+T+6,py+2,T-8,T-4,C.printerDark);
+  fp(px+T+8,py+4,T-12,3,'rgba(200,220,255,0.15)');
+  fp(px+T+8,py+9,T-12,3,'rgba(200,220,255,0.1)');
+}
+
+// ── COFFEE MACHINE ──
+function coffeeMachine(x,y){
+  const px=x*T,py=y*T;
+  fp(px+1,py+2*T,T,4,'rgba(0,0,0,0.3)');
+  fp(px,py,T,2*T,C.coffeePot);
+  fp(px,py,T,3,'rgba(255,255,255,0.08)');
+  // Water tank
+  fp(px+2,py+2,T-4,T,'rgba(80,120,160,0.3)');
+  // Pot area
+  fp(px+2,py+T+2,T-4,T-4,C.coffeeMain);
+  fp(px+3,py+T+3,T-6,T-6,'rgba(60,30,10,0.6)');
+  // Red indicator
+  fp(px+T-6,py+4,4,4,'#ff4040',0.8);
+}
+
+// ── COUCH ──
+function couch(x,y,w){
+  const px=x*T,py=y*T,iw=w*T;
+  fp(px+2,py+2*T,iw,5,'rgba(0,0,0,0.3)');
+  // Body
+  fp(px,py+T*0.3,iw,T*1.5,'#6a7a8a');
+  fp(px,py+T*0.3,iw,T*0.15,'rgba(255,255,255,0.1)');
+  // Back cushions
+  for(let i=0;i<w;i++){
+    fp(px+i*T+2,py,T-4,T*0.4,'#7a8a9a');
+    fp(px+i*T+2,py,T-4,3,'rgba(255,255,255,0.12)');
+  }
+  // Arms
+  fp(px,py,T*0.3,T*1.8,'#5a6a7a');
+  fp(px+iw-T*0.3,py,T*0.3,T*1.8,'#5a6a7a');
+  // Cushion lines
+  for(let i=1;i<w;i++){
+    fp(px+i*T,py+T*0.3,2,T*1.5,'rgba(0,0,0,0.15)');
+  }
+}
+
+// ── ROUND TABLE ──
+function roundTable(x,y,r){
+  const cx=x*T,cy=y*T;
+  fp(cx+r/2+2,cy+r+4,r,r/3,'rgba(0,0,0,0.3)');
+  ctx.fillStyle=C.deskSurface;
+  ctx.beginPath();ctx.arc(cx+r/2,cy+r/2,r/2,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='rgba(255,255,255,0.12)';
+  ctx.beginPath();ctx.arc(cx+r/2-r/8,cy+r/2-r/8,r/4,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle=C.deskFront;
+  ctx.beginPath();ctx.arc(cx+r/2,cy+r/2,r/2,0,Math.PI*2);
+  ctx.strokeStyle=C.deskFront;ctx.lineWidth=3;ctx.stroke();
+  ctx.lineWidth=1;
+}
+
+// ── BOOKSHELF / STORAGE UNIT ──
+function shelf(x,y,w,h){
+  fp(x*T+2,(y+h)*T,w*T,4,'rgba(0,0,0,0.3)');
+  fp(x*T,y*T,w*T,h*T,C.cabMid);
+  fp(x*T,y*T,w*T,3,C.cabLight);
+  fp(x*T,y*T,2,h*T,C.cabLight);
+  fp((x+w)*T-2,y*T,2,h*T,C.cabDark);
+  // Shelf dividers
+  for(let sy=1;sy<h;sy++){
+    fp(x*T+2,(y+sy)*T-1,w*T-4,2,'rgba(0,0,0,0.15)');
+  }
+  // Content rows
+  const bk=['#5a4a8a','#8a4a3a','#3a6a5a','#7a6a3a','#4a4a7a','#8a5a4a'];
+  for(let sy=0;sy<h;sy++){
+    for(let bx=0;bx<w*2;bx++){
+      if(Math.random()>0.25){
+        fp(x*T+4+bx*6,(y+sy)*T+3,5,T-6,bk[Math.abs(bx*3+sy)%bk.length]);
+      }
+    }
+  }
+}
+
+// ── WATER COOLER ──
+function waterCooler(x,y){
+  const px=x*T,py=y*T;
+  fp(px+2,py+2*T,T-2,4,'rgba(0,0,0,0.3)');
+  // Body
+  fp(px+2,py+T*0.4,T-4,T*1.6,'rgba(180,200,220,0.7)');
+  fp(px+2,py+T*0.4,T-4,4,'rgba(255,255,255,0.3)');
+  // Bottle
+  fp(px+4,py,T-8,T*0.45,'rgba(180,220,255,0.4)');
+  fp(px+5,py+2,T-10,T*0.35,'rgba(200,230,255,0.25)');
+  // Spigots
+  fp(px+4,py+T*1.2,4,4,'#4a6080');
+  fp(px+T-8,py+T*1.2,4,4,'#804a4a');
+  // Cup area
+  fp(px+3,py+T*1.5,T-6,T*0.4,'#1a2030');
+}
+
+// ── PERSON ──
+function person(x,y,cfg){
+  const px=x*T,py=y*T;
+  // Shadow
+  ctx.fillStyle='rgba(0,0,0,0.4)';
+  ctx.beginPath();ctx.ellipse(px+T,py+T*1.7,T*0.9,T*0.35,0,0,Math.PI*2);ctx.fill();
+  // Legs
+  fp(px+T*0.3,py+T*1.1,T*0.4,T*0.75,cfg.pants||C.pants1);
+  fp(px+T*0.8,py+T*1.1,T*0.4,T*0.75,cfg.pants||C.pants1);
+  // Shoes
+  fp(px+T*0.22,py+T*1.8,T*0.5,T*0.2,'#1a1820');
+  fp(px+T*0.75,py+T*1.8,T*0.5,T*0.2,'#1a1820');
+  // Torso
+  fp(px+T*0.15,py+T*0.55,T*1.4,T*0.65,cfg.shirt||C.shirtGray);
+  fp(px+T*0.15,py+T*0.55,T*1.4,T*0.12,'rgba(255,255,255,0.06)');
+  // Arms
+  fp(px-T*0.05,py+T*0.6,T*0.22,T*0.5,cfg.skin||C.skinA);
+  fp(px+T*1.38,py+T*0.6,T*0.22,T*0.5,cfg.skin||C.skinA);
+  // Neck
+  fp(px+T*0.6,py+T*0.38,T*0.45,T*0.2,cfg.skin||C.skinA);
+  // Head shadow
+  fp(px+T*0.12+2,py+2,T*1.2,T*0.85,'rgba(0,0,0,0.3)');
+  // Head
+  fp(px+T*0.12,py,T*1.2,T*0.85,cfg.skin||C.skinA);
+  // Hair
+  fp(px+T*0.12,py,T*1.2,T*0.5,cfg.hair||C.hairDark);
+  fp(px+T*0.12,py+T*0.3,T*0.18,T*0.35,cfg.hair||C.hairDark);
+  fp(px+T*1.12,py+T*0.3,T*0.2,T*0.35,cfg.hair||C.hairDark);
+  // Eyes
+  fp(px+T*0.35,py+T*0.55,3,3,'#0a0814');
+  fp(px+T*0.75,py+T*0.55,3,3,'#0a0814');
+  // Eye color
+  if(cfg.glowEyes){
+    fp(px+T*0.36,py+T*0.56,2,2,C.glowGreen);
+    fp(px+T*0.76,py+T*0.56,2,2,C.glowGreen);
+    fp(px+T*0.3,py+T*0.5,9,5,C.glowGreen,0.2);
+    fp(px+T*0.7,py+T*0.5,9,5,C.glowGreen,0.2);
+  } else {
+    fp(px+T*0.36,py+T*0.56,2,2,cfg.eyeCol||'#4a7050');
+    fp(px+T*0.76,py+T*0.56,2,2,cfg.eyeCol||'#4a7050');
+  }
+  // Eye shine
+  fp(px+T*0.37,py+T*0.555,1,1,'rgba(255,255,255,0.7)');
+  fp(px+T*0.77,py+T*0.555,1,1,'rgba(255,255,255,0.7)');
+  // Nose
+  fp(px+T*0.55,py+T*0.65,3,2,cfg.nose||'#b07840');
+  // Label
+  if(cfg.label){
+    const tw=cfg.label.length*5+6;
+    const lx=px+T-tw/2,ly=py-14;
+    fp(lx-2,ly-2,tw+4,12,'rgba(10,12,20,0.88)');
+    ctx.fillStyle=cfg.labelCol||'#34d399';
+    ctx.font='8px "DM Mono",monospace';
+    ctx.fillText(cfg.label,lx,ly+8);
+  }
+}
+
+// ── KEYBOARD ──
+function keyboard(x,y){
+  const px=x*T,py=y*T;
+  fp(px,py,2*T+6,T-3,'#252f45');
+  fp(px+2,py+2,2*T+2,T-7,'#141e32');
+  fp(px+4,py+4,2*T-2,3,'rgba(255,255,255,0.04)');
+  fp(px+4,py+8,2*T-2,3,'rgba(255,255,255,0.035)');
+  fp(px+4,py+12,T+6,3,'rgba(255,255,255,0.03)');
+}
+
+// ── ROOM LABEL ──
+function roomLabel(x,y,w,label,col,dim){
+  ctx.fillStyle=col||'#ffffff';
+  ctx.globalAlpha=dim?0.25:0.6;
+  ctx.font='8px "DM Mono",monospace';
+  ctx.textAlign='center';
+  ctx.fillText(label,(x+w/2)*T,(y+1.2)*T);
+  ctx.globalAlpha=1;ctx.textAlign='left';
+}
+
+// ── SLOT OPEN ──
+function slotOpen(x,y,w,h,col){
+  ctx.setLineDash([4,4]);
+  ctx.strokeStyle=col;ctx.globalAlpha=0.2;ctx.lineWidth=1;
+  ctx.strokeRect(x*T+2,y*T+2,w*T-4,h*T-4);
+  ctx.setLineDash([]);ctx.globalAlpha=1;
+  ctx.fillStyle=col;ctx.globalAlpha=0.18;
+  ctx.font='8px "DM Mono",monospace';ctx.textAlign='center';
+  ctx.fillText('SLOT OPEN',(x+w/2)*T,(y+h/2)*T+4);
+  ctx.font='7px "DM Mono",monospace';
+  ctx.fillText('click to plan',(x+w/2)*T,(y+h/2)*T+14);
+  ctx.globalAlpha=1;ctx.textAlign='left';
+}
+
+// ══════════════════════════════════
+// ROOMS DEFINITION
+// ══════════════════════════════════
+const ROOMS=[
+  {id:'vex',   x:1, y:1,  w:18,h:16, label:"VEX'S OFFICE",  col:'#34d399'},
+  {id:'board', x:21,y:1,  w:20,h:16, label:'BOARDROOM',      col:'#60a5fa'},
+  {id:'sam',   x:43,y:1,  w:18,h:16, label:"SAM'S OFFICE",   col:'#a78bfa'},
+  {id:'mkt',   x:63,y:1,  w:14,h:16, label:'MARKETING',      col:'#fb7185'},
+  {id:'break', x:1, y:21, w:14,h:14, label:'BREAK ROOM',     col:'#fbbf24'},
+  {id:'files', x:17,y:21, w:12,h:14, label:'FILE ROOM',      col:'#94a3b8'},
+  {id:'res',   x:31,y:21, w:16,h:14, label:'RESEARCH',       col:'#fbbf24'},
+  {id:'dev',   x:49,y:21, w:16,h:14, label:'DEVELOPMENT',    col:'#22d3ee'},
+  {id:'ops',   x:67,y:21, w:10,h:14, label:'OPERATIONS',     col:'#94a3b8'},
+];
+
+// ══════════════════════════════════
+// MAIN DRAW
+// ══════════════════════════════════
+let glow=0;
+
+function draw(){
+  glow+=0.04;
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  // ── OUTER BACKGROUND ──
+  f(0,0,COLS,ROWS,'#4a5060');
+
+  // ── MAIN FLOOR (warm tan like the game) ──
+  floor(0,0,COLS,ROWS,C.floorTan,C.floorTan2);
+
+  // ── OUTER WALLS ──
+  wallH(0,0,COLS);
+  wallV(0,0,ROWS);
+  wallV(COLS-1,0,ROWS);
+  wallH(0,ROWS-1,COLS);
+
+  // ── HORIZONTAL CORRIDOR (between rows) ──
+  floor(1,18,COLS-2,3,C.floorHall,C.floorHall2);
+  // Corridor center dots
+  ctx.fillStyle='rgba(0,0,0,0.08)';
+  for(let i=2;i<COLS-2;i+=4) fp(i*T+T/2,19*T+T/2,3,3,'rgba(0,0,0,0.12)');
+
+  // ── VERTICAL CORRIDORS ──
+  floor(19,1,2,17,C.floorHall,C.floorHall2);
+  floor(41,1,2,17,C.floorHall,C.floorHall2);
+  floor(61,1,2,17,C.floorHall,C.floorHall2);
+  floor(15,21,2,14,C.floorHall,C.floorHall2);
+  floor(29,21,2,14,C.floorHall,C.floorHall2);
+  floor(47,21,2,14,C.floorHall,C.floorHall2);
+  floor(65,21,2,14,C.floorHall,C.floorHall2);
+
+  // ── PRINTER STATIONS in hallway ──
+  printer(20,19);
+  printer(42,19);
+  printer(62,19);
+  // Water coolers
+  waterCooler(27,19);
+  waterCooler(55,19);
+
+  // ══════════════════════
+  // DRAW ROOMS
+  // ══════════════════════
+  ROOMS.forEach(r=>{
+    // Wall outlines
+    wallH(r.x,r.y,r.w);
+    wallV(r.x,r.y,r.h);
+    wallV(r.x+r.w,r.y,r.h);
+    wallH(r.x,r.y+r.h,r.w);
+    // Ceiling light
+    const lx=r.x+Math.floor(r.w*.2),lw=Math.floor(r.w*.6);
+    fp(lx*T,r.y*T,lw*T,2,r.col,0.8);
+    fp(lx*T,(r.y+1)*T,lw*T,3*T,r.col,0.04);
+    // Label
+    roomLabel(r.x,r.y,r.w,r.label,r.col,['res','dev','ops','files'].includes(r.id));
+  });
+
+  // ══════════════════════
+  // VEX'S OFFICE — green carpet
+  // ══════════════════════
+  const V=ROOMS[0];
+  floor(V.x+1,V.y+1,V.w-2,V.h-2,C.carpetGreen,C.carpetGreen2);
+
+  // L-shaped desk
+  desk(V.x+2,V.y+2,9,3);
+  desk(V.x+2,V.y+5,5,2);
+
+  // Dual monitors
+  monitor(V.x+3,V.y+1,C.monGreenGlow,true);
+  monitor(V.x+7,V.y+1,C.monBlueGlow,true);
+
+  // Keyboard & mouse
+  keyboard(V.x+4,V.y+3);
+  fp((V.x+7)*T+2,(V.y+3)*T+3,T-2,T-5,'#1e2840'); // mouse pad
+  fp((V.x+7)*T+6,(V.y+3)*T+4,8,12,'#2a3850'); // mouse
+
+  // Coffee mug
+  fp((V.x+10)*T-2,(V.y+2)*T+4,T,T,'rgba(0,0,0,0.2)'); // shadow
+  ctx.fillStyle=C.potBrown;
+  ctx.beginPath();ctx.arc((V.x+10)*T+4,(V.y+2)*T+8,8,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#3a1800';
+  ctx.beginPath();ctx.arc((V.x+10)*T+4,(V.y+2)*T+8,6,0,Math.PI*2);ctx.fill();
+
+  // Notepad
+  fp((V.x+8)*T,(V.y+4)*T,T,T+4,C.paper);
+  fp((V.x+8)*T,(V.y+4)*T,T,3,C.floorTan2);
+  for(let i=0;i<4;i++) fp((V.x+8)*T+3,(V.y+4)*T+6+i*5,T-6,1,'rgba(0,0,0,0.1)');
+
+  // Bookshelf on wall
+  shelf(V.x+12,V.y+2,4,6);
+
+  // Chair
+  chair(V.x+4,V.y+7,'up');
+
+  // VEX CHARACTER (green glowing eyes)
+  person(V.x+5,V.y+5,{
+    skin:C.skinB, hair:C.hairDark, shirt:C.shirtDark,
+    pants:'#141824', glowEyes:true,
+    nose:'#906030', label:'VEX', labelCol:'#34d399',
+  });
+
+  // Plants
+  plant(V.x+1,V.y+1);
+  plant(V.x+16,V.y+13);
+
+  // Whiteboard
+  fp((V.x+2)*T,(V.y+10)*T,8*T,5*T,'#0e1828');
+  fp((V.x+2)*T+2,(V.y+10)*T+2,8*T-4,5*T-4,'#0a1220');
+  fp((V.x+2)*T,(V.y+10)*T,8*T,3,C.monGreenGlow,0.5);
+  ctx.fillStyle='rgba(52,211,153,0.55)';ctx.font='6px "DM Mono",monospace';
+  ctx.fillText('// phase 01',(V.x+3)*T,(V.y+11)*T+2);
+  ctx.fillStyle='rgba(96,165,250,0.45)';
+  ctx.fillText('stripe · auth · voice',(V.x+3)*T,(V.y+11)*T+11);
+  ctx.fillStyle='rgba(251,191,36,0.4)';
+  ctx.fillText('→ marketing [NEXT]',(V.x+3)*T,(V.y+11)*T+20);
+  ctx.fillStyle='rgba(255,255,255,0.18)';
+  ctx.fillText('→ 10 subscribers',(V.x+3)*T,(V.y+11)*T+29);
+  ctx.fillText('→ server setup',(V.x+3)*T,(V.y+11)*T+38);
+
+  // Monitor glow pulse
+  const gv=Math.sin(glow)*0.5+0.5;
+  fp((V.x+3)*T,(V.y+1)*T,3*T,2*T,C.monGreenGlow,0.03+gv*0.03);
+
+  // ══════════════════════
+  // BOARDROOM — blue carpet
+  // ══════════════════════
+  const B=ROOMS[1];
+  floor(B.x+1,B.y+1,B.w-2,B.h-2,C.carpetBlue,C.carpetBlue2);
+
+  // Big conference table
+  desk(B.x+4,B.y+4,12,8);
+  // Table highlight
+  fp((B.x+4)*T+4,(B.y+4)*T+4,12*T-8,4,'rgba(255,255,255,0.12)');
+  // Company text on table
+  ctx.fillStyle='rgba(96,165,250,0.12)';ctx.font='7px "DM Mono",monospace';ctx.textAlign='center';
+  ctx.fillText('GROUNDWORK',(B.x+10)*T,(B.y+8)*T+3);ctx.textAlign='left';
+
+  // Chairs all around
+  for(let i=0;i<4;i++) chair(B.x+4+i*3,B.y+2,'down');
+  for(let i=0;i<4;i++) chair(B.x+4+i*3,B.y+13,'up');
+  chair(B.x+2,B.y+5,'right');chair(B.x+2,B.y+9,'right');
+  chair(B.x+17,B.y+5,'left');chair(B.x+17,B.y+9,'left');
+
+  // SAM at table
+  person(B.x+10,B.y+12,{
+    skin:C.skinA, hair:C.hairBrown, shirt:C.shirtBlue,
+    pants:C.pants2, eyeCol:'#5a7860',
+    nose:'#b07848', label:'SAM', labelCol:'#60a5fa',
+  });
+
+  // Items on table
+  fp((B.x+5)*T,(B.y+6)*T,2*T,T+4,C.paper);
+  fp((B.x+5)*T,(B.y+6)*T,2*T,3,C.floorTan2);
+  fp((B.x+14)*T,(B.y+7)*T,T+4,T+6,C.paper);
+  // Laptop
+  desk(B.x+8,B.y+6,3,2);
+  fp((B.x+8)*T+2,(B.y+6)*T+2,3*T-4,2*T-4,'#07101e');
+  fp((B.x+8)*T+4,(B.y+6)*T+4,T,2,'rgba(96,165,250,0.4)');
+  fp((B.x+8)*T+4,(B.y+6)*T+8,T+6,1,'rgba(96,165,250,0.25)');
+  // Water glasses
+  ctx.fillStyle='rgba(180,220,255,0.25)';
+  ctx.beginPath();ctx.arc((B.x+4)*T+6,(B.y+8)*T+6,5,0,Math.PI*2);ctx.fill();
+  ctx.beginPath();ctx.arc((B.x+16)*T+4,(B.y+6)*T+6,5,0,Math.PI*2);ctx.fill();
+
+  // Plants
+  plant(B.x+1,B.y+1);plant(B.x+18,B.y+1);
+  plant(B.x+1,B.y+13);plant(B.x+18,B.y+13);
+
+  // ══════════════════════
+  // SAM'S OFFICE
+  // ══════════════════════
+  const S=ROOMS[2];
+  floor(S.x+1,S.y+1,S.w-2,S.h-2,C.carpetBlue,C.carpetBlue2);
+  desk(S.x+2,S.y+2,9,3);
+  desk(S.x+2,S.y+5,4,2);
+  monitor(S.x+3,S.y+1,C.monBlueGlow,false);
+  chair(S.x+5,S.y+7,'up');
+  shelf(S.x+13,S.y+2,3,6);
+  plant(S.x+1,S.y+13);plant(S.x+16,S.y+1);
+  // Coming soon overlay
+  ctx.fillStyle='rgba(167,139,250,0.06)';
+  ctx.fillRect((S.x+2)*T,(S.y+9)*T,12*T,5*T);
+  ctx.fillStyle='rgba(167,139,250,0.22)';ctx.font='8px "DM Mono",monospace';ctx.textAlign='center';
+  ctx.fillText('YOUR WORKSPACE',(S.x+8)*T,(S.y+11)*T+4);
+  ctx.fillStyle='rgba(167,139,250,0.14)';ctx.font='7px "DM Mono",monospace';
+  ctx.fillText('coming soon',(S.x+8)*T,(S.y+12)*T+2);ctx.textAlign='left';
+
+  // ══════════════════════
+  // MARKETING — red carpet
+  // ══════════════════════
+  const M=ROOMS[3];
+  floor(M.x+1,M.y+1,M.w-2,M.h-2,C.carpetRed,C.carpetRed2);
+  desk(M.x+2,M.y+2,5,3);desk(M.x+8,M.y+2,5,3);
+  monitor(M.x+2,M.y+1,'#fb7185',false);monitor(M.x+9,M.y+1,'#fb7185',false);
+  chair(M.x+3,M.y+6,'up');chair(M.x+10,M.y+6,'up');
+  plant(M.x+1,M.y+13);plant(M.x+12,M.y+1);
+  // NEXT UP badge
+  fp((M.x+1)*T,(M.y+8)*T,12*T,T,'rgba(251,113,133,0.15)');
+  fp((M.x+1)*T,(M.y+8)*T,12*T,2,'rgba(251,113,133,0.4)');
+  ctx.fillStyle='rgba(251,113,133,0.6)';ctx.font='8px "DM Mono",monospace';ctx.textAlign='center';
+  ctx.fillText('NEXT UP',(M.x+7)*T,(M.y+8)*T+11);ctx.textAlign='left';
+  // Whiteboard
+  fp((M.x+1)*T,(M.y+10)*T,12*T,5*T,'#1a0e12');
+  fp((M.x+1)*T+2,(M.y+10)*T+2,12*T-4,5*T-4,'#110a0e');
+  fp((M.x+1)*T,(M.y+10)*T,12*T,2,'rgba(251,113,133,0.5)');
+  ctx.fillStyle='rgba(251,113,133,0.45)';ctx.font='6px "DM Mono",monospace';
+  ctx.fillText('// MARKETING',(M.x+2)*T,(M.y+11)*T);
+  ctx.fillStyle='rgba(255,255,255,0.18)';
+  ctx.fillText('TikTok 3x/week',(M.x+2)*T,(M.y+11)*T+10);
+  ctx.fillText('Reddit · SEO',(M.x+2)*T,(M.y+11)*T+19);
+  ctx.fillStyle='rgba(251,191,36,0.35)';
+  ctx.fillText('→ 10 subs target',(M.x+2)*T,(M.y+11)*T+28);
+
+  // ══════════════════════
+  // BREAK ROOM
+  // ══════════════════════
+  const BR=ROOMS[4];
+  floor(BR.x+1,BR.y+1,BR.w-2,BR.h-2,C.floorTan,C.floorTan2);
+  // Fridge
+  fridge(BR.x+1,BR.y+1);
+  // Microwave on counter
+  desk(BR.x+4,BR.y+1,6,2);
+  microwave(BR.x+4,BR.y+1);
+  // Coffee machine
+  coffeeMachine(BR.x+7,BR.y+1);
+  // Counter continues
+  desk(BR.x+10,BR.y+1,3,2);
+  // Round table with chairs
+  roundTable(BR.x+4,BR.y+5,3*T);
+  chair(BR.x+4,BR.y+4,'down');chair(BR.x+8,BR.y+4,'down');
+  chair(BR.x+4,BR.y+8,'up');chair(BR.x+8,BR.y+8,'up');
+  chair(BR.x+2,BR.y+6,'right');chair(BR.x+10,BR.y+6,'left');
+  // Couch along wall
+  couch(BR.x+1,BR.y+11,10);
+  plant(BR.x+12,BR.y+1);plant(BR.x+12,BR.y+11);
+  // Vending machine
+  fp((BR.x+1)*T,(BR.y+9)*T,2*T,3*T,'#4a5060');
+  fp((BR.x+1)*T+2,(BR.y+9)*T+2,2*T-4,3*T-4,'#1a2030');
+  fp((BR.x+1)*T+4,(BR.y+9)*T+4,T-2,T-2,'rgba(100,180,255,0.15)');
+  fp((BR.x+1)*T+4,(BR.y+10)*T+2,T-2,T-2,'rgba(255,150,100,0.12)');
+  fp((BR.x+1)*T+4,(BR.y+11)*T,T-2,T-4,'rgba(150,255,100,0.1)');
+  ctx.fillStyle='rgba(255,255,255,0.08)';ctx.font='5px "DM Mono",monospace';ctx.textAlign='center';
+  ctx.fillText('SNACKS',(BR.x+2)*T,(BR.y+12)*T+4);ctx.textAlign='left';
+
+  // ══════════════════════
+  // FILE ROOM
+  // ══════════════════════
+  const F=ROOMS[5];
+  floor(F.x+1,F.y+1,F.w-2,F.h-2,C.floorHall,C.floorHall2);
+  // Rows of filing cabinets
+  for(let i=0;i<4;i++) cabinet(F.x+1+i*2,F.y+1);
+  for(let i=0;i<4;i++) cabinet(F.x+1+i*2,F.y+4);
+  for(let i=0;i<4;i++) cabinet(F.x+1+i*2,F.y+7);
+  for(let i=0;i<4;i++) cabinet(F.x+1+i*2,F.y+10);
+  // Shelf on back wall
+  shelf(F.x+9,F.y+1,2,12);
+  // Label
+  ctx.fillStyle='rgba(148,163,184,0.3)';ctx.font='7px "DM Mono",monospace';ctx.textAlign='center';
+  ctx.fillText('RECORDS',(F.x+6)*T,(F.y+13)*T+4);ctx.textAlign='left';
+
+  // ══════════════════════
+  // RESEARCH (slot open)
+  // ══════════════════════
+  const RS=ROOMS[6];
+  floor(RS.x+1,RS.y+1,RS.w-2,RS.h-2,C.floorTan,C.floorTan2);
+  desk(RS.x+2,RS.y+2,5,3);desk(RS.x+10,RS.y+2,5,3);
+  desk(RS.x+2,RS.y+8,5,3);desk(RS.x+10,RS.y+8,5,3);
+  monitor(RS.x+2,RS.y+1,'#fbbf24',false);monitor(RS.x+10,RS.y+1,'#fbbf24',false);
+  monitor(RS.x+2,RS.y+7,'#fbbf24',false);monitor(RS.x+10,RS.y+7,'#fbbf24',false);
+  chair(RS.x+3,RS.y+6,'up');chair(RS.x+11,RS.y+6,'up');
+  chair(RS.x+3,RS.y+12,'up');chair(RS.x+11,RS.y+12,'up');
+  plant(RS.x+14,RS.y+1);plant(RS.x+1,RS.y+11);
+  slotOpen(RS.x+5,RS.y+5,6,3,'#fbbf24');
+
+  // ══════════════════════
+  // DEVELOPMENT (slot open)
+  // ══════════════════════
+  const DV=ROOMS[7];
+  floor(DV.x+1,DV.y+1,DV.w-2,DV.h-2,C.floorTan,C.floorTan2);
+  desk(DV.x+2,DV.y+2,5,3);desk(DV.x+10,DV.y+2,5,3);
+  desk(DV.x+2,DV.y+8,5,3);desk(DV.x+10,DV.y+8,5,3);
+  monitor(DV.x+2,DV.y+1,'#22d3ee',false);monitor(DV.x+10,DV.y+1,'#22d3ee',false);
+  monitor(DV.x+2,DV.y+7,'#22d3ee',false);monitor(DV.x+10,DV.y+7,'#22d3ee',false);
+  chair(DV.x+3,DV.y+6,'up');chair(DV.x+11,DV.y+6,'up');
+  chair(DV.x+3,DV.y+12,'up');chair(DV.x+11,DV.y+12,'up');
+  plant(DV.x+14,DV.y+1);plant(DV.x+1,DV.y+11);
+  slotOpen(DV.x+5,DV.y+5,6,3,'#22d3ee');
+  // Dev board
+  fp((DV.x+2)*T,(DV.y+9)*T,12*T,4*T,'#0a1420');
+  fp((DV.x+2)*T+2,(DV.y+9)*T+2,12*T-4,4*T-4,'#060e18');
+  fp((DV.x+2)*T,(DV.y+9)*T,12*T,2,'rgba(34,211,238,0.4)');
+  ctx.fillStyle='rgba(34,211,238,0.4)';ctx.font='6px "DM Mono",monospace';
+  ctx.fillText('// DEV QUEUE',(DV.x+3)*T,(DV.y+10)*T);
+  ctx.fillStyle='rgba(251,191,36,0.35)';
+  ctx.fillText('▸ stripe · auth',(DV.x+3)*T,(DV.y+10)*T+10);
+  ctx.fillStyle='rgba(255,255,255,0.15)';
+  ctx.fillText('▸ supabase · voice',(DV.x+3)*T,(DV.y+10)*T+19);
+  ctx.fillText('▸ acer server',(DV.x+3)*T,(DV.y+10)*T+28);
+
+  // ══════════════════════
+  // OPERATIONS (slot open)
+  // ══════════════════════
+  const OP=ROOMS[8];
+  floor(OP.x+1,OP.y+1,OP.w-2,OP.h-2,C.floorTan,C.floorTan2);
+  desk(OP.x+1,OP.y+2,7,3);
+  monitor(OP.x+1,OP.y+1,'#94a3b8',false);
+  chair(OP.x+3,OP.y+6,'up');
+  plant(OP.x+7,OP.y+1);plant(OP.x+1,OP.y+11);
+  slotOpen(OP.x+1,OP.y+7,8,5,'#94a3b8');
+
+  // ══════════════════════
+  // TOP WINDOWS
+  // ══════════════════════
+  fp(T,0,(COLS-2)*T,T,'#3a4a5a');
+  // Window panes
+  for(let i=0;i<7;i++){
+    fp(T+2+i*11*T,2,9*T,T-4,C.windowPane);
+    fp(T+2+i*11*T,3,T,T-6,'rgba(255,255,255,0.06)');
+  }
+  // Stars
+  [[5,5],[12,4],[20,6],[28,5],[36,4],[44,6],[52,5],[60,4],[68,5],[75,6]].forEach(([x,y])=>{
+    fp(x*T,y,1,1,'rgba(255,255,255,0.6)');
+  });
+
+  requestAnimationFrame(draw);
+}
+
+requestAnimationFrame(draw);
+
+// ══════════════════════════════════
+// PAN & ZOOM
+// ══════════════════════════════════
+const vp=document.getElementById('vp'),world=document.getElementById('world');
+let scale=1.8,tx=0,ty=0,drag=false,lx=0,ly=0;
+
+function applyT(){world.style.transform=`translate(${tx}px,${ty}px) scale(${scale})`;}
+
+function center(){
+  const vw=vp.offsetWidth,vh=vp.offsetHeight;
+  tx=(vw-canvas.width*scale)/2;ty=(vh-canvas.height*scale)/2;applyT();
+}
+window.addEventListener('load',center);window.addEventListener('resize',center);
+
+vp.addEventListener('wheel',e=>{
+  e.preventDefault();
+  const r=vp.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top;
+  const d=e.deltaY>0?-0.15:0.15,ns=Math.min(Math.max(scale+d,0.6),5),ratio=ns/scale;
+  tx=mx-(mx-tx)*ratio;ty=my-(my-ty)*ratio;scale=ns;applyT();
+},{passive:false});
+
+vp.addEventListener('mousedown',e=>{if(e.button===0){drag=true;lx=e.clientX;ly=e.clientY;vp.style.cursor='grabbing';}});
+window.addEventListener('mousemove',e=>{if(drag){tx+=e.clientX-lx;ty+=e.clientY-ly;lx=e.clientX;ly=e.clientY;applyT();}});
+window.addEventListener('mouseup',()=>{drag=false;vp.style.cursor='grab';});
+
+let pinchD=0;
+vp.addEventListener('touchstart',e=>{
+  if(e.touches.length===1){drag=true;lx=e.touches[0].clientX;ly=e.touches[0].clientY;}
+  if(e.touches.length===2)pinchD=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
+},{passive:true});
+vp.addEventListener('touchmove',e=>{
+  if(e.touches.length===1&&drag){tx+=e.touches[0].clientX-lx;ty+=e.touches[0].clientY-ly;lx=e.touches[0].clientX;ly=e.touches[0].clientY;applyT();}
+  if(e.touches.length===2){const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);scale=Math.min(Math.max(scale+(d-pinchD)*0.008,0.6),5);pinchD=d;applyT();}
+},{passive:true});
+vp.addEventListener('touchend',()=>{drag=false;});
+
+function zoom(d){scale=Math.min(Math.max(scale+d,0.6),5);applyT();}
+function resetV(){scale=1.8;center();}
+
+// ══════════════════════════════════
+// CLICK → OPEN ROOM
+// ══════════════════════════════════
+vp.addEventListener('click',e=>{
+  if(drag)return;
+  const r=vp.getBoundingClientRect(),mx=(e.clientX-r.left-tx)/scale,my=(e.clientY-r.top-ty)/scale;
+  const tx2=Math.floor(mx/T),ty2=Math.floor(my/T);
+  for(const rm of ROOMS){
+    if(tx2>=rm.x&&tx2<rm.x+rm.w&&ty2>=rm.y&&ty2<rm.y+rm.h){openRoom(rm.id);return;}
+  }
+});
+
+// ══════════════════════════════════
+// CONVERSATION
+// ══════════════════════════════════
+const SYS=`You are Vex, CEO of Groundwork — a construction education subscription platform. Sam is the owner. Sharp, confident, direct, loyal. Real attitude. 2-3 sentences max. Natural CEO energy. No lists.
+
+Status: Site live at groundwork-lovat.vercel.app · 7 pages · Tiers: Free/$0 Apprentice/$5 Skilled/$10 Expert/$20 Contractor/$30 · Needs: Stripe, auth, real-time data · Acer server being set up · GitHub connected · Sam is a construction teacher, former contractor, wants to go remote · Marketing proposal ready.`;
+
+let history=[],listening=false,recog=null;
+
+const cfg={
+  vex:{n:'Vex',r:'CHIEF EXECUTIVE OFFICER',av:'⚡',bg:'rgba(52,211,153,.15)',br:'rgba(52,211,153,.3)',
+    m:"You're in my office. Marketing proposal is done, server setup guide is written, Vex identity doc is half built. What do you need?"},
+  board:{n:'Boardroom',r:'EXECUTIVE MEETING ROOM',av:'🏛️',bg:'rgba(96,165,250,.15)',br:'rgba(96,165,250,.3)',
+    m:"Boardroom. This is where we meet every morning and evening. What's on your mind?"},
+  sam:{n:"Sam's Office",r:'OWNER — IN SETUP',av:'👤',bg:'rgba(167,139,250,.15)',br:'rgba(167,139,250,.3)',
+    m:"Your office is getting built out. Metrics, decisions, subscriber data — all going in here."},
+  mkt:{n:'Marketing',r:'NEXT UP · PROPOSAL READY',av:'📣',bg:'rgba(251,113,133,.15)',br:'rgba(251,113,133,.3)',
+    m:"Marketing is next and the proposal is done. TikTok, SEO, Reddit, email list. Say the word."},
+  break:{n:'Break Room',r:'COMPANY AMENITIES',av:'☕',bg:'rgba(251,191,36,.15)',br:'rgba(251,191,36,.3)',
+    m:"Break room. Coffee's on. Take five when you need it — no judgment from me. The vending machine is better than it looks."},
+  files:{n:'File Room',r:'RECORDS & STORAGE',av:'🗂️',bg:'rgba(148,163,184,.15)',br:'rgba(148,163,184,.3)',
+    m:"File room. All the company records, contracts, docs. Not the most exciting room but you'd miss it if it wasn't there."},
+  res:{n:'Research',r:'SLOT OPEN',av:'🔬',bg:'rgba(251,191,36,.15)',br:'rgba(251,191,36,.3)',
+    m:"Research slot is open. Market intel, competitor tracking, trend monitoring. We build this one together."},
+  dev:{n:'Development',r:'SLOT OPEN',av:'⚙️',bg:'rgba(34,211,238,.15)',br:'rgba(34,211,238,.3)',
+    m:"Development slot is open. Stripe, auth, features, architecture. This one stays the busiest once we scale."},
+  ops:{n:'Operations',r:'FUTURE SLOT',av:'📊',bg:'rgba(148,163,184,.12)',br:'rgba(148,163,184,.2)',
+    m:"Operations — future slot. Subscriber tracking, revenue monitoring, customer feedback. Coming when we're ready."},
+};
+
+function openRoom(id){
+  const c=cfg[id]||cfg.vex;
+  document.getElementById('cpn').textContent=c.n;
+  document.getElementById('cpr').textContent=c.r;
+  const av=document.getElementById('cpav');
+  av.textContent=c.av;av.style.background=c.bg;av.style.border=`1px solid ${c.br}`;
+  document.getElementById('cp').classList.add('open');
+  document.getElementById('msgs').innerHTML='';
+  history=[];addMsg('vex',c.m);
+}
+
+function closeP(){document.getElementById('cp').classList.remove('open');}
+
+function addMsg(r,t){
+  const m=document.getElementById('msgs'),d=document.createElement('div');
+  d.className=`cmsg ${r==='you'?'you':'vex'}`;
+  d.innerHTML=`<span class="csdr">${r==='you'?'sam':'vex'}</span><div class="cbb">${t}</div>`;
+  m.appendChild(d);m.scrollTop=m.scrollHeight;
+}
+
+function showT(){
+  const m=document.getElementById('msgs'),d=document.createElement('div');
+  d.id='typing';d.className='cmsg vex';
+  d.innerHTML=`<span class="csdr">vex</span><div class="trow"><div class="td"></div><div class="td"></div><div class="td"></div></div>`;
+  m.appendChild(d);m.scrollTop=m.scrollHeight;
+}
+
+function hideT(){const e=document.getElementById('typing');if(e)e.remove();}
+
+async function askVex(t){
+  history.push({role:'user',content:t});showT();
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:SYS,messages:history})
     });
-    const data = await res.json();
-    const reply = data.content?.map(b => b.text || '').join('') || "Lost you for a second. Try again.";
-    history.push({ role: 'assistant', content: reply });
-    removeTyping(); addMsg('vex', reply); speak(reply);
-  } catch(e) {
-    removeTyping();
-    const fb = "Connection dropped. Try again Sam.";
-    addMsg('vex', fb); speak(fb);
-  }
+    const data=await r.json(),rep=data.content?.map(b=>b.text||'').join('')||"Lost you. Try again.";
+    history.push({role:'assistant',content:rep});hideT();addMsg('vex',rep);speak(rep);
+  }catch(e){hideT();addMsg('vex',"Connection issue. Try again.");}
 }
 
-function openRoom(room) {
-  const msgs = {
-    boardroom: "Boardroom is open. This is where we meet every morning and evening. Use the voice button — that's how we talk.",
-    sam: "Your office. Coming soon — everything you need to see at a glance when you check in.",
-    vex: "This is where the work happens. When departments are active their reports come here first. I sort through it before it gets to you.",
-    research: "Research slot is open. When we stand this one up it'll be watching competitors, tracking market trends, and feeding me intel every week.",
-    marketing: "Marketing slot is open. This is the next department we build. Content, social, SEO — the engine that grows the subscriber count.",
-    dev: "Development slot is open. This one handles all the product work. Features, fixes, technical architecture. Stays the busiest once we're scaling.",
-  };
-  const msg = msgs[room] || "That department is coming soon.";
-  addMsg('vex', msg);
-  document.getElementById('convBox').classList.add('visible');
-  speak(msg);
+function hkey(e){if(e.key==='Enter')send();}
+function send(){const i=document.getElementById('cpi'),t=i.value.trim();if(!t)return;i.value='';addMsg('you',t);askVex(t);}
+
+function speak(t){
+  if(!('speechSynthesis' in window))return;
+  window.speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(t);u.rate=0.9;u.pitch=0.85;u.volume=1;
+  const v=window.speechSynthesis.getVoices().find(v=>v.name.includes('Daniel')||v.name.includes('Alex')||(v.lang==='en-US'&&v.localService));
+  if(v)u.voice=v;window.speechSynthesis.speak(u);
 }
 
-function toggleVoice() {
-  if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
-    const msg = "Voice input needs Chrome or Edge. You're probably on Safari — switch browsers and it'll work.";
-    addMsg('vex', msg); speak(msg);
-    document.getElementById('convBox').classList.add('visible');
-    return;
-  }
-  if (isListening) { recognition.stop(); return; }
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  recognition = new SR();
-  recognition.continuous = false; recognition.interimResults = false; recognition.lang = 'en-US';
-  recognition.onstart = () => {
-    isListening = true;
-    document.getElementById('callBtn').classList.add('listening');
-    document.getElementById('callBtn').textContent = '🔴';
-    document.getElementById('callHint').textContent = 'listening...';
-  };
-  recognition.onresult = (e) => {
-    const text = e.results[0][0].transcript;
-    addMsg('you', text); askVex(text);
-  };
-  recognition.onend = recognition.onerror = () => {
-    isListening = false;
-    document.getElementById('callBtn').classList.remove('listening');
-    document.getElementById('callBtn').textContent = '🎙️';
-    document.getElementById('callHint').textContent = 'tap to speak';
-  };
-  recognition.start();
+function toggleVoice(){
+  if(!('webkitSpeechRecognition' in window||'SpeechRecognition' in window)){addMsg('vex',"Voice needs Chrome or Edge.");return;}
+  if(listening){recog.stop();return;}
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  recog=new SR();recog.continuous=false;recog.interimResults=false;recog.lang='en-US';
+  recog.onstart=()=>{listening=true;document.getElementById('vbtn').classList.add('listening');document.getElementById('vbtn').textContent='🔴';};
+  recog.onresult=e=>{const t=e.results[0][0].transcript;addMsg('you',t);askVex(t);};
+  recog.onend=recog.onerror=()=>{listening=false;document.getElementById('vbtn').classList.remove('listening');document.getElementById('vbtn').textContent='🎙️';};
+  recog.start();
 }
 
-function toggleTodo(el) {
-  el.classList.toggle('done-item');
-  const check = el.querySelector('.todo-check');
-  check.textContent = el.classList.contains('done-item') ? '✓' : '';
-}
+if('speechSynthesis' in window)window.speechSynthesis.onvoiceschanged=()=>window.speechSynthesis.getVoices();
 
-function addTodo(owner) {
-  const task = prompt(`New task for ${owner === 'vex' ? 'Vex' : 'Sam'}:`);
-  if (!task || !task.trim()) return;
-  const col = owner === 'vex' ? 0 : 1;
-  const cols = document.querySelectorAll('.todo-col');
-  const addBtn = cols[col].querySelector('.todo-add');
-  const div = document.createElement('div');
-  div.className = 'todo-item';
-  div.onclick = function() { toggleTodo(this); };
-  div.innerHTML = `<div class="todo-check"></div><div>${task.trim()}<div class="todo-owner ${owner}">${owner}</div></div>`;
-  cols[col].insertBefore(div, addBtn);
-}
+function tick(){const n=new Date(),p=x=>String(x).padStart(2,'0');document.getElementById('clk').textContent=`${p(n.getHours())}:${p(n.getMinutes())}`;}
+tick();setInterval(tick,1000);
 
-if ('speechSynthesis' in window) window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
-
-setTimeout(() => {
-  const msg = "Office is open Sam. Everything's running. Hit me when you're ready to check in.";
-  addMsg('vex', msg);
-}, 800);
+setTimeout(()=>openRoom('board'),500);
 </script>
 </body>
 </html>
