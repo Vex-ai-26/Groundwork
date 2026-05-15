@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Groundwork — Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --green: #3A6B3A;
+    --green-light: #4E8A4E;
+    --green-dim: #3A6B3A14;
+    --green-mid: #3A6B3A44;
+    --bg: #F5EFE4;
+    --bg2: #EDE4D4;
+    --bg3: #E4D8C4;
+    --bg4: #D8CAAF;
+    --border: #C8B89A;
+    --border2: #B8A488;
+    --text: #3A2E22;
+    --text2: #5A4E3A;
+    --text3: #9A8870;
+    --brown: #5A4030;
+    --leather: #8B6040;
+    --sand: #C8A870;
+    --amber: #B8860B;
+    --amber-dim: #B8860B14;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    padding-bottom: 80px;
+  }
+
+  body::before {
+    content: '';
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background-image: repeating-linear-gradient(
+      180deg, transparent 0px, transparent 48px,
+      rgba(160,120,70,0.025) 48px, rgba(160,120,70,0.025) 49px
+    );
+    pointer-events: none; z-index: 0;
+  }
+
+  * { position: relative; z-index: 1; }
+
+  /* NAV */
+  nav {
+    background: rgba(245,239,228,0.96);
+    border-bottom: 1px solid var(--border);
+    padding: 0 20px; height: 62px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 100;
+  }
+
+  .nav-logo { font-size: 20px; font-weight: 800; color: var(--green); letter-spacing: -0.02em; }
+
+  .nav-right { display: flex; align-items: center; gap: 10px; }
+
+  .nav-tier {
+    font-family: 'DM Mono', monospace; font-size: 10px;
+    padding: 4px 10px; border-radius: 20px;
+    background: var(--green-dim); color: var(--green);
+    border: 1px solid var(--green-mid); letter-spacing: 0.06em;
+  }
+
+  .nav-avatar {
+    width: 34px; height: 34px; border-radius: 50%;
+    background: var(--bg3); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700; color: var(--brown);
+  }
+
+  /* MAIN */
+  .main { max-width: 900px; margin: 0 auto; padding: 28px 20px; display: flex; flex-direction: column; gap: 24px; }
+
+  /* WELCOME */
+  .welcome {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 16px; padding: 24px;
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 16px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+  }
+
+  .welcome-left { display: flex; flex-direction: column; gap: 4px; }
+  .welcome-greeting { font-size: 22px; font-weight: 800; color: var(--brown); letter-spacing: -0.02em; }
+  .welcome-sub { font-size: 13px; color: var(--text2); }
+
+  .upgrade-btn {
+    font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700;
+    color: white; background: var(--green); border: none;
+    padding: 10px 18px; border-radius: 8px; cursor: pointer;
+    transition: all 0.15s; white-space: nowrap;
+  }
+
+  .upgrade-btn:hover { background: var(--green-light); }
+
+  /* METRICS */
+  .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+
+  .metric-card {
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px;
+    display: flex; flex-direction: column; gap: 4px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  }
+
+  .metric-label { font-size: 10px; color: var(--text3); font-family: 'DM Mono', monospace; letter-spacing: 0.05em; }
+  .metric-value { font-size: 26px; font-weight: 700; color: var(--brown); font-family: 'DM Mono', monospace; letter-spacing: -0.02em; }
+  .metric-value.green { color: var(--green); }
+  .metric-sub { font-size: 11px; color: var(--text3); }
+
+  /* SECTION LABEL */
+  .section-label {
+    font-family: 'DM Mono', monospace; font-size: 10px;
+    color: var(--text3); letter-spacing: 0.12em;
+    text-transform: uppercase; margin-bottom: -8px;
+  }
+
+  /* CONTENT GRID */
+  .content-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
+
+  .content-card {
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 14px; overflow: hidden;
+    transition: all 0.2s; cursor: pointer;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  }
+
+  .content-card:hover { border-color: var(--green-mid); box-shadow: 0 4px 16px rgba(58,107,58,0.08); transform: translateY(-2px); }
+  .content-card.locked { opacity: 0.6; cursor: not-allowed; }
+  .content-card.locked:hover { transform: none; box-shadow: 0 1px 4px rgba(0,0,0,0.04); border-color: var(--border); }
+
+  .content-thumb {
+    height: 80px; background: var(--bg3);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 32px; border-bottom: 1px solid var(--border);
+    position: relative;
+  }
+
+  .content-lock {
+    position: absolute; top: 8px; right: 8px;
+    width: 24px; height: 24px; border-radius: 6px;
+    background: var(--bg4); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px;
+  }
+
+  .content-tier-tag {
+    position: absolute; top: 8px; left: 8px;
+    font-family: 'DM Mono', monospace; font-size: 9px;
+    padding: 2px 7px; border-radius: 20px; letter-spacing: 0.06em;
+  }
+
+  .tag-free { background: var(--bg2); color: var(--text3); border: 1px solid var(--border); }
+  .tag-apprentice { background: rgba(139,96,64,0.12); color: var(--leather); border: 1px solid rgba(139,96,64,0.3); }
+  .tag-skilled { background: rgba(200,168,112,0.15); color: var(--sand); border: 1px solid rgba(200,168,112,0.4); }
+  .tag-expert { background: var(--green-dim); color: var(--green); border: 1px solid var(--green-mid); }
+
+  .content-body { padding: 14px; }
+  .content-title { font-size: 14px; font-weight: 700; color: var(--brown); margin-bottom: 4px; }
+  .content-desc { font-size: 12px; color: var(--text2); line-height: 1.5; margin-bottom: 10px; }
+
+  .content-meta { display: flex; align-items: center; justify-content: space-between; }
+  .content-type { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text3); }
+  .content-action {
+    font-size: 11px; font-weight: 700; color: var(--green);
+    background: var(--green-dim); border: 1px solid var(--green-mid);
+    padding: 4px 10px; border-radius: 6px;
+  }
+
+  .content-action.locked-btn {
+    color: var(--text3); background: var(--bg3);
+    border-color: var(--border); font-weight: 600;
+  }
+
+  /* TOOLS SECTION */
+  .tools-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+
+  .tool-card {
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px;
+    display: flex; align-items: center; gap: 12px;
+    cursor: pointer; transition: all 0.15s;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    text-decoration: none;
+  }
+
+  .tool-card:hover { border-color: var(--green-mid); background: var(--bg2); transform: translateY(-1px); }
+
+  .tool-icon {
+    width: 40px; height: 40px; border-radius: 10px;
+    background: var(--green-dim); border: 1px solid var(--green-mid);
+    display: flex; align-items: center; justify-content: center; font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .tool-info { flex: 1; }
+  .tool-name { font-size: 13px; font-weight: 700; color: var(--brown); margin-bottom: 2px; }
+  .tool-desc { font-size: 11px; color: var(--text3); }
+
+  /* PROGRESS */
+  .progress-card {
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 14px; padding: 20px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  }
+
+  .progress-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .progress-title { font-size: 14px; font-weight: 700; color: var(--brown); }
+  .progress-tier { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--green); }
+
+  .tier-ladder { display: flex; align-items: center; gap: 0; }
+
+  .ladder-step {
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    flex: 1;
+  }
+
+  .ladder-node {
+    width: 28px; height: 28px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'DM Mono', monospace; font-size: 9px; font-weight: 500;
+    border: 1.5px solid var(--border);
+    background: var(--bg3); color: var(--text3);
+    transition: all 0.3s;
+  }
+
+  .ladder-node.current { background: var(--green); color: white; border-color: var(--green); }
+  .ladder-node.completed { background: var(--green-dim); color: var(--green); border-color: var(--green-mid); }
+
+  .ladder-node-label { font-size: 9px; color: var(--text3); font-family: 'DM Mono', monospace; text-align: center; }
+  .ladder-node-label.current { color: var(--green); font-weight: 600; }
+
+  .ladder-line { flex: 1; height: 1.5px; background: var(--border); margin-bottom: 14px; }
+  .ladder-line.completed { background: var(--green-mid); }
+
+  /* BOTTOM NAV */
+  .bottom-nav {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: rgba(245,239,228,0.96);
+    border-top: 1px solid var(--border);
+    display: flex; padding: 8px 0 12px; z-index: 100;
+  }
+
+  .bottom-nav-item {
+    flex: 1; display: flex; flex-direction: column; align-items: center;
+    gap: 3px; cursor: pointer; padding: 4px 0;
+    border: none; background: none; transition: all 0.15s;
+  }
+
+  .nav-icon { font-size: 20px; color: var(--text3); transition: color 0.15s; }
+  .nav-label-txt { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--text3); transition: color 0.15s; }
+  .bottom-nav-item.active .nav-icon,
+  .bottom-nav-item.active .nav-label-txt { color: var(--green); }
+
+  /* SECTIONS */
+  .tab-section { display: none; flex-direction: column; gap: 20px; }
+  .tab-section.active { display: flex; }
+
+  @media (max-width: 600px) {
+    .main { padding: 20px 16px; }
+    .welcome { padding: 18px; }
+    .welcome-greeting { font-size: 18px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <span class="nav-logo">Groundwork</span>
+  <div class="nav-right">
+    <span class="nav-tier">free tier</span>
+    <div class="nav-avatar">S</div>
+  </div>
+</nav>
+
+<div class="main">
+
+  <!-- OVERVIEW TAB -->
+  <div class="tab-section active" id="tab-home">
+
+    <!-- WELCOME -->
+    <div class="welcome">
+      <div class="welcome-left">
+        <span class="welcome-greeting">Welcome back, Sam.</span>
+        <span class="welcome-sub">You're on the Free tier — ready to level up?</span>
+      </div>
+      <button class="upgrade-btn" onclick="alert('Payment system coming soon!')">Upgrade to Apprentice →</button>
+    </div>
+
+    <!-- METRICS -->
+    <div class="metrics">
+      <div class="metric-card">
+        <span class="metric-label">your tier</span>
+        <span class="metric-value green">Free</span>
+        <span class="metric-sub">5 tiers available</span>
+      </div>
+      <div class="metric-card">
+        <span class="metric-label">content unlocked</span>
+        <span class="metric-value">3</span>
+        <span class="metric-sub">of 40+ pieces</span>
+      </div>
+      <div class="metric-card">
+        <span class="metric-label">tools available</span>
+        <span class="metric-value green">2</span>
+        <span class="metric-sub">ft/in calc + glossary</span>
+      </div>
+      <div class="metric-card">
+        <span class="metric-label">days active</span>
+        <span class="metric-value">1</span>
+        <span class="metric-sub">just getting started</span>
+      </div>
+    </div>
+
+    <!-- TIER PROGRESS -->
+    <div class="progress-card">
+      <div class="progress-header">
+        <span class="progress-title">Your progress</span>
+        <span class="progress-tier">free → apprentice next</span>
+      </div>
+      <div class="tier-ladder">
+        <div class="ladder-step">
+          <div class="ladder-node current">F</div>
+          <span class="ladder-node-label current">Free</span>
+        </div>
+        <div class="ladder-line"></div>
+        <div class="ladder-step">
+          <div class="ladder-node">A</div>
+          <span class="ladder-node-label">Apprentice</span>
+        </div>
+        <div class="ladder-line"></div>
+        <div class="ladder-step">
+          <div class="ladder-node">S</div>
+          <span class="ladder-node-label">Skilled</span>
+        </div>
+        <div class="ladder-line"></div>
+        <div class="ladder-step">
+          <div class="ladder-node">E</div>
+          <span class="ladder-node-label">Expert</span>
+        </div>
+        <div class="ladder-line"></div>
+        <div class="ladder-step">
+          <div class="ladder-node">C</div>
+          <span class="ladder-node-label">Contractor</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- FREE TOOLS -->
+    <span class="section-label">your tools</span>
+    <div class="tools-grid">
+      <a href="groundwork-calculator.html" class="tool-card">
+        <div class="tool-icon">🧮</div>
+        <div class="tool-info">
+          <div class="tool-name">Ft & In Calculator</div>
+          <div class="tool-desc">Add, subtract, multiply measurements</div>
+        </div>
+      </a>
+      <div class="tool-card">
+        <div class="tool-icon">📖</div>
+        <div class="tool-info">
+          <div class="tool-name">Glossary</div>
+          <div class="tool-desc">50 essential construction terms</div>
+        </div>
+      </div>
+      <div class="tool-card" style="opacity:0.5;cursor:not-allowed;">
+        <div class="tool-icon">📐</div>
+        <div class="tool-info">
+          <div class="tool-name">Material Calculator</div>
+          <div class="tool-desc">Unlock at Apprentice</div>
+        </div>
+      </div>
+      <div class="tool-card" style="opacity:0.5;cursor:not-allowed;">
+        <div class="tool-icon">📏</div>
+        <div class="tool-info">
+          <div class="tool-name">Cut Calculator</div>
+          <div class="tool-desc">Unlock at Skilled</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- LEARN TAB -->
+  <div class="tab-section" id="tab-learn">
+    <span class="section-label">your content</span>
+    <div class="content-grid">
+
+      <div class="content-card">
+        <div class="content-thumb">
+          📏
+          <span class="content-tier-tag tag-free">free</span>
+        </div>
+        <div class="content-body">
+          <div class="content-title">How to Read a Tape Measure</div>
+          <div class="content-desc">The most searched construction question. Master fractions, feet and inches once and for all.</div>
+          <div class="content-meta">
+            <span class="content-type">guide · 5 min</span>
+            <span class="content-action">Read →</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="content-card">
+        <div class="content-thumb">
+          🔧
+          <span class="content-tier-tag tag-free">free</span>
+        </div>
+        <div class="content-body">
+          <div class="content-title">Starter Tools Guide</div>
+          <div class="content-desc">What to buy first, what to skip, and how much to spend when you're just getting started.</div>
+          <div class="content-meta">
+            <span class="content-type">guide · 8 min</span>
+            <span class="content-action">Read →</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="content-card">
+        <div class="content-thumb">
+          📋
+          <span class="content-tier-tag tag-free">free</span>
+        </div>
+        <div class="content-body">
+          <div class="content-title">Simple Shelf Blueprint</div>
+          <div class="content-desc">Your first project. A floating shelf with a full cut list and material estimate.</div>
+          <div class="content-meta">
+            <span class="content-type">blueprint · PDF</span>
+            <span class="content-action">Download →</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="content-card locked">
+        <div class="content-thumb">
+          🪚
+          <span class="content-tier-tag tag-apprentice">apprentice</span>
+          <span class="content-lock">🔒</span>
+        </div>
+        <div class="content-body">
+          <div class="content-title">Hand & Power Tools 101</div>
+          <div class="content-desc">Every essential tool explained. What it does, how to use it, and how to stay safe.</div>
+          <div class="content-meta">
+            <span class="content-type">guide · 12 min</span>
+            <span class="content-action locked-btn">Unlock →</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="content-card locked">
+        <div class="content-thumb">
+          🦺
+          <span class="content-tier-tag tag-apprentice">apprentice</span>
+          <span class="content-lock">🔒</span>
+        </div>
+        <div class="content-body">
+          <div class="content-title">Job Site Safety Guide</div>
+          <div class="content-desc">PPE, common hazards, and the habits that keep you working injury-free.</div>
+          <div class="content-meta">
+            <span class="content-type">guide · 10 min</span>
+            <span class="content-action locked-btn">Unlock →</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="content-card locked">
+        <div class="content-thumb">
+          🏗️
+          <span class="content-tier-tag tag-skilled">skilled</span>
+          <span class="content-lock">🔒</span>
+        </div>
+        <div class="content-body">
+          <div class="content-title">Framing Fundamentals</div>
+          <div class="content-desc">Walls, floors, and roof basics. How residential construction actually goes together.</div>
+          <div class="content-meta">
+            <span class="content-type">guide · 20 min</span>
+            <span class="content-action locked-btn">Unlock →</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="content-card locked">
+        <div class="content-thumb">
+          📐
+          <span class="content-tier-tag tag-skilled">skilled</span>
+          <span class="content-lock">🔒</span>
+        </div>
+        <div class="content-body">
+          <div class="content-title">Reading Blueprints</div>
+          <div class="content-desc">Symbols, scales, and how to follow a plan without getting lost.</div>
+          <div class="content-meta">
+            <span class="content-type">guide · 15 min</span>
+            <span class="content-action locked-btn">Unlock →</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="content-card locked">
+        <div class="content-thumb">
+          📋
+          <span class="content-tier-tag tag-expert">expert</span>
+          <span class="content-lock">🔒</span>
+        </div>
+        <div class="content-body">
+          <div class="content-title">Code & Permit Guide</div>
+          <div class="content-desc">What needs a permit, what doesn't, and how to pass inspection the first time.</div>
+          <div class="content-meta">
+            <span class="content-type">guide · 18 min</span>
+            <span class="content-action locked-btn">Unlock →</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- BLUEPRINTS TAB -->
+  <div class="tab-section" id="tab-blueprints">
+    <span class="section-label">project blueprints</span>
+    <div class="content-grid">
+
+      <div class="content-card">
+        <div class="content-thumb">🪵<span class="content-tier-tag tag-free">free</span></div>
+        <div class="content-body">
+          <div class="content-title">Floating Shelf</div>
+          <div class="content-desc">Simple wall-mounted shelf. Great first project. Includes cut list and hardware list.</div>
+          <div class="content-meta"><span class="content-type">beginner · PDF</span><span class="content-action">Download →</span></div>
+        </div>
+      </div>
+
+      <div class="content-card locked">
+        <div class="content-thumb">🛠️<span class="content-tier-tag tag-apprentice">apprentice</span><span class="content-lock">🔒</span></div>
+        <div class="content-body">
+          <div class="content-title">Workbench</div>
+          <div class="content-desc">A solid 6-foot workbench you'll use forever. Full cut list included.</div>
+          <div class="content-meta"><span class="content-type">beginner · PDF</span><span class="content-action locked-btn">Unlock →</span></div>
+        </div>
+      </div>
+
+      <div class="content-card locked">
+        <div class="content-thumb">🌱<span class="content-tier-tag tag-apprentice">apprentice</span><span class="content-lock">🔒</span></div>
+        <div class="content-body">
+          <div class="content-title">Raised Garden Bed</div>
+          <div class="content-desc">4x8 raised bed. Outdoor build using cedar or treated lumber.</div>
+          <div class="content-meta"><span class="content-type">beginner · PDF</span><span class="content-action locked-btn">Unlock →</span></div>
+        </div>
+      </div>
+
+      <div class="content-card locked">
+        <div class="content-thumb">🧰<span class="content-tier-tag tag-apprentice">apprentice</span><span class="content-lock">🔒</span></div>
+        <div class="content-body">
+          <div class="content-title">Tool Tote</div>
+          <div class="content-desc">Portable tool carrier. Great for practicing cuts and joinery.</div>
+          <div class="content-meta"><span class="content-type">beginner · PDF</span><span class="content-action locked-btn">Unlock →</span></div>
+        </div>
+      </div>
+
+      <div class="content-card locked">
+        <div class="content-thumb">🏡<span class="content-tier-tag tag-skilled">skilled</span><span class="content-lock">🔒</span></div>
+        <div class="content-body">
+          <div class="content-title">Small Deck Build</div>
+          <div class="content-desc">12x12 ground-level deck. Framing, decking, and finishing included.</div>
+          <div class="content-meta"><span class="content-type">intermediate · PDF</span><span class="content-action locked-btn">Unlock →</span></div>
+        </div>
+      </div>
+
+      <div class="content-card locked">
+        <div class="content-thumb">🚪<span class="content-tier-tag tag-skilled">skilled</span><span class="content-lock">🔒</span></div>
+        <div class="content-body">
+          <div class="content-title">Interior Wall Framing</div>
+          <div class="content-desc">Frame a non-load-bearing interior wall from scratch. Full layout guide.</div>
+          <div class="content-meta"><span class="content-type">intermediate · PDF</span><span class="content-action locked-btn">Unlock →</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ACCOUNT TAB -->
+  <div class="tab-section" id="tab-account">
+    <div class="progress-card">
+      <div class="progress-header">
+        <span class="progress-title">Account</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div style="display:flex;align-items:center;gap:14px;padding-bottom:14px;border-bottom:1px solid var(--border);">
+          <div style="width:52px;height:52px;border-radius:50%;background:var(--bg3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:var(--brown);">S</div>
+          <div>
+            <div style="font-size:16px;font-weight:700;color:var(--brown);">Sam</div>
+            <div style="font-size:12px;color:var(--text3);">sam@email.com</div>
+          </div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);">
+          <div>
+            <div style="font-size:13px;font-weight:600;color:var(--brown);">Current tier</div>
+            <div style="font-size:12px;color:var(--text3);">Free — $0/mo</div>
+          </div>
+          <button class="upgrade-btn" style="font-size:12px;padding:8px 14px;">Upgrade</button>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);">
+          <div>
+            <div style="font-size:13px;font-weight:600;color:var(--brown);">Member since</div>
+            <div style="font-size:12px;color:var(--text3);">May 2026</div>
+          </div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;">
+          <div>
+            <div style="font-size:13px;font-weight:600;color:var(--brown);">Password</div>
+            <div style="font-size:12px;color:var(--text3);">Last changed never</div>
+          </div>
+          <button style="font-family:'Syne',sans-serif;font-size:12px;padding:6px 12px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text2);cursor:pointer;">Change</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <button class="bottom-nav-item active" onclick="switchTab('home', this)">
+    <span class="nav-icon">⬡</span>
+    <span class="nav-label-txt">home</span>
+  </button>
+  <button class="bottom-nav-item" onclick="switchTab('learn', this)">
+    <span class="nav-icon">📚</span>
+    <span class="nav-label-txt">learn</span>
+  </button>
+  <button class="bottom-nav-item" onclick="switchTab('blueprints', this)">
+    <span class="nav-icon">📋</span>
+    <span class="nav-label-txt">blueprints</span>
+  </button>
+  <button class="bottom-nav-item" onclick="switchTab('account', this)">
+    <span class="nav-icon">○</span>
+    <span class="nav-label-txt">account</span>
+  </button>
+</nav>
+
+<script>
+  function switchTab(id, el) {
+    document.querySelectorAll('.bottom-nav-item').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+    document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active'));
+    document.getElementById('tab-' + id).classList.add('active');
+    window.scrollTo(0, 0);
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Groundwork — Command Post</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --green: #00e5a0;
+    --green-dim: #00e5a018;
+    --green-mid: #00e5a044;
+    --bg: #080808;
+    --bg2: #0d0d0d;
+    --bg3: #121212;
+    --bg4: #1a1a1a;
+    --border: #1e1e1e;
+    --border2: #2a2a2a;
+    --text: #e0e0e0;
+    --text2: #999;
+    --text3: #444;
+    --amber: #f59e0b;
+    --blue: #3b82f6;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    padding-bottom: 80px;
+  }
+
+  .header {
+    background: var(--bg2);
+    border-bottom: 0.5px solid var(--border);
+    padding: 16px 16px 12px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+
+  .logo-name { font-size: 20px; font-weight: 800; color: var(--green); letter-spacing: -0.02em; display: block; }
+  .logo-tag { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--text3); letter-spacing: 0.1em; display: block; }
+
+  .vex-pill {
+    display: flex; align-items: center; gap: 6px;
+    background: var(--green-dim); border: 0.5px solid var(--green-mid);
+    border-radius: 20px; padding: 5px 10px;
+  }
+
+  .vex-orb { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse 2.5s ease-in-out infinite; }
+
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+  .vex-label { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--green); }
+
+  .tabs { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; }
+  .tabs::-webkit-scrollbar { display: none; }
+
+  .tab {
+    font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.06em;
+    padding: 5px 12px; border-radius: 6px; border: 0.5px solid transparent;
+    background: transparent; color: var(--text3); cursor: pointer;
+    white-space: nowrap; transition: all 0.15s; flex-shrink: 0;
+  }
+
+  .tab.active { background: var(--green-dim); color: var(--green); border-color: var(--green-mid); }
+
+  .content { padding: 16px; display: flex; flex-direction: column; gap: 14px; }
+
+  .section { display: none; flex-direction: column; gap: 14px; }
+  .section.active { display: flex; }
+
+  .metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  .metric-card {
+    background: var(--bg2); border: 0.5px solid var(--border);
+    border-radius: 10px; padding: 14px;
+    display: flex; flex-direction: column; gap: 4px;
+    animation: fadeUp 0.3s ease both;
+  }
+
+  .metric-card.full { grid-column: span 2; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  .metric-label { font-size: 10px; color: var(--text3); font-family: 'DM Mono', monospace; letter-spacing: 0.05em; }
+  .metric-value { font-size: 28px; font-weight: 700; letter-spacing: -0.02em; font-family: 'DM Mono', monospace; color: var(--text); }
+  .metric-value.green { color: var(--green); }
+  .metric-value.amber { color: var(--amber); }
+  .metric-sub { font-size: 10px; color: var(--text3); }
+
+  .card { background: var(--bg2); border: 0.5px solid var(--border); border-radius: 12px; overflow: hidden; animation: fadeUp 0.3s ease both; }
+
+  .card-header {
+    padding: 12px 16px; border-bottom: 0.5px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+
+  .card-title { font-size: 12px; font-weight: 600; color: var(--text); display: flex; align-items: center; gap: 7px; }
+  .card-title .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--green); }
+  .card-tag { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--text3); }
+  .card-body { padding: 14px 16px; }
+
+  .roadmap-item { display: flex; align-items: flex-start; gap: 12px; padding: 12px 0; border-bottom: 0.5px solid var(--border); }
+  .roadmap-item:first-child { padding-top: 0; }
+  .roadmap-item:last-child { border-bottom: none; padding-bottom: 0; }
+
+  .rm-indicator {
+    width: 26px; height: 26px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 600; flex-shrink: 0;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .rm-indicator.done { background: var(--green-dim); color: var(--green); border: 0.5px solid var(--green-mid); }
+  .rm-indicator.active { background: rgba(245,158,11,0.12); color: var(--amber); border: 0.5px solid rgba(245,158,11,0.3); }
+  .rm-indicator.pending { background: var(--bg4); color: var(--text3); border: 0.5px solid var(--border2); }
+
+  .rm-phase { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--text3); letter-spacing: 0.08em; margin-bottom: 2px; }
+  .rm-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+  .rm-chips { display: flex; flex-wrap: wrap; gap: 4px; }
+
+  .chip { font-size: 10px; padding: 2px 7px; border-radius: 4px; background: var(--bg4); color: var(--text3); border: 0.5px solid var(--border2); }
+  .chip.done { background: var(--green-dim); color: var(--green); border-color: var(--green-mid); }
+  .chip.active { background: rgba(245,158,11,0.1); color: var(--amber); border-color: rgba(245,158,11,0.3); }
+
+  .tier-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 0.5px solid var(--border); }
+  .tier-row:first-child { padding-top: 0; }
+  .tier-row:last-child { border-bottom: none; padding-bottom: 0; }
+
+  .tier-name { font-size: 12px; font-weight: 600; color: var(--text2); width: 80px; flex-shrink: 0; }
+  .tier-bar-wrap { flex: 1; height: 3px; background: var(--bg4); border-radius: 2px; overflow: hidden; }
+  .tier-bar { height: 100%; border-radius: 2px; }
+  .tier-bar.amber { background: var(--amber); }
+  .tier-bar.dim { background: var(--border2); }
+  .tier-pct { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text3); width: 30px; text-align: right; flex-shrink: 0; }
+  .tier-status { font-size: 9px; padding: 2px 6px; border-radius: 4px; flex-shrink: 0; font-family: 'DM Mono', monospace; }
+  .tier-status.building { background: rgba(245,158,11,0.1); color: var(--amber); }
+  .tier-status.queued { background: var(--bg4); color: var(--text3); }
+
+  .decision-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 0; border-bottom: 0.5px solid var(--border); }
+  .decision-item:first-child { padding-top: 0; }
+  .decision-item:last-child { border-bottom: none; padding-bottom: 0; }
+  .decision-dot { width: 7px; height: 7px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
+  .decision-dot.locked { background: var(--green); }
+  .decision-dot.open { background: var(--amber); animation: pulse 2s infinite; }
+  .decision-text { font-size: 12px; color: var(--text2); line-height: 1.5; }
+  .decision-text strong { color: var(--text); font-weight: 600; }
+
+  .brief-box { background: var(--bg3); border: 0.5px solid var(--green-mid); border-radius: 10px; padding: 14px; }
+  .brief-header { display: flex; align-items: center; gap: 7px; margin-bottom: 10px; }
+  .brief-orb { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse 2.5s infinite; }
+  .brief-from { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--green); }
+  .brief-text { font-size: 13px; color: var(--text2); line-height: 1.75; }
+  .brief-text em { color: var(--text); font-style: normal; font-weight: 600; }
+
+  .action-item { display: flex; align-items: center; gap: 10px; padding: 11px 12px; border-radius: 8px; margin-bottom: 6px; background: var(--bg3); border: 0.5px solid var(--border); }
+  .action-item:last-child { margin-bottom: 0; }
+  .action-num { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--green); width: 18px; flex-shrink: 0; }
+  .action-text { font-size: 12px; color: var(--text2); flex: 1; line-height: 1.4; }
+  .action-owner { font-family: 'DM Mono', monospace; font-size: 9px; padding: 2px 6px; border-radius: 4px; flex-shrink: 0; }
+  .action-owner.vex { background: var(--green-dim); color: var(--green); }
+  .action-owner.sam { background: rgba(59,130,246,0.15); color: var(--blue); }
+  .action-owner.both { background: var(--bg4); color: var(--text3); }
+
+  .bottom-nav {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: var(--bg2); border-top: 0.5px solid var(--border);
+    display: flex; padding: 8px 0 12px; z-index: 100;
+  }
+
+  .bottom-nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; padding: 4px 0; border: none; background: none; transition: all 0.15s; }
+  .nav-icon { font-size: 18px; color: var(--text3); transition: color 0.15s; }
+  .nav-label-txt { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--text3); letter-spacing: 0.05em; transition: color 0.15s; }
+  .bottom-nav-item.active .nav-icon,
+  .bottom-nav-item.active .nav-label-txt { color: var(--green); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <div>
+      <span class="logo-name">Groundwork</span>
+      <span class="logo-tag">// command post</span>
+    </div>
+    <div class="vex-pill">
+      <div class="vex-orb"></div>
+      <span class="vex-label">VEX online</span>
+    </div>
+  </div>
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('overview', this)">overview</button>
+    <button class="tab" onclick="switchTab('roadmap', this)">roadmap</button>
+    <button class="tab" onclick="switchTab('tiers', this)">tiers</button>
+    <button class="tab" onclick="switchTab('actions', this)">actions</button>
+    <button class="tab" onclick="switchTab('brief', this)">vex brief</button>
+  </div>
+</div>
+
+<div class="content">
+
+  <div class="section active" id="overview">
+    <div class="metrics">
+      <div class="metric-card">
+        <span class="metric-label">subscribers</span>
+        <span class="metric-value green">0</span>
+        <span class="metric-sub">target: 10 paying</span>
+      </div>
+      <div class="metric-card">
+        <span class="metric-label">MRR</span>
+        <span class="metric-value">$0</span>
+        <span class="metric-sub">target: $12k</span>
+      </div>
+      <div class="metric-card">
+        <span class="metric-label">tiers live</span>
+        <span class="metric-value amber">0/5</span>
+        <span class="metric-sub">Free → Contractor</span>
+      </div>
+      <div class="metric-card">
+        <span class="metric-label">days to launch</span>
+        <span class="metric-value amber">~42</span>
+        <span class="metric-sub">6-week target</span>
+      </div>
+      <div class="metric-card full">
+        <span class="metric-label">content pieces built</span>
+        <span class="metric-value">0</span>
+        <span class="metric-sub">target: 12 pieces at launch</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title"><span class="dot"></span>Open decisions</span>
+        <span class="card-tag">needs action</span>
+      </div>
+      <div class="card-body">
+        <div class="decision-item">
+          <div class="decision-dot open"></div>
+          <span class="decision-text"><strong>Platform:</strong> Where are we building Groundwork?</span>
+        </div>
+        <div class="decision-item">
+          <div class="decision-dot open"></div>
+          <span class="decision-text"><strong>Brand:</strong> Visual identity not designed yet</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title"><span class="dot"></span>Locked decisions</span>
+        <span class="card-tag">done</span>
+      </div>
+      <div class="card-body">
+        <div class="decision-item">
+          <div class="decision-dot locked"></div>
+          <span class="decision-text"><strong>Name:</strong> Groundwork (working title)</span>
+        </div>
+        <div class="decision-item">
+          <div class="decision-dot locked"></div>
+          <span class="decision-text"><strong>Tiers:</strong> Free / Apprentice / Skilled / Expert / Contractor</span>
+        </div>
+        <div class="decision-item">
+          <div class="decision-dot locked"></div>
+          <span class="decision-text"><strong>Pricing:</strong> $0 / $5 / $10 / $20 / $30 per month</span>
+        </div>
+        <div class="decision-item">
+          <div class="decision-dot locked"></div>
+          <span class="decision-text"><strong>Free tier extras:</strong> ft/in calculator + starter tools guide</span>
+        </div>
+        <div class="decision-item">
+          <div class="decision-dot locked"></div>
+          <span class="decision-text"><strong>CEO:</strong> Vex</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" id="roadmap">
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title"><span class="dot"></span>Build roadmap</span>
+        <span class="card-tag">phase 01 of 04</span>
+      </div>
+      <div class="card-body">
+        <div class="roadmap-item">
+          <div class="rm-indicator done">✓</div>
+          <div>
+            <div class="rm-phase">completed</div>
+            <div class="rm-title">Strategy & structure</div>
+            <div class="rm-chips">
+              <span class="chip done">name</span>
+              <span class="chip done">5 tiers</span>
+              <span class="chip done">pricing</span>
+              <span class="chip done">MVP scope</span>
+              <span class="chip done">CEO named</span>
+            </div>
+          </div>
+        </div>
+        <div class="roadmap-item">
+          <div class="rm-indicator active">→</div>
+          <div>
+            <div class="rm-phase">now // week 1–2</div>
+            <div class="rm-title">Foundation</div>
+            <div class="rm-chips">
+              <span class="chip active">platform</span>
+              <span class="chip active">payments</span>
+              <span class="chip active">ft/in calc</span>
+              <span class="chip active">email list</span>
+            </div>
+          </div>
+        </div>
+        <div class="roadmap-item">
+          <div class="rm-indicator pending">3</div>
+          <div>
+            <div class="rm-phase">week 3–4</div>
+            <div class="rm-title">Build Apprentice tier</div>
+            <div class="rm-chips">
+              <span class="chip">core guides</span>
+              <span class="chip">5 blueprints</span>
+              <span class="chip">calculator v1</span>
+            </div>
+          </div>
+        </div>
+        <div class="roadmap-item">
+          <div class="rm-indicator pending">4</div>
+          <div>
+            <div class="rm-phase">week 5–6</div>
+            <div class="rm-title">Soft launch</div>
+            <div class="rm-chips">
+              <span class="chip">go live</span>
+              <span class="chip">social push</span>
+              <span class="chip">first 10 users</span>
+            </div>
+          </div>
+        </div>
+        <div class="roadmap-item">
+          <div class="rm-indicator pending">5</div>
+          <div>
+            <div class="rm-phase">month 2–3</div>
+            <div class="rm-title">Build Skilled tier</div>
+            <div class="rm-chips">
+              <span class="chip">framing content</span>
+              <span class="chip">blueprints</span>
+              <span class="chip">grow audience</span>
+            </div>
+          </div>
+        </div>
+        <div class="roadmap-item">
+          <div class="rm-indicator pending">6</div>
+          <div>
+            <div class="rm-phase">phase 2</div>
+            <div class="rm-title">Expert + Contractor tiers</div>
+            <div class="rm-chips">
+              <span class="chip">pro tools</span>
+              <span class="chip">calculators</span>
+              <span class="chip">community</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" id="tiers">
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title"><span class="dot"></span>Tier status</span>
+        <span class="card-tag">5 levels</span>
+      </div>
+      <div class="card-body">
+        <div class="tier-row">
+          <span class="tier-name">Free</span>
+          <div class="tier-bar-wrap"><div class="tier-bar amber" style="width:15%"></div></div>
+          <span class="tier-pct">15%</span>
+          <span class="tier-status building">building</span>
+        </div>
+        <div class="tier-row">
+          <span class="tier-name">Apprentice</span>
+          <div class="tier-bar-wrap"><div class="tier-bar amber" style="width:5%"></div></div>
+          <span class="tier-pct">5%</span>
+          <span class="tier-status building">building</span>
+        </div>
+        <div class="tier-row">
+          <span class="tier-name">Skilled</span>
+          <div class="tier-bar-wrap"><div class="tier-bar dim" style="width:0%"></div></div>
+          <span class="tier-pct">0%</span>
+          <span class="tier-status queued">queued</span>
+        </div>
+        <div class="tier-row">
+          <span class="tier-name">Expert</span>
+          <div class="tier-bar-wrap"><div class="tier-bar dim" style="width:0%"></div></div>
+          <span class="tier-pct">0%</span>
+          <span class="tier-status queued">queued</span>
+        </div>
+        <div class="tier-row">
+          <span class="tier-name">Contractor</span>
+          <div class="tier-bar-wrap"><div class="tier-bar dim" style="width:0%"></div></div>
+          <span class="tier-pct">0%</span>
+          <span class="tier-status queued">queued</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title"><span class="dot"></span>Pricing ladder</span>
+        <span class="card-tag">monthly</span>
+      </div>
+      <div class="card-body">
+        <div class="tier-row">
+          <span class="tier-name">Free</span>
+          <span style="font-family:'DM Mono',monospace;font-size:16px;font-weight:500;color:var(--text);flex:1">$0</span>
+          <span style="font-size:11px;color:var(--text3)">hook & build list</span>
+        </div>
+        <div class="tier-row">
+          <span class="tier-name">Apprentice</span>
+          <span style="font-family:'DM Mono',monospace;font-size:16px;font-weight:500;color:var(--text);flex:1">$5</span>
+          <span style="font-size:11px;color:var(--text3)">entry level</span>
+        </div>
+        <div class="tier-row">
+          <span class="tier-name">Skilled</span>
+          <span style="font-family:'DM Mono',monospace;font-size:16px;font-weight:500;color:var(--text);flex:1">$10</span>
+          <span style="font-size:11px;color:var(--text3)">fundamentals</span>
+        </div>
+        <div class="tier-row">
+          <span class="tier-name">Expert</span>
+          <span style="font-family:'DM Mono',monospace;font-size:16px;font-weight:500;color:var(--green);flex:1">$20</span>
+          <span style="font-size:11px;color:var(--text3)">money tier</span>
+        </div>
+        <div class="tier-row">
+          <span class="tier-name">Contractor</span>
+          <span style="font-family:'DM Mono',monospace;font-size:16px;font-weight:500;color:var(--text);flex:1">$30</span>
+          <span style="font-size:11px;color:var(--text3)">phase 4</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" id="actions">
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title"><span class="dot"></span>Next actions</span>
+        <span class="card-tag">prioritized</span>
+      </div>
+      <div class="card-body">
+        <div class="action-item">
+          <span class="action-num">01</span>
+          <span class="action-text">Choose the platform to build Groundwork on</span>
+          <span class="action-owner both">both</span>
+        </div>
+        <div class="action-item">
+          <span class="action-num">02</span>
+          <span class="action-text">Build the feet & inches calculator</span>
+          <span class="action-owner vex">vex</span>
+        </div>
+        <div class="action-item">
+          <span class="action-num">03</span>
+          <span class="action-text">Write the tape measure guide</span>
+          <span class="action-owner sam">sam</span>
+        </div>
+        <div class="action-item">
+          <span class="action-num">04</span>
+          <span class="action-text">Write the starter tools guide</span>
+          <span class="action-owner sam">sam</span>
+        </div>
+        <div class="action-item">
+          <span class="action-num">05</span>
+          <span class="action-text">Set up Discord channel #groundwork-ops</span>
+          <span class="action-owner sam">sam</span>
+        </div>
+        <div class="action-item">
+          <span class="action-num">06</span>
+          <span class="action-text">Design Groundwork brand identity</span>
+          <span class="action-owner vex">vex</span>
+        </div>
+        <div class="action-item">
+          <span class="action-num">07</span>
+          <span class="action-text">Set up Stripe payment processor</span>
+          <span class="action-owner vex">vex</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" id="brief">
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title"><span class="dot"></span>Vex's brief</span>
+        <span class="card-tag">may 2026</span>
+      </div>
+      <div class="card-body">
+        <div class="brief-box">
+          <div class="brief-header">
+            <div class="brief-orb"></div>
+            <span class="brief-from">VEX // CEO — May 2026</span>
+          </div>
+          <p class="brief-text">
+            Good session Sam. We've got more done in one conversation than most people do in a month of "planning." Strategy is locked — <em>five tiers, clear pricing, MVP scope defined.</em> Right now we're sitting at zero but that's fine, every company starts there. The two open questions keeping us from moving are <em>platform and brand.</em> Platform especially — can't build anything until we know where we're building it. That's the first thing we tackle next session. I'll have options ready.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<nav class="bottom-nav">
+  <button class="bottom-nav-item active" onclick="switchSection('overview', this)">
+    <span class="nav-icon">⬡</span>
+    <span class="nav-label-txt">overview</span>
+  </button>
+  <button class="bottom-nav-item" onclick="switchSection('roadmap', this)">
+    <span class="nav-icon">◈</span>
+    <span class="nav-label-txt">roadmap</span>
+  </button>
+  <button class="bottom-nav-item" onclick="switchSection('tiers', this)">
+    <span class="nav-icon">◇</span>
+    <span class="nav-label-txt">tiers</span>
+  </button>
+  <button class="bottom-nav-item" onclick="switchSection('actions', this)">
+    <span class="nav-icon">○</span>
+    <span class="nav-label-txt">actions</span>
+  </button>
+  <button class="bottom-nav-item" onclick="switchSection('brief', this)">
+    <span class="nav-icon">◑</span>
+    <span class="nav-label-txt">brief</span>
+  </button>
+</nav>
+
+<script>
+  function switchTab(id, el) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+  }
+
+  function switchSection(id, el) {
+    document.querySelectorAll('.bottom-nav-item').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+    const ids = ['overview','roadmap','tiers','actions','brief'];
+    document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', ids[i] === id));
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    window.scrollTo(0, 0);
+  }
+</script>
+
+</body>
+</html>

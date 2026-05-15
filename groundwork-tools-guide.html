@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Groundwork — Starter Tools Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --green: #3A6B3A;
+    --green-light: #4E8A4E;
+    --green-dim: #3A6B3A14;
+    --green-mid: #3A6B3A44;
+    --bg: #F5EFE4;
+    --bg2: #EDE4D4;
+    --bg3: #E4D8C4;
+    --bg4: #D8CAAF;
+    --border: #C8B89A;
+    --border2: #B8A488;
+    --text: #3A2E22;
+    --text2: #5A4E3A;
+    --text3: #9A8870;
+    --brown: #5A4030;
+    --amber: #B8860B;
+    --amber-dim: #B8860B12;
+    --red: #8B2020;
+    --red-dim: #8B202012;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+  }
+
+  body::before {
+    content: '';
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background-image: repeating-linear-gradient(
+      180deg, transparent 0px, transparent 48px,
+      rgba(160,120,70,0.025) 48px, rgba(160,120,70,0.025) 49px
+    );
+    pointer-events: none; z-index: 0;
+  }
+
+  * { position: relative; z-index: 1; }
+
+  nav {
+    background: rgba(245,239,228,0.96);
+    border-bottom: 1px solid var(--border);
+    padding: 0 20px; height: 62px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 100;
+  }
+
+  .nav-logo { font-size: 20px; font-weight: 800; color: var(--green); letter-spacing: -0.02em; text-decoration: none; }
+  .nav-back {
+    font-size: 13px; color: var(--text2); text-decoration: none;
+    padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border);
+    transition: all 0.15s; font-weight: 600;
+  }
+  .nav-back:hover { background: var(--bg3); }
+
+  .article { max-width: 680px; margin: 0 auto; padding: 48px 24px 80px; }
+
+  .article-eyebrow {
+    font-family: 'DM Mono', monospace; font-size: 10px;
+    color: var(--green); letter-spacing: 0.15em; text-transform: uppercase;
+    margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
+  }
+
+  .eyebrow-tag {
+    background: var(--green-dim); border: 1px solid var(--green-mid);
+    padding: 2px 8px; border-radius: 4px;
+  }
+
+  .article-title {
+    font-size: clamp(28px, 5vw, 44px); font-weight: 800;
+    color: var(--brown); letter-spacing: -0.02em; line-height: 1.1; margin-bottom: 16px;
+  }
+
+  .article-meta {
+    display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+    padding-bottom: 24px; border-bottom: 1px solid var(--border); margin-bottom: 36px;
+  }
+
+  .meta-item { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text3); }
+  .meta-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--border2); }
+
+  .article-body { display: flex; flex-direction: column; gap: 28px; }
+  .article-body p { font-size: 16px; color: var(--text2); line-height: 1.8; }
+  .article-body h2 { font-size: 22px; font-weight: 700; color: var(--brown); letter-spacing: -0.01em; margin-bottom: -12px; margin-top: 8px; }
+
+  .callout {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-left: 3px solid var(--green); border-radius: 0 10px 10px 0; padding: 16px 20px;
+  }
+  .callout-label { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--green); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 6px; }
+  .callout p { font-size: 14px; color: var(--text2); line-height: 1.7; }
+
+  /* TOOL CARDS */
+  .tool-list { display: flex; flex-direction: column; gap: 14px; }
+
+  .tool-card {
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 14px; padding: 20px;
+    display: flex; gap: 16px; align-items: flex-start;
+    transition: all 0.15s;
+  }
+
+  .tool-card:hover { border-color: var(--green-mid); }
+
+  .tool-emoji { font-size: 32px; flex-shrink: 0; }
+
+  .tool-content { flex: 1; }
+  .tool-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; flex-wrap: wrap; gap: 8px; }
+  .tool-name { font-size: 16px; font-weight: 700; color: var(--brown); }
+
+  .tool-priority {
+    font-family: 'DM Mono', monospace; font-size: 10px;
+    padding: 2px 8px; border-radius: 20px; letter-spacing: 0.05em;
+  }
+
+  .priority-must { background: var(--green-dim); color: var(--green); border: 1px solid var(--green-mid); }
+  .priority-good { background: var(--amber-dim); color: var(--amber); border: 1px solid rgba(184,134,11,0.3); }
+  .priority-wait { background: var(--bg3); color: var(--text3); border: 1px solid var(--border); }
+
+  .tool-desc { font-size: 13px; color: var(--text2); line-height: 1.6; margin-bottom: 10px; }
+
+  .tool-meta { display: flex; gap: 12px; flex-wrap: wrap; }
+  .tool-meta-item { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text3); }
+  .tool-meta-item strong { color: var(--brown); }
+
+  /* SKIP LIST */
+  .skip-list { display: flex; flex-direction: column; gap: 10px; }
+
+  .skip-item {
+    background: var(--red-dim); border: 1px solid rgba(139,32,32,0.2);
+    border-radius: 10px; padding: 14px 16px;
+    display: flex; gap: 12px; align-items: flex-start;
+  }
+
+  .skip-x { color: var(--red); font-weight: 700; font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+  .skip-content { flex: 1; }
+  .skip-name { font-size: 14px; font-weight: 700; color: var(--red); margin-bottom: 4px; }
+  .skip-reason { font-size: 12px; color: var(--text2); line-height: 1.5; }
+
+  .tip-box {
+    background: var(--green-dim); border: 1px solid var(--green-mid);
+    border-radius: 12px; padding: 20px;
+    display: flex; gap: 14px; align-items: flex-start;
+  }
+
+  .tip-icon { font-size: 22px; flex-shrink: 0; }
+  .tip-content { flex: 1; }
+  .tip-label { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--green); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 6px; }
+  .tip-content p { font-size: 14px; color: var(--text2); line-height: 1.7; }
+
+  /* BUDGET SUMMARY */
+  .budget-card {
+    background: var(--bg2); border: 1px solid var(--border); border-radius: 14px; overflow: hidden;
+  }
+
+  .budget-header {
+    background: var(--bg3); border-bottom: 1px solid var(--border);
+    padding: 14px 18px; font-size: 14px; font-weight: 700; color: var(--brown);
+  }
+
+  .budget-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 18px; border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+
+  .budget-row:last-child { border-bottom: none; }
+  .budget-name { color: var(--text2); }
+  .budget-cost { font-family: 'DM Mono', monospace; color: var(--brown); font-weight: 500; }
+  .budget-row.total { background: var(--green-dim); }
+  .budget-row.total .budget-name { font-weight: 700; color: var(--green); }
+  .budget-row.total .budget-cost { color: var(--green); font-size: 15px; }
+
+  .next-up {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 14px; padding: 24px; display: flex; flex-direction: column; gap: 14px;
+  }
+
+  .next-label { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text3); letter-spacing: 0.1em; text-transform: uppercase; }
+  .next-title { font-size: 18px; font-weight: 700; color: var(--brown); }
+  .next-desc { font-size: 13px; color: var(--text2); line-height: 1.6; }
+
+  .next-btn {
+    font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700;
+    color: white; background: var(--green); border: none;
+    padding: 12px 20px; border-radius: 8px; cursor: pointer;
+    transition: all 0.15s; text-decoration: none; display: inline-block; align-self: flex-start;
+  }
+
+  .next-btn:hover { background: var(--green-light); }
+
+  @media (max-width: 600px) {
+    .article { padding: 32px 16px 60px; }
+    .tool-card { flex-wrap: wrap; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="groundwork-dashboard.html" class="nav-logo">Groundwork</a>
+  <a href="groundwork-dashboard.html" class="nav-back">← Dashboard</a>
+</nav>
+
+<article class="article">
+
+  <div class="article-eyebrow">
+    <span class="eyebrow-tag">free</span>
+    Getting Started
+  </div>
+
+  <h1 class="article-title">Starter Tools Guide</h1>
+
+  <div class="article-meta">
+    <span class="meta-item">8 min read</span>
+    <div class="meta-dot"></div>
+    <span class="meta-item">beginner</span>
+    <div class="meta-dot"></div>
+    <span class="meta-item">by Sam · Groundwork</span>
+  </div>
+
+  <div class="article-body">
+
+    <p>The biggest mistake new builders make is going to Home Depot and buying everything that looks useful. You end up with a pile of tools you don't need and a lighter wallet. Here's the real starter list — what you actually need, what to skip, and how to spend smart.</p>
+
+    <div class="callout">
+      <div class="callout-label">the rule</div>
+      <p>Buy a tool when a project requires it. Not before. This keeps your spending tied to actual work and prevents you from accumulating stuff that sits in a drawer.</p>
+    </div>
+
+    <h2>Must-have tools — buy these first</h2>
+
+    <div class="tool-list">
+
+      <div class="tool-card">
+        <div class="tool-emoji">📏</div>
+        <div class="tool-content">
+          <div class="tool-header">
+            <span class="tool-name">Tape Measure</span>
+            <span class="tool-priority priority-must">must have</span>
+          </div>
+          <div class="tool-desc">The most used tool on any job site. Get a 25-foot tape — long enough for most jobs, short enough to carry comfortably. Look for a wide blade that stands out on its own (blade standout matters more than people think).</div>
+          <div class="tool-meta">
+            <span class="tool-meta-item">budget: <strong>$15–25</strong></span>
+            <span class="tool-meta-item">brand: <strong>Stanley or Milwaukee</strong></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-emoji">🔨</div>
+        <div class="tool-content">
+          <div class="tool-header">
+            <span class="tool-name">Hammer</span>
+            <span class="tool-priority priority-must">must have</span>
+          </div>
+          <div class="tool-desc">A 16 oz framing hammer is the standard. Heavy enough to drive nails, light enough not to wear you out. Don't buy a cheap plastic-handled one — the handle absorbs shock and cheap ones crack.</div>
+          <div class="tool-meta">
+            <span class="tool-meta-item">budget: <strong>$20–35</strong></span>
+            <span class="tool-meta-item">brand: <strong>Estwing</strong></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-emoji">🪛</div>
+        <div class="tool-content">
+          <div class="tool-header">
+            <span class="tool-name">Drill / Driver</span>
+            <span class="tool-priority priority-must">must have</span>
+          </div>
+          <div class="tool-desc">A cordless drill is the most versatile power tool you'll own. Get a combo kit — drill and impact driver together. 18V or 20V lithium ion. You'll use this on almost every single project.</div>
+          <div class="tool-meta">
+            <span class="tool-meta-item">budget: <strong>$80–150 combo</strong></span>
+            <span class="tool-meta-item">brand: <strong>DeWalt, Milwaukee, or Ryobi</strong></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-emoji">📐</div>
+        <div class="tool-content">
+          <div class="tool-header">
+            <span class="tool-name">Speed Square</span>
+            <span class="tool-priority priority-must">must have</span>
+          </div>
+          <div class="tool-desc">A small triangular square for marking 90 and 45 degree angles. Fits in your pocket, costs almost nothing, and you'll reach for it constantly. Also works as a fence for circular saw cuts.</div>
+          <div class="tool-meta">
+            <span class="tool-meta-item">budget: <strong>$8–15</strong></span>
+            <span class="tool-meta-item">brand: <strong>Swanson</strong></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-emoji">🫧</div>
+        <div class="tool-content">
+          <div class="tool-header">
+            <span class="tool-name">Level</span>
+            <span class="tool-priority priority-must">must have</span>
+          </div>
+          <div class="tool-desc">A 24-inch level handles most jobs. Use it for hanging anything on a wall, checking if a surface is flat, and plumbing vertical work. Cheap levels are inaccurate — spend a little more here.</div>
+          <div class="tool-meta">
+            <span class="tool-meta-item">budget: <strong>$25–40</strong></span>
+            <span class="tool-meta-item">brand: <strong>Empire or Stabila</strong></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-emoji">✏️</div>
+        <div class="tool-content">
+          <div class="tool-header">
+            <span class="tool-name">Pencil + Chalk Line</span>
+            <span class="tool-priority priority-must">must have</span>
+          </div>
+          <div class="tool-desc">Always mark before you cut. A carpenter's pencil for close work, a chalk line for snapping long straight lines across lumber or subflooring. Both are cheap and essential.</div>
+          <div class="tool-meta">
+            <span class="tool-meta-item">budget: <strong>$5–12 total</strong></span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <h2>Good to have — buy when needed</h2>
+
+    <div class="tool-list">
+
+      <div class="tool-card">
+        <div class="tool-emoji">🪚</div>
+        <div class="tool-content">
+          <div class="tool-header">
+            <span class="tool-name">Circular Saw</span>
+            <span class="tool-priority priority-good">buy when needed</span>
+          </div>
+          <div class="tool-desc">Your first real cutting tool. A 7-1/4 inch circular saw cuts lumber, plywood, and decking. Buy it when your first project requires more than straight hand cuts. Corded is fine to start.</div>
+          <div class="tool-meta">
+            <span class="tool-meta-item">budget: <strong>$60–100</strong></span>
+            <span class="tool-meta-item">brand: <strong>DeWalt or Skilsaw</strong></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-emoji">🗜️</div>
+        <div class="tool-content">
+          <div class="tool-header">
+            <span class="tool-name">Clamps</span>
+            <span class="tool-priority priority-good">buy when needed</span>
+          </div>
+          <div class="tool-desc">Clamps are your extra hands. You'll need them for woodworking and assembly. Start with a set of 4 quick-release clamps in various sizes. You'll slowly accumulate more — every woodworker does.</div>
+          <div class="tool-meta">
+            <span class="tool-meta-item">budget: <strong>$20–40 for a starter set</strong></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-emoji">🔧</div>
+        <div class="tool-content">
+          <div class="tool-header">
+            <span class="tool-name">Utility Knife</span>
+            <span class="tool-priority priority-good">buy when needed</span>
+          </div>
+          <div class="tool-desc">Scoring drywall, trimming material, opening boxes. A retractable blade utility knife is a job site staple. Get one with a quick blade change — you'll use new blades more than you think.</div>
+          <div class="tool-meta">
+            <span class="tool-meta-item">budget: <strong>$10–18</strong></span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <h2>Skip these for now</h2>
+
+    <div class="skip-list">
+      <div class="skip-item">
+        <span class="skip-x">✕</span>
+        <div class="skip-content">
+          <div class="skip-name">Combo tool kits from discount stores</div>
+          <div class="skip-reason">20-piece tool sets for $49 look like a deal. They're not. The tools are inaccurate, break fast, and teach you bad habits. Buy one good tool instead.</div>
+        </div>
+      </div>
+      <div class="skip-item">
+        <span class="skip-x">✕</span>
+        <div class="skip-content">
+          <div class="skip-name">Miter saw (to start)</div>
+          <div class="skip-reason">Great tool, but expensive and not necessary until you're doing trim work or repeat angle cuts. A circular saw handles most beginner cuts just fine.</div>
+        </div>
+      </div>
+      <div class="skip-item">
+        <span class="skip-x">✕</span>
+        <div class="skip-content">
+          <div class="skip-name">Air compressor and nail gun</div>
+          <div class="skip-reason">You don't need this yet. Hand nailing teaches you fundamentals and a hammer works perfectly for most beginner projects. Add this when you're framing walls regularly.</div>
+        </div>
+      </div>
+      <div class="skip-item">
+        <span class="skip-x">✕</span>
+        <div class="skip-content">
+          <div class="skip-name">Laser level</div>
+          <div class="skip-reason">Cool but unnecessary. A standard bubble level does everything you need starting out. Laser levels become useful when you're doing large-scale layout work.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tip-box">
+      <div class="tip-icon">🛒</div>
+      <div class="tip-content">
+        <div class="tip-label">buying tip</div>
+        <p>Facebook Marketplace and Craigslist are gold for tools. Contractors sell off old equipment constantly and you can get professional-grade tools for beginner prices. Look for name brands only — no off-brand deals.</p>
+      </div>
+    </div>
+
+    <h2>What's this going to cost?</h2>
+
+    <div class="budget-card">
+      <div class="budget-header">Starter kit budget</div>
+      <div class="budget-row"><span class="budget-name">Tape measure (25 ft)</span><span class="budget-cost">$20</span></div>
+      <div class="budget-row"><span class="budget-name">Hammer (16 oz Estwing)</span><span class="budget-cost">$28</span></div>
+      <div class="budget-row"><span class="budget-name">Drill/driver combo kit</span><span class="budget-cost">$120</span></div>
+      <div class="budget-row"><span class="budget-name">Speed square</span><span class="budget-cost">$10</span></div>
+      <div class="budget-row"><span class="budget-name">24" level</span><span class="budget-cost">$30</span></div>
+      <div class="budget-row"><span class="budget-name">Pencil + chalk line</span><span class="budget-cost">$10</span></div>
+      <div class="budget-row total"><span class="budget-name">Total</span><span class="budget-cost">~$218</span></div>
+    </div>
+
+    <p>That's a complete starter kit for under $220 buying new. Buy used and you can cut that in half. These tools will handle your first 10+ projects without any gaps.</p>
+
+    <div class="next-up">
+      <span class="next-label">ready for more?</span>
+      <span class="next-title">Upgrade to Apprentice</span>
+      <span class="next-desc">Get access to hand & power tools 101, the full safety guide, 5 project blueprints, and the material calculator.</span>
+      <a href="groundwork-signup.html" class="next-btn">Upgrade for $5/mo →</a>
+    </div>
+
+  </div>
+</article>
+
+</body>
+</html>

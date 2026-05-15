@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Groundwork — Feet & Inches Calculator</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --green: #00e5a0;
+    --green-dim: #00e5a018;
+    --green-mid: #00e5a044;
+    --bg: #080808;
+    --bg2: #0d0d0d;
+    --bg3: #141414;
+    --bg4: #1a1a1a;
+    --border: #1e1e1e;
+    --border2: #2a2a2a;
+    --text: #e0e0e0;
+    --text2: #888;
+    --text3: #444;
+    --amber: #f59e0b;
+    --red: #ef4444;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* HEADER */
+  .header {
+    background: var(--bg2);
+    border-bottom: 0.5px solid var(--border);
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .logo { display: flex; flex-direction: column; }
+  .logo-name { font-size: 18px; font-weight: 800; color: var(--green); letter-spacing: -0.02em; }
+  .logo-tag { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--text3); letter-spacing: 0.1em; }
+
+  .free-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    background: var(--green-dim);
+    color: var(--green);
+    border: 0.5px solid var(--green-mid);
+    letter-spacing: 0.05em;
+  }
+
+  /* MAIN */
+  .main {
+    flex: 1;
+    padding: 24px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-width: 480px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .page-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.02em;
+  }
+
+  .page-sub {
+    font-size: 13px;
+    color: var(--text2);
+    margin-top: 4px;
+    line-height: 1.5;
+  }
+
+  /* OPERATION TABS */
+  .op-tabs {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+  }
+
+  .op-tab {
+    padding: 10px 6px;
+    border-radius: 8px;
+    border: 0.5px solid var(--border2);
+    background: var(--bg2);
+    color: var(--text3);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .op-tab .op-symbol { font-size: 18px; font-weight: 700; color: var(--text3); transition: color 0.15s; }
+  .op-tab:hover { border-color: var(--border2); background: var(--bg4); color: var(--text2); }
+  .op-tab.active { background: var(--green-dim); border-color: var(--green-mid); color: var(--green); }
+  .op-tab.active .op-symbol { color: var(--green); }
+
+  /* INPUT ROWS */
+  .inputs { display: flex; flex-direction: column; gap: 12px; }
+
+  .input-row {
+    background: var(--bg2);
+    border: 0.5px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .input-row-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text3);
+    letter-spacing: 0.08em;
+  }
+
+  .input-fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+  }
+
+  .field { display: flex; flex-direction: column; gap: 4px; }
+
+  .field-label {
+    font-size: 10px;
+    color: var(--text3);
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.05em;
+  }
+
+  .field input {
+    background: var(--bg3);
+    border: 0.5px solid var(--border2);
+    border-radius: 8px;
+    padding: 10px 12px;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 16px;
+    font-weight: 500;
+    width: 100%;
+    outline: none;
+    transition: border-color 0.15s;
+    -moz-appearance: textfield;
+  }
+
+  .field input::-webkit-outer-spin-button,
+  .field input::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+  .field input:focus { border-color: var(--green-mid); }
+  .field input::placeholder { color: var(--text3); font-size: 14px; }
+
+  /* OPERATOR DISPLAY */
+  .op-display {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 0;
+  }
+
+  .op-sign {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--bg4);
+    border: 0.5px solid var(--border2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--green);
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* CALCULATE BUTTON */
+  .calc-btn {
+    width: 100%;
+    padding: 16px;
+    border-radius: 12px;
+    background: var(--green);
+    border: none;
+    color: #080808;
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 0.01em;
+  }
+
+  .calc-btn:hover { background: #00cfb4; }
+  .calc-btn:active { transform: scale(0.98); }
+
+  /* RESULT */
+  .result-box {
+    background: var(--bg2);
+    border: 0.5px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 16px;
+    display: none;
+    flex-direction: column;
+    gap: 14px;
+    animation: fadeUp 0.2s ease;
+  }
+
+  .result-box.visible { display: flex; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+  .result-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text3);
+    letter-spacing: 0.08em;
+  }
+
+  .result-primary {
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--green);
+    font-family: 'DM Mono', monospace;
+    letter-spacing: -0.02em;
+  }
+
+  .result-secondary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .result-chip {
+    background: var(--bg4);
+    border: 0.5px solid var(--border2);
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--text2);
+  }
+
+  .result-chip span { color: var(--text); font-weight: 500; }
+
+  .error-box {
+    background: rgba(239,68,68,0.08);
+    border: 0.5px solid rgba(239,68,68,0.3);
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-size: 13px;
+    color: var(--red);
+    display: none;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .error-box.visible { display: block; }
+
+  /* CLEAR BTN */
+  .clear-btn {
+    background: none;
+    border: 0.5px solid var(--border2);
+    border-radius: 8px;
+    padding: 8px 16px;
+    color: var(--text3);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.15s;
+    align-self: flex-start;
+  }
+
+  .clear-btn:hover { color: var(--text2); border-color: var(--border2); background: var(--bg4); }
+
+  /* HISTORY */
+  .history-section { display: flex; flex-direction: column; gap: 10px; }
+  .history-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text3);
+    letter-spacing: 0.08em;
+  }
+
+  .history-list { display: flex; flex-direction: column; gap: 6px; }
+
+  .history-item {
+    background: var(--bg2);
+    border: 0.5px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    animation: fadeUp 0.2s ease;
+  }
+
+  .history-expr { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--text2); }
+  .history-result { font-family: 'DM Mono', monospace; font-size: 13px; color: var(--green); font-weight: 500; }
+
+  /* FOOTER */
+  .footer {
+    padding: 20px;
+    text-align: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text3);
+    border-top: 0.5px solid var(--border);
+    letter-spacing: 0.05em;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">
+    <span class="logo-name">Groundwork</span>
+    <span class="logo-tag">// construction calculator</span>
+  </div>
+  <span class="free-badge">free tool</span>
+</div>
+
+<div class="main">
+
+  <div>
+    <h1 class="page-title">Feet & Inches Calculator</h1>
+    <p class="page-sub">Add, subtract, multiply or divide measurements without converting to decimals. Built for job sites.</p>
+  </div>
+
+  <!-- OPERATION TABS -->
+  <div class="op-tabs">
+    <button class="op-tab active" onclick="setOp('add', this)">
+      <span class="op-symbol">+</span>
+      <span>Add</span>
+    </button>
+    <button class="op-tab" onclick="setOp('subtract', this)">
+      <span class="op-symbol">−</span>
+      <span>Subtract</span>
+    </button>
+    <button class="op-tab" onclick="setOp('multiply', this)">
+      <span class="op-symbol">×</span>
+      <span>Multiply</span>
+    </button>
+    <button class="op-tab" onclick="setOp('divide', this)">
+      <span class="op-symbol">÷</span>
+      <span>Divide</span>
+    </button>
+  </div>
+
+  <!-- INPUTS -->
+  <div class="inputs">
+    <div class="input-row">
+      <span class="input-row-label">measurement A</span>
+      <div class="input-fields">
+        <div class="field">
+          <span class="field-label">feet</span>
+          <input type="number" id="a-feet" placeholder="0" min="0" inputmode="numeric">
+        </div>
+        <div class="field">
+          <span class="field-label">inches</span>
+          <input type="number" id="a-inches" placeholder="0" min="0" max="11" inputmode="numeric">
+        </div>
+        <div class="field">
+          <span class="field-label">fraction</span>
+          <select id="a-frac" style="background:var(--bg3);border:0.5px solid var(--border2);border-radius:8px;padding:10px 8px;color:var(--text);font-family:'DM Mono',monospace;font-size:13px;outline:none;width:100%;appearance:none;-webkit-appearance:none;">
+            <option value="0">0</option>
+            <option value="0.125">1/8</option>
+            <option value="0.25">1/4</option>
+            <option value="0.375">3/8</option>
+            <option value="0.5">1/2</option>
+            <option value="0.625">5/8</option>
+            <option value="0.75">3/4</option>
+            <option value="0.875">7/8</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="op-display">
+      <div class="op-sign" id="opSign">+</div>
+    </div>
+
+    <div class="input-row" id="inputB">
+      <span class="input-row-label" id="labelB">measurement B</span>
+      <div class="input-fields">
+        <div class="field">
+          <span class="field-label" id="bLabel1">feet</span>
+          <input type="number" id="b-feet" placeholder="0" min="0" inputmode="numeric">
+        </div>
+        <div class="field">
+          <span class="field-label" id="bLabel2">inches</span>
+          <input type="number" id="b-inches" placeholder="0" min="0" inputmode="numeric">
+        </div>
+        <div class="field" id="bFracField">
+          <span class="field-label">fraction</span>
+          <select id="b-frac" style="background:var(--bg3);border:0.5px solid var(--border2);border-radius:8px;padding:10px 8px;color:var(--text);font-family:'DM Mono',monospace;font-size:13px;outline:none;width:100%;appearance:none;-webkit-appearance:none;">
+            <option value="0">0</option>
+            <option value="0.125">1/8</option>
+            <option value="0.25">1/4</option>
+            <option value="0.375">3/8</option>
+            <option value="0.5">1/2</option>
+            <option value="0.625">5/8</option>
+            <option value="0.75">3/4</option>
+            <option value="0.875">7/8</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CALCULATE -->
+  <button class="calc-btn" onclick="calculate()">Calculate</button>
+
+  <!-- ERROR -->
+  <div class="error-box" id="errorBox"></div>
+
+  <!-- RESULT -->
+  <div class="result-box" id="resultBox">
+    <span class="result-label">result</span>
+    <span class="result-primary" id="resultPrimary"></span>
+    <div class="result-secondary" id="resultSecondary"></div>
+    <button class="clear-btn" onclick="clearAll()">clear</button>
+  </div>
+
+  <!-- HISTORY -->
+  <div class="history-section" id="historySection" style="display:none">
+    <span class="history-label">recent calculations</span>
+    <div class="history-list" id="historyList"></div>
+  </div>
+
+</div>
+
+<div class="footer">groundwork // free tier — no account needed</div>
+
+<script>
+  let currentOp = 'add';
+  let history = [];
+
+  const opSymbols = { add: '+', subtract: '−', multiply: '×', divide: '÷' };
+
+  function setOp(op, el) {
+    currentOp = op;
+    document.querySelectorAll('.op-tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('opSign').textContent = opSymbols[op];
+
+    const bFracField = document.getElementById('bFracField');
+    const bLabel1 = document.getElementById('bLabel1');
+    const bLabel2 = document.getElementById('bLabel2');
+    const labelB = document.getElementById('labelB');
+
+    if (op === 'multiply' || op === 'divide') {
+      bLabel1.textContent = 'whole';
+      bLabel2.textContent = 'decimal';
+      bFracField.style.display = 'none';
+      labelB.textContent = op === 'multiply' ? 'multiply by' : 'divide by';
+      document.getElementById('b-inches').placeholder = '0';
+    } else {
+      bLabel1.textContent = 'feet';
+      bLabel2.textContent = 'inches';
+      bFracField.style.display = 'flex';
+      labelB.textContent = 'measurement B';
+      document.getElementById('b-inches').placeholder = '0';
+    }
+
+    hideResult();
+  }
+
+  function toInches(feet, inches, frac) {
+    return (parseFloat(feet) || 0) * 12 + (parseFloat(inches) || 0) + (parseFloat(frac) || 0);
+  }
+
+  function inchesToFeetStr(totalInches) {
+    const negative = totalInches < 0;
+    totalInches = Math.abs(totalInches);
+
+    const feet = Math.floor(totalInches / 12);
+    const remaining = totalInches - feet * 12;
+    const wholeInches = Math.floor(remaining);
+    const fracInches = remaining - wholeInches;
+
+    const fracs = [
+      [0, ''],
+      [0.125, ' 1/8"'],
+      [0.25, ' 1/4"'],
+      [0.375, ' 3/8"'],
+      [0.5, ' 1/2"'],
+      [0.625, ' 5/8"'],
+      [0.75, ' 3/4"'],
+      [0.875, ' 7/8"'],
+    ];
+
+    let closestFrac = '';
+    let minDiff = Infinity;
+    for (const [val, label] of fracs) {
+      const diff = Math.abs(fracInches - val);
+      if (diff < minDiff) { minDiff = diff; closestFrac = label; }
+    }
+
+    let result = '';
+    if (negative) result += '−';
+    if (feet > 0) result += feet + "'";
+    if (feet > 0 && (wholeInches > 0 || closestFrac)) result += ' ';
+    if (wholeInches > 0 || closestFrac) result += wholeInches + closestFrac + '"';
+    if (!feet && !wholeInches && !closestFrac) result = '0"';
+
+    return result;
+  }
+
+  function decimalFeet(totalInches) {
+    return (totalInches / 12).toFixed(4) + ' ft';
+  }
+
+  function decimalInches(totalInches) {
+    return totalInches.toFixed(4) + ' in';
+  }
+
+  function calculate() {
+    const aFeet = document.getElementById('a-feet').value;
+    const aInches = document.getElementById('a-inches').value;
+    const aFrac = document.getElementById('a-frac').value;
+
+    const bFeet = document.getElementById('b-feet').value;
+    const bInches = document.getElementById('b-inches').value;
+    const bFrac = document.getElementById('b-frac').value;
+
+    hideError();
+
+    let resultInches;
+    let exprStr = '';
+
+    if (currentOp === 'add' || currentOp === 'subtract') {
+      const aTotal = toInches(aFeet, aInches, aFrac);
+      const bTotal = toInches(bFeet, bInches, bFrac);
+      const aStr = inchesToFeetStr(aTotal);
+      const bStr = inchesToFeetStr(bTotal);
+
+      if (currentOp === 'add') {
+        resultInches = aTotal + bTotal;
+        exprStr = `${aStr} + ${bStr}`;
+      } else {
+        resultInches = aTotal - bTotal;
+        exprStr = `${aStr} − ${bStr}`;
+      }
+    } else if (currentOp === 'multiply') {
+      const aTotal = toInches(aFeet, aInches, aFrac);
+      const multiplier = (parseFloat(bFeet) || 0) + (parseFloat(bInches) || 0) / 10;
+      if (isNaN(multiplier)) { showError('Enter a valid multiplier'); return; }
+      resultInches = aTotal * multiplier;
+      exprStr = `${inchesToFeetStr(aTotal)} × ${multiplier}`;
+    } else if (currentOp === 'divide') {
+      const aTotal = toInches(aFeet, aInches, aFrac);
+      const divisor = (parseFloat(bFeet) || 0) + (parseFloat(bInches) || 0) / 10;
+      if (!divisor) { showError("Can't divide by zero"); return; }
+      resultInches = aTotal / divisor;
+      exprStr = `${inchesToFeetStr(aTotal)} ÷ ${divisor}`;
+    }
+
+    const primary = inchesToFeetStr(resultInches);
+    const secFt = decimalFeet(resultInches);
+    const secIn = decimalInches(Math.abs(resultInches));
+
+    document.getElementById('resultPrimary').textContent = primary;
+    document.getElementById('resultSecondary').innerHTML = `
+      <div class="result-chip">decimal feet <span>${secFt}</span></div>
+      <div class="result-chip">decimal inches <span>${secIn}</span></div>
+    `;
+    document.getElementById('resultBox').classList.add('visible');
+
+    addHistory(exprStr, primary);
+  }
+
+  function addHistory(expr, result) {
+    history.unshift({ expr, result });
+    if (history.length > 5) history.pop();
+
+    const list = document.getElementById('historyList');
+    const section = document.getElementById('historySection');
+    section.style.display = 'flex';
+    list.innerHTML = history.map(h => `
+      <div class="history-item">
+        <span class="history-expr">${h.expr}</span>
+        <span class="history-result">= ${h.result}</span>
+      </div>
+    `).join('');
+  }
+
+  function hideResult() {
+    document.getElementById('resultBox').classList.remove('visible');
+  }
+
+  function showError(msg) {
+    const el = document.getElementById('errorBox');
+    el.textContent = '// ' + msg;
+    el.classList.add('visible');
+  }
+
+  function hideError() {
+    document.getElementById('errorBox').classList.remove('visible');
+  }
+
+  function clearAll() {
+    ['a-feet','a-inches','b-feet','b-inches'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('a-frac').value = '0';
+    document.getElementById('b-frac').value = '0';
+    hideResult();
+    hideError();
+  }
+
+  document.addEventListener('keydown', e => { if (e.key === 'Enter') calculate(); });
+</script>
+
+</body>
+</html>

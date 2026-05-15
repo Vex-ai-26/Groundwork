@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Groundwork — Get Started</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --green: #3A6B3A;
+    --green-light: #4E8A4E;
+    --green-dim: #3A6B3A14;
+    --green-mid: #3A6B3A44;
+    --bg: #F5EFE4;
+    --bg2: #EDE4D4;
+    --bg3: #E4D8C4;
+    --bg4: #D8CAAF;
+    --border: #C8B89A;
+    --border2: #B8A488;
+    --text: #3A2E22;
+    --text2: #5A4E3A;
+    --text3: #9A8870;
+    --brown: #5A4030;
+    --leather: #8B6040;
+    --sand: #C8A870;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+  }
+
+  body::before {
+    content: '';
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background-image: repeating-linear-gradient(
+      180deg,
+      transparent 0px, transparent 48px,
+      rgba(160,120,70,0.025) 48px, rgba(160,120,70,0.025) 49px
+    );
+    pointer-events: none; z-index: 0;
+  }
+
+  * { position: relative; z-index: 1; }
+
+  /* NAV */
+  nav {
+    background: rgba(245,239,228,0.96);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px; height: 62px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+
+  .nav-logo-name { font-size: 21px; font-weight: 800; color: var(--green); letter-spacing: -0.02em; text-decoration: none; display: block; }
+
+  .nav-back {
+    font-size: 13px; color: var(--text2); text-decoration: none;
+    padding: 6px 12px; border-radius: 6px; transition: all 0.15s;
+    font-weight: 600; display: flex; align-items: center; gap: 6px;
+    border: 1px solid var(--border);
+  }
+
+  .nav-back:hover { background: var(--bg3); color: var(--text); }
+
+  /* LAYOUT */
+  .page {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    align-items: start;
+  }
+
+  /* LEFT — TIER PICKER */
+  .left { display: flex; flex-direction: column; gap: 20px; }
+
+  .left-title {
+    font-size: 28px; font-weight: 800;
+    color: var(--brown); letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+
+  .left-sub { font-size: 14px; color: var(--text2); line-height: 1.6; }
+
+  .tiers { display: flex; flex-direction: column; gap: 10px; }
+
+  .tier-option {
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .tier-option:hover { border-color: var(--green-mid); background: var(--bg2); }
+
+  .tier-option.selected {
+    border-color: var(--green);
+    background: var(--green-dim);
+  }
+
+  .tier-radio {
+    width: 18px; height: 18px; border-radius: 50%;
+    border: 1.5px solid var(--border2);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; transition: all 0.15s;
+  }
+
+  .tier-option.selected .tier-radio {
+    border-color: var(--green);
+    background: var(--green);
+  }
+
+  .tier-radio-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: white; opacity: 0; transition: opacity 0.15s;
+  }
+
+  .tier-option.selected .tier-radio-dot { opacity: 1; }
+
+  .tier-info { flex: 1; }
+
+  .tier-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 2px; }
+
+  .tier-name { font-size: 14px; font-weight: 700; color: var(--brown); }
+  .tier-price-tag { font-family: 'DM Mono', monospace; font-size: 14px; font-weight: 500; color: var(--green); }
+
+  .tier-desc { font-size: 12px; color: var(--text3); line-height: 1.4; }
+
+  .tier-badge {
+    font-family: 'DM Mono', monospace; font-size: 9px;
+    padding: 2px 8px; border-radius: 20px; letter-spacing: 0.06em;
+    flex-shrink: 0;
+  }
+
+  .badge-free { background: var(--bg3); color: var(--text3); border: 1px solid var(--border); }
+  .badge-popular { background: var(--green-dim); color: var(--green); border: 1px solid var(--green-mid); }
+
+  /* RIGHT — FORM */
+  .right {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+    position: sticky;
+    top: 24px;
+  }
+
+  .form-header {
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    padding: 20px 24px;
+  }
+
+  .form-title { font-size: 16px; font-weight: 700; color: var(--brown); margin-bottom: 2px; }
+  .form-sub { font-size: 12px; color: var(--text3); }
+
+  .form-body { padding: 24px; display: flex; flex-direction: column; gap: 16px; }
+
+  .field { display: flex; flex-direction: column; gap: 6px; }
+
+  .field-label {
+    font-size: 12px; font-weight: 600; color: var(--text2);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+
+  .field-optional { font-size: 11px; color: var(--text3); font-weight: 400; }
+
+  .field input {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 11px 14px;
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    width: 100%;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .field input:focus { border-color: var(--green); background: var(--bg); }
+  .field input::placeholder { color: var(--text3); }
+
+  .selected-tier-display {
+    background: var(--green-dim);
+    border: 1px solid var(--green-mid);
+    border-radius: 8px;
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .selected-tier-name { font-size: 14px; font-weight: 700; color: var(--green); }
+  .selected-tier-price { font-family: 'DM Mono', monospace; font-size: 14px; color: var(--green); }
+
+  .divider { height: 1px; background: var(--border); margin: 4px 0; }
+
+  .submit-btn {
+    width: 100%;
+    padding: 14px;
+    border-radius: 10px;
+    background: var(--green);
+    border: none;
+    color: white;
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .submit-btn:hover { background: var(--green-light); transform: translateY(-1px); }
+  .submit-btn:active { transform: scale(0.98); }
+
+  .form-note {
+    font-size: 11px;
+    color: var(--text3);
+    text-align: center;
+    line-height: 1.5;
+  }
+
+  /* SUCCESS STATE */
+  .success-state {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 40px 24px;
+    gap: 16px;
+  }
+
+  .success-state.visible { display: flex; }
+  .form-body.hidden { display: none; }
+
+  .success-icon {
+    width: 56px; height: 56px; border-radius: 50%;
+    background: var(--green-dim); border: 1px solid var(--green-mid);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px;
+  }
+
+  .success-title { font-size: 20px; font-weight: 700; color: var(--brown); }
+  .success-sub { font-size: 13px; color: var(--text2); line-height: 1.6; max-width: 260px; }
+
+  .success-next {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px 16px; width: 100%;
+    text-align: left; display: flex; flex-direction: column; gap: 4px;
+  }
+
+  .success-next-label { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--text3); letter-spacing: 0.1em; }
+  .success-next-text { font-size: 13px; font-weight: 600; color: var(--brown); }
+
+  /* PERKS */
+  .perks { display: flex; flex-direction: column; gap: 10px; }
+
+  .perk {
+    display: flex; align-items: flex-start; gap: 10px;
+    font-size: 13px; color: var(--text2); line-height: 1.5;
+  }
+
+  .perk-dot {
+    width: 18px; height: 18px; border-radius: 50%;
+    background: var(--green-dim); border: 1px solid var(--green-mid);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; flex-shrink: 0; margin-top: 1px; color: var(--green);
+  }
+
+  @media (max-width: 680px) {
+    .page { grid-template-columns: 1fr; gap: 32px; padding: 32px 16px 60px; }
+    .right { position: static; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="groundwork-homepage.html" class="nav-logo-name">Groundwork</a>
+  <a href="groundwork-homepage.html" class="nav-back">← Back</a>
+</nav>
+
+<div class="page">
+
+  <!-- LEFT -->
+  <div class="left">
+    <div>
+      <h1 class="left-title">Pick your level.<br>Start building.</h1>
+      <p class="left-sub" style="margin-top:10px">Choose the tier that fits where you are right now. You can always upgrade later.</p>
+    </div>
+
+    <div class="tiers" id="tierList">
+
+      <div class="tier-option selected" onclick="selectTier(this, 'Free', '$0')">
+        <div class="tier-radio"><div class="tier-radio-dot"></div></div>
+        <div class="tier-info">
+          <div class="tier-top">
+            <span class="tier-name">Free</span>
+            <span class="tier-price-tag">$0</span>
+          </div>
+          <div class="tier-desc">Calculator, glossary, starter tools guide. No card needed.</div>
+        </div>
+        <span class="tier-badge badge-free">free</span>
+      </div>
+
+      <div class="tier-option" onclick="selectTier(this, 'Apprentice', '$5/mo')">
+        <div class="tier-radio"><div class="tier-radio-dot"></div></div>
+        <div class="tier-info">
+          <div class="tier-top">
+            <span class="tier-name">Apprentice</span>
+            <span class="tier-price-tag">$5/mo</span>
+          </div>
+          <div class="tier-desc">Tools 101, safety guide, 5 blueprints, material calculator.</div>
+        </div>
+      </div>
+
+      <div class="tier-option" onclick="selectTier(this, 'Skilled', '$10/mo')">
+        <div class="tier-radio"><div class="tier-radio-dot"></div></div>
+        <div class="tier-info">
+          <div class="tier-top">
+            <span class="tier-name">Skilled</span>
+            <span class="tier-price-tag">$10/mo</span>
+          </div>
+          <div class="tier-desc">Framing, blueprint reading, 15+ blueprints, cut calculators.</div>
+        </div>
+      </div>
+
+      <div class="tier-option" onclick="selectTier(this, 'Expert', '$20/mo')">
+        <div class="tier-radio"><div class="tier-radio-dot"></div></div>
+        <div class="tier-info">
+          <div class="tier-top">
+            <span class="tier-name">Expert</span>
+            <span class="tier-price-tag">$20/mo</span>
+          </div>
+          <div class="tier-desc">Advanced framing, code guides, full calculator suite, community.</div>
+        </div>
+        <span class="tier-badge badge-popular">popular</span>
+      </div>
+
+      <div class="tier-option" onclick="selectTier(this, 'Contractor', '$30/mo')">
+        <div class="tier-radio"><div class="tier-radio-dot"></div></div>
+        <div class="tier-info">
+          <div class="tier-top">
+            <span class="tier-name">Contractor</span>
+            <span class="tier-price-tag">$30/mo</span>
+          </div>
+          <div class="tier-desc">Full access. Estimating tools, bid templates, code library.</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="perks">
+      <div class="perk"><div class="perk-dot">✓</div>Cancel anytime — no long term commitment</div>
+      <div class="perk"><div class="perk-dot">✓</div>Start free, upgrade when you're ready</div>
+      <div class="perk"><div class="perk-dot">✓</div>Built by a real construction teacher</div>
+      <div class="perk"><div class="perk-dot">✓</div>Works on any device, no app needed</div>
+    </div>
+  </div>
+
+  <!-- RIGHT — FORM -->
+  <div class="right">
+    <div class="form-header">
+      <div class="form-title">Create your account</div>
+      <div class="form-sub">Takes less than a minute.</div>
+    </div>
+
+    <div class="form-body" id="formBody">
+
+      <div class="field">
+        <label class="field-label">First name</label>
+        <input type="text" id="firstName" placeholder="Sam" autocomplete="given-name">
+      </div>
+
+      <div class="field">
+        <label class="field-label">
+          Last name
+          <span class="field-optional">optional</span>
+        </label>
+        <input type="text" id="lastName" placeholder="Johnson" autocomplete="family-name">
+      </div>
+
+      <div class="field">
+        <label class="field-label">Email address</label>
+        <input type="email" id="email" placeholder="you@email.com" autocomplete="email">
+      </div>
+
+      <div class="field">
+        <label class="field-label">Password</label>
+        <input type="password" id="password" placeholder="8+ characters">
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="field">
+        <label class="field-label">Selected tier</label>
+        <div class="selected-tier-display">
+          <span class="selected-tier-name" id="selectedTierName">Free</span>
+          <span class="selected-tier-price" id="selectedTierPrice">$0</span>
+        </div>
+      </div>
+
+      <button class="submit-btn" onclick="handleSubmit()">
+        <span id="submitLabel">Create Free Account</span>
+      </button>
+
+      <p class="form-note">By signing up you agree to our terms of service. No spam, ever. We're building this thing too.</p>
+
+    </div>
+
+    <div class="success-state" id="successState">
+      <div class="success-icon">🏗️</div>
+      <div class="success-title">You're in.</div>
+      <div class="success-sub">Welcome to Groundwork. Your account is being set up — we'll email you when it's ready.</div>
+      <div class="success-next">
+        <span class="success-next-label">while you wait</span>
+        <span class="success-next-text">Try the free feet & inches calculator →</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  let selectedTier = 'Free';
+  let selectedPrice = '$0';
+
+  function selectTier(el, name, price) {
+    document.querySelectorAll('.tier-option').forEach(t => t.classList.remove('selected'));
+    el.classList.add('selected');
+    selectedTier = name;
+    selectedPrice = price;
+    document.getElementById('selectedTierName').textContent = name;
+    document.getElementById('selectedTierPrice').textContent = price;
+    const btn = document.getElementById('submitLabel');
+    btn.textContent = name === 'Free' ? 'Create Free Account' : `Get Started — ${price}`;
+  }
+
+  function handleSubmit() {
+    const first = document.getElementById('firstName').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+
+    if (!first) { alert('Enter your first name.'); return; }
+    if (!email || !email.includes('@')) { alert('Enter a valid email address.'); return; }
+    if (password.length < 8) { alert('Password needs to be at least 8 characters.'); return; }
+
+    document.getElementById('formBody').classList.add('hidden');
+    document.getElementById('successState').classList.add('visible');
+  }
+</script>
+
+</body>
+</html>

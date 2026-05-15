@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Groundwork — How to Read a Tape Measure</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --green: #3A6B3A;
+    --green-light: #4E8A4E;
+    --green-dim: #3A6B3A14;
+    --green-mid: #3A6B3A44;
+    --bg: #F5EFE4;
+    --bg2: #EDE4D4;
+    --bg3: #E4D8C4;
+    --bg4: #D8CAAF;
+    --border: #C8B89A;
+    --border2: #B8A488;
+    --text: #3A2E22;
+    --text2: #5A4E3A;
+    --text3: #9A8870;
+    --brown: #5A4030;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+  }
+
+  body::before {
+    content: '';
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background-image: repeating-linear-gradient(
+      180deg, transparent 0px, transparent 48px,
+      rgba(160,120,70,0.025) 48px, rgba(160,120,70,0.025) 49px
+    );
+    pointer-events: none; z-index: 0;
+  }
+
+  * { position: relative; z-index: 1; }
+
+  /* NAV */
+  nav {
+    background: rgba(245,239,228,0.96);
+    border-bottom: 1px solid var(--border);
+    padding: 0 20px; height: 62px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 100;
+  }
+
+  .nav-logo { font-size: 20px; font-weight: 800; color: var(--green); letter-spacing: -0.02em; text-decoration: none; }
+  .nav-back {
+    font-size: 13px; color: var(--text2); text-decoration: none;
+    padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border);
+    transition: all 0.15s; font-weight: 600;
+  }
+  .nav-back:hover { background: var(--bg3); }
+
+  /* ARTICLE */
+  .article {
+    max-width: 680px; margin: 0 auto; padding: 48px 24px 80px;
+  }
+
+  /* HEADER */
+  .article-eyebrow {
+    font-family: 'DM Mono', monospace; font-size: 10px;
+    color: var(--green); letter-spacing: 0.15em; text-transform: uppercase;
+    margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
+  }
+
+  .eyebrow-tag {
+    background: var(--green-dim); border: 1px solid var(--green-mid);
+    padding: 2px 8px; border-radius: 4px;
+  }
+
+  .article-title {
+    font-size: clamp(28px, 5vw, 44px); font-weight: 800;
+    color: var(--brown); letter-spacing: -0.02em; line-height: 1.1;
+    margin-bottom: 16px;
+  }
+
+  .article-meta {
+    display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+    padding-bottom: 24px; border-bottom: 1px solid var(--border);
+    margin-bottom: 36px;
+  }
+
+  .meta-item { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text3); }
+  .meta-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--border2); }
+
+  /* CONTENT */
+  .article-body { display: flex; flex-direction: column; gap: 28px; }
+
+  .article-body p { font-size: 16px; color: var(--text2); line-height: 1.8; }
+
+  .article-body h2 {
+    font-size: 22px; font-weight: 700; color: var(--brown);
+    letter-spacing: -0.01em; margin-bottom: -12px; margin-top: 8px;
+  }
+
+  .article-body h3 {
+    font-size: 17px; font-weight: 700; color: var(--brown);
+    margin-bottom: -16px;
+  }
+
+  /* CALLOUT */
+  .callout {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-left: 3px solid var(--green); border-radius: 0 10px 10px 0;
+    padding: 16px 20px;
+  }
+
+  .callout-label {
+    font-family: 'DM Mono', monospace; font-size: 9px;
+    color: var(--green); letter-spacing: 0.12em; text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .callout p { font-size: 14px; color: var(--text2); line-height: 1.7; }
+
+  /* TAPE VISUAL */
+  .tape-visual {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 12px; padding: 24px; display: flex; flex-direction: column; gap: 16px;
+  }
+
+  .tape-label { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text3); letter-spacing: 0.1em; text-transform: uppercase; }
+
+  .tape-strip {
+    background: #F5D060;
+    border-radius: 6px;
+    padding: 12px 0;
+    display: flex;
+    align-items: flex-end;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid #C8A820;
+  }
+
+  .tape-inch {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    position: relative;
+  }
+
+  .tick { background: #1a1a1a; border-radius: 1px; width: 1.5px; }
+  .tick-full { height: 20px; }
+  .tick-half { height: 14px; }
+  .tick-quarter { height: 10px; }
+  .tick-eighth { height: 7px; }
+
+  .tick-number {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px; font-weight: 500;
+    color: #1a1a1a;
+    margin-top: 4px;
+    position: absolute;
+    bottom: -22px;
+  }
+
+  .tape-numbers {
+    display: flex; justify-content: space-around;
+    padding: 4px 0;
+    font-family: 'DM Mono', monospace; font-size: 12px;
+    color: var(--text2);
+  }
+
+  /* FRACTION TABLE */
+  .fraction-table {
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 10px; overflow: hidden;
+  }
+
+  .fraction-table-header {
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    background: var(--bg2); border-bottom: 1px solid var(--border);
+    padding: 10px 16px;
+    font-family: 'DM Mono', monospace; font-size: 10px;
+    color: var(--text3); letter-spacing: 0.08em; text-transform: uppercase;
+  }
+
+  .fraction-row {
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    padding: 12px 16px; border-bottom: 1px solid var(--border);
+    font-size: 14px; align-items: center;
+    transition: background 0.1s;
+  }
+
+  .fraction-row:last-child { border-bottom: none; }
+  .fraction-row:hover { background: var(--bg2); }
+
+  .fraction-visual {
+    display: flex; gap: 3px; align-items: center;
+  }
+
+  .frac-block { width: 14px; height: 14px; border-radius: 2px; background: var(--green); }
+  .frac-block.empty { background: var(--bg3); border: 1px solid var(--border); }
+
+  .fraction-name { font-weight: 600; color: var(--brown); }
+  .fraction-desc { font-size: 12px; color: var(--text3); }
+
+  /* TIP BOX */
+  .tip-box {
+    background: var(--green-dim); border: 1px solid var(--green-mid);
+    border-radius: 12px; padding: 20px;
+    display: flex; gap: 14px; align-items: flex-start;
+  }
+
+  .tip-icon { font-size: 22px; flex-shrink: 0; }
+  .tip-content { flex: 1; }
+  .tip-label { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--green); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 6px; }
+  .tip-content p { font-size: 14px; color: var(--text2); line-height: 1.7; }
+
+  /* STEPS */
+  .steps { display: flex; flex-direction: column; gap: 16px; }
+
+  .step {
+    display: flex; gap: 16px; align-items: flex-start;
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px;
+  }
+
+  .step-num {
+    width: 30px; height: 30px; border-radius: 50%;
+    background: var(--green); color: white;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 500;
+    flex-shrink: 0;
+  }
+
+  .step-content { flex: 1; }
+  .step-title { font-size: 14px; font-weight: 700; color: var(--brown); margin-bottom: 4px; }
+  .step-desc { font-size: 13px; color: var(--text2); line-height: 1.6; }
+
+  /* NEXT UP */
+  .next-up {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 14px; padding: 24px;
+    display: flex; flex-direction: column; gap: 14px;
+  }
+
+  .next-label { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text3); letter-spacing: 0.1em; text-transform: uppercase; }
+  .next-title { font-size: 18px; font-weight: 700; color: var(--brown); }
+  .next-desc { font-size: 13px; color: var(--text2); line-height: 1.6; }
+
+  .next-btn {
+    font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700;
+    color: white; background: var(--green); border: none;
+    padding: 12px 20px; border-radius: 8px; cursor: pointer;
+    transition: all 0.15s; text-decoration: none; display: inline-block; align-self: flex-start;
+  }
+
+  .next-btn:hover { background: var(--green-light); }
+
+  @media (max-width: 600px) {
+    .article { padding: 32px 16px 60px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="groundwork-dashboard.html" class="nav-logo">Groundwork</a>
+  <a href="groundwork-dashboard.html" class="nav-back">← Dashboard</a>
+</nav>
+
+<article class="article">
+
+  <div class="article-eyebrow">
+    <span class="eyebrow-tag">free</span>
+    Fundamentals
+  </div>
+
+  <h1 class="article-title">How to Read a Tape Measure</h1>
+
+  <div class="article-meta">
+    <span class="meta-item">5 min read</span>
+    <div class="meta-dot"></div>
+    <span class="meta-item">beginner</span>
+    <div class="meta-dot"></div>
+    <span class="meta-item">by Sam · Groundwork</span>
+  </div>
+
+  <div class="article-body">
+
+    <p>If you've ever looked at a tape measure and felt confused by all those lines, you're not alone. It's the most common question in any construction class — and once it clicks, it clicks forever. Let's break it down.</p>
+
+    <div class="callout">
+      <div class="callout-label">why this matters</div>
+      <p>Every project starts with a measurement. Get this wrong and nothing fits right. Get it right and everything else gets easier.</p>
+    </div>
+
+    <h2>The basics — feet and inches</h2>
+
+    <p>A tape measure shows distance in feet and inches. The big numbers you see — 1, 2, 3 — are inches. Every time you hit 12 inches, you've got a foot. Most tapes mark the foot marks in red or with a small "F" so you can spot them fast.</p>
+
+    <div class="tape-visual">
+      <div class="tape-label">tape measure — inch breakdown</div>
+      <div style="display:flex;justify-content:space-around;padding:8px 0 28px;background:#F5D060;border-radius:8px;border:1px solid #C8A820;align-items:flex-end;position:relative;">
+
+        <div style="display:flex;flex-direction:column;align-items:center;">
+          <div style="width:2px;height:24px;background:#1a1a1a;"></div>
+          <span style="position:absolute;bottom:-22px;font-family:'DM Mono',monospace;font-size:12px;font-weight:700;color:#1a1a1a;">1"</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;">
+          <div style="width:1.5px;height:8px;background:#1a1a1a;"></div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;">
+          <div style="width:1.5px;height:12px;background:#1a1a1a;"></div>
+          <span style="position:absolute;bottom:-22px;font-family:'DM Mono',monospace;font-size:10px;color:#555;">1/2</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;">
+          <div style="width:1.5px;height:8px;background:#1a1a1a;"></div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;">
+          <div style="width:2px;height:24px;background:#1a1a1a;"></div>
+          <span style="position:absolute;bottom:-22px;font-family:'DM Mono',monospace;font-size:12px;font-weight:700;color:#1a1a1a;">2"</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;">
+          <div style="width:1.5px;height:8px;background:#1a1a1a;"></div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;">
+          <div style="width:1.5px;height:12px;background:#1a1a1a;"></div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;">
+          <div style="width:1.5px;height:8px;background:#1a1a1a;"></div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;">
+          <div style="width:2px;height:24px;background:#1a1a1a;"></div>
+          <span style="position:absolute;bottom:-22px;font-family:'DM Mono',monospace;font-size:12px;font-weight:700;color:#1a1a1a;">3"</span>
+        </div>
+
+      </div>
+      <p style="font-size:12px;color:var(--text3);font-family:'DM Mono',monospace;">tall tick = whole inch · medium tick = 1/2" · short ticks = 1/4" and 1/8"</p>
+    </div>
+
+    <h2>The lines — what each one means</h2>
+
+    <p>Between each inch number you'll see a series of tick marks at different heights. The height tells you the fraction. Here's the key:</p>
+
+    <div class="fraction-table">
+      <div class="fraction-table-header">
+        <span>mark</span>
+        <span>fraction</span>
+        <span>what it looks like</span>
+      </div>
+      <div class="fraction-row">
+        <div class="fraction-visual"><div class="frac-block"></div><div class="frac-block"></div><div class="frac-block"></div><div class="frac-block"></div><div class="frac-block"></div><div class="frac-block"></div><div class="frac-block"></div><div class="frac-block"></div></div>
+        <span class="fraction-name">1 inch</span>
+        <span class="fraction-desc">Tallest tick mark</span>
+      </div>
+      <div class="fraction-row">
+        <div class="fraction-visual"><div class="frac-block"></div><div class="frac-block"></div><div class="frac-block"></div><div class="frac-block"></div><div class="frac-block empty"></div><div class="frac-block empty"></div><div class="frac-block empty"></div><div class="frac-block empty"></div></div>
+        <span class="fraction-name">1/2"</span>
+        <span class="fraction-desc">Second tallest, middle of inch</span>
+      </div>
+      <div class="fraction-row">
+        <div class="fraction-visual"><div class="frac-block"></div><div class="frac-block"></div><div class="frac-block empty"></div><div class="frac-block empty"></div><div class="frac-block"></div><div class="frac-block"></div><div class="frac-block empty"></div><div class="frac-block empty"></div></div>
+        <span class="fraction-name">1/4"</span>
+        <span class="fraction-desc">Medium tick, 4 per inch</span>
+      </div>
+      <div class="fraction-row">
+        <div class="fraction-visual"><div class="frac-block"></div><div class="frac-block empty"></div><div class="frac-block"></div><div class="frac-block empty"></div><div class="frac-block"></div><div class="frac-block empty"></div><div class="frac-block"></div><div class="frac-block empty"></div></div>
+        <span class="fraction-name">1/8"</span>
+        <span class="fraction-desc">Short tick, 8 per inch</span>
+      </div>
+      <div class="fraction-row">
+        <div class="fraction-visual"><div class="frac-block"></div><div class="frac-block empty"></div><div class="frac-block empty"></div><div class="frac-block empty"></div><div class="frac-block"></div><div class="frac-block empty"></div><div class="frac-block empty"></div><div class="frac-block empty"></div></div>
+        <span class="fraction-name">1/16"</span>
+        <span class="fraction-desc">Smallest tick, 16 per inch</span>
+      </div>
+    </div>
+
+    <div class="tip-box">
+      <div class="tip-icon">💡</div>
+      <div class="tip-content">
+        <div class="tip-label">pro tip</div>
+        <p>Most construction work only needs accuracy to 1/8 of an inch. You'll rarely need to read the 1/16" marks unless you're doing fine woodworking or cabinet work.</p>
+      </div>
+    </div>
+
+    <h2>How to actually take a measurement</h2>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <div class="step-title">Hook it on the edge</div>
+          <div class="step-desc">The metal hook at the end of the tape is designed to slide slightly. This compensates for the hook's own thickness — so whether you hook over an edge or butt up against something, the measurement stays accurate.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <div class="step-title">Pull it taut</div>
+          <div class="step-desc">A loose tape sags and gives you a longer reading than the actual distance. Pull it snug against whatever you're measuring, but don't yank it off the hook.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <div class="step-title">Read at the mark</div>
+          <div class="step-desc">Find the closest whole inch, then count the tick marks past it. Each tick is 1/8". So if you're 3 ticks past 6", you've got 6 and 3/8 inches.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <div class="step-title">Write it down immediately</div>
+          <div class="step-desc">Never trust your memory on a measurement. "Measure twice, cut once" is real — but even better is measure, write it down, then cut.</div>
+        </div>
+      </div>
+    </div>
+
+    <h2>Common mistakes</h2>
+
+    <p>The hook slides — that's on purpose. New builders sometimes think their tape is broken when the hook moves. It's not. It's designed that way. The hook is exactly as thick as its own travel distance.</p>
+
+    <p>Reading from the wrong end — always read with the numbers right-side up. If you're measuring from the right side of something, flip around so the numbers read naturally left to right.</p>
+
+    <p>Confusing feet and inches — when someone says a board is "six two" they mean 6 feet 2 inches, not 6.2 feet. Always clarify if you're not sure.</p>
+
+    <div class="tip-box">
+      <div class="tip-icon">🎯</div>
+      <div class="tip-content">
+        <div class="tip-label">practice this</div>
+        <p>Grab your tape and measure 10 things around your house right now. Don't just measure — write down the feet, inches, and fraction. After 10 repetitions it becomes automatic.</p>
+      </div>
+    </div>
+
+    <h2>The black diamond marks</h2>
+
+    <p>Every 19.2 inches on most tapes you'll see a small black diamond. These mark the spacing for engineered lumber floor trusses — five of them fit evenly in an 8-foot span. You may never use them, but now you won't wonder what they are.</p>
+
+    <h2>You've got it</h2>
+
+    <p>That's the whole thing. Feet, inches, fractions — they all live on that one strip of metal. The more you use it the faster you'll read it. Keep your tape on you and measure everything you can until it feels natural.</p>
+
+    <!-- NEXT UP -->
+    <div class="next-up">
+      <span class="next-label">up next</span>
+      <span class="next-title">Starter Tools Guide</span>
+      <span class="next-desc">What to buy first, what to skip, and how to build your toolkit without wasting money.</span>
+      <a href="groundwork-tools-guide.html" class="next-btn">Read next →</a>
+    </div>
+
+  </div>
+</article>
+
+</body>
+</html>
