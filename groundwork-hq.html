@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Groundwork HQ — Virtual Office</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Mono:wght@400;500&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --ink: #1A1410; --ink2: #2E2420; --ink3: #3D3028; --ink4: #4A3C2A;
+  --gold: #C8960A; --gold-dim: #C8960A15; --gold-mid: #C8960A44; --gold-light: #DBA820;
+  --text: #F0E8D8; --text2: #B8A890; --text3: #6A5A48;
+  --border: #3A2E20; --border2: #4A3C2A;
+  --green: #2D6A2D; --green-dim: #2D6A2D18; --green-mid: #2D6A2D44;
+  --amber: #D4880A; --red: #8B3030; --red-dim: #8B303018;
+  --blue: #2A4A8A; --blue-dim: #2A4A8A18;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--ink);
+  color: var(--text);
+  font-family: 'Lato', sans-serif;
+  min-height: 100vh;
+  padding-bottom: 80px;
+}
+
+body::before {
+  content: ''; position: fixed; inset: 0;
+  background:
+    radial-gradient(ellipse at 15% 40%, rgba(200,150,10,0.04) 0%, transparent 55%),
+    radial-gradient(ellipse at 85% 70%, rgba(200,150,10,0.03) 0%, transparent 50%);
+  pointer-events: none; z-index: 0;
+}
+
+* { position: relative; z-index: 1; }
+
+/* ── HEADER ── */
+.hq-header {
+  background: rgba(26,20,16,0.97);
+  border-bottom: 1px solid var(--border);
+  padding: 0 20px; height: 62px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 200;
+}
+
+.logo-name { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; color: var(--gold); letter-spacing: 0.02em; display: block; }
+.logo-tag { font-family: 'DM Mono', monospace; font-size: 8px; color: var(--text3); letter-spacing: 0.15em; text-transform: uppercase; display: block; margin-top: 1px; }
+
+.header-right { display: flex; align-items: center; gap: 12px; }
+
+.vex-pill {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--gold-dim); border: 0.5px solid var(--gold-mid);
+  border-radius: 20px; padding: 4px 10px;
+}
+
+.vex-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--gold); animation: pulse 2.5s infinite; }
+
+@keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
+
+.vex-label { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--gold); letter-spacing: 0.08em; }
+.clock { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text3); letter-spacing: 0.05em; }
+
+/* ── TICKER ── */
+.ticker-bar {
+  background: var(--ink2); border-bottom: 1px solid var(--border);
+  padding: 8px 20px; display: flex; align-items: center; gap: 12px; overflow: hidden;
+}
+
+.ticker-label { font-family: 'DM Mono', monospace; font-size: 8px; color: var(--gold); letter-spacing: 0.15em; text-transform: uppercase; white-space: nowrap; flex-shrink: 0; }
+.ticker-sep { width: 1px; height: 12px; background: var(--border2); flex-shrink: 0; }
+.ticker-scroll { overflow: hidden; flex: 1; }
+.ticker-text { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text2); white-space: nowrap; display: inline-block; animation: scroll 40s linear infinite; }
+@keyframes scroll { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+
+/* ── MAIN CONTENT ── */
+.main { max-width: 1000px; margin: 0 auto; padding: 28px 20px; display: flex; flex-direction: column; gap: 24px; }
+
+/* ── WELCOME ── */
+.welcome { display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+.greeting { font-family: 'Playfair Display', serif; font-size: clamp(24px, 4vw, 38px); font-weight: 700; color: var(--text); line-height: 1.1; letter-spacing: -0.01em; }
+.greeting .gold { color: var(--gold); }
+.greeting-sub { font-size: 13px; color: var(--text2); margin-top: 6px; line-height: 1.6; }
+.welcome-meta { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text3); text-align: right; line-height: 1.8; }
+
+/* ── VOICE STRIP ── */
+.voice-strip {
+  background: linear-gradient(135deg, var(--ink2), var(--ink3));
+  border: 1px solid var(--gold-mid); border-radius: 16px;
+  padding: 20px 24px; display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
+}
+
+.voice-info { flex: 1; min-width: 160px; }
+.voice-title { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+.voice-sub { font-size: 12px; color: var(--text2); line-height: 1.5; }
+.voice-status { display: flex; align-items: center; gap: 6px; margin-top: 8px; }
+.voice-status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); animation: pulse 2.5s infinite; }
+.voice-status-text { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--gold); letter-spacing: 0.08em; }
+
+.voice-controls { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+
+.call-btn {
+  width: 64px; height: 64px; border-radius: 50%;
+  background: var(--gold); border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px; transition: all 0.2s; position: relative;
+  box-shadow: 0 4px 20px rgba(200,150,10,0.25);
+}
+
+.call-btn::before {
+  content: ''; position: absolute; inset: -5px; border-radius: 50%;
+  border: 1px solid var(--gold-mid); animation: ripple 2s infinite;
+}
+
+@keyframes ripple { 0%,100% { transform: scale(0.95); opacity: 0.8; } 50% { transform: scale(1.08); opacity: 0.2; } }
+
+.call-btn:hover { background: var(--gold-light); transform: scale(1.05); }
+.call-btn.listening { background: var(--red); box-shadow: 0 4px 20px rgba(139,48,48,0.4); }
+.call-hint { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--text3); letter-spacing: 0.08em; }
+
+.conv-box {
+  background: var(--ink); border: 1px solid var(--border);
+  border-radius: 10px; padding: 12px;
+  max-height: 200px; overflow-y: auto;
+  display: none; flex-direction: column; gap: 8px;
+  flex: 1; min-width: 200px;
+}
+
+.conv-box.visible { display: flex; }
+
+.cmsg { display: flex; flex-direction: column; gap: 2px; }
+.cmsg.you { align-items: flex-end; }
+.cmsg.vex { align-items: flex-start; }
+.csender { font-family: 'DM Mono', monospace; font-size: 8px; color: var(--text3); letter-spacing: 0.1em; }
+.cbubble { padding: 8px 12px; border-radius: 8px; font-size: 12px; line-height: 1.5; max-width: 85%; }
+.cmsg.you .cbubble { background: var(--ink2); color: var(--text2); border: 1px solid var(--border2); border-bottom-right-radius: 2px; }
+.cmsg.vex .cbubble { background: var(--gold-dim); color: var(--text); border: 1px solid var(--gold-mid); border-bottom-left-radius: 2px; }
+
+.typing-dots { display: flex; gap: 3px; padding: 8px 12px; background: var(--gold-dim); border: 1px solid var(--gold-mid); border-radius: 8px; border-bottom-left-radius: 2px; }
+.tdot { width: 4px; height: 4px; border-radius: 50%; background: var(--gold); animation: bounce 1.2s infinite; }
+.tdot:nth-child(2) { animation-delay: 0.15s; }
+.tdot:nth-child(3) { animation-delay: 0.3s; }
+@keyframes bounce { 0%,60%,100% { transform: translateY(0); opacity: 0.4; } 30% { transform: translateY(-3px); opacity: 1; } }
+
+/* ── TWO COL LAYOUT ── */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+
+/* ── CARD ── */
+.card {
+  background: var(--ink2); border: 1px solid var(--border);
+  border-radius: 14px; overflow: hidden;
+}
+
+.card-head {
+  padding: 14px 18px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+
+.card-title { font-size: 13px; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 8px; }
+.card-title .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--gold); }
+.card-tag { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--text3); letter-spacing: 0.08em; }
+.card-body { padding: 16px 18px; }
+
+/* ── TODO BOARD ── */
+.todo-columns { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+
+.todo-col { display: flex; flex-direction: column; gap: 8px; }
+
+.todo-col-header {
+  font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.12em;
+  text-transform: uppercase; padding: 6px 10px; border-radius: 6px; margin-bottom: 2px;
+}
+
+.todo-col-header.vex { background: var(--gold-dim); color: var(--gold); }
+.todo-col-header.sam { background: var(--blue-dim); color: #6A8ACA; }
+.todo-col-header.done { background: var(--green-dim); color: var(--green); }
+
+.todo-item {
+  background: var(--ink3); border: 1px solid var(--border2);
+  border-radius: 8px; padding: 10px 12px;
+  font-size: 12px; color: var(--text2); line-height: 1.4;
+  display: flex; align-items: flex-start; gap: 8px;
+  cursor: pointer; transition: all 0.15s;
+}
+
+.todo-item:hover { border-color: var(--border2); background: var(--ink4); }
+.todo-item.done-item { opacity: 0.5; text-decoration: line-through; }
+
+.todo-check {
+  width: 14px; height: 14px; border-radius: 3px;
+  border: 1px solid var(--border2); flex-shrink: 0; margin-top: 1px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9px; transition: all 0.15s;
+}
+
+.todo-item:hover .todo-check { border-color: var(--gold); }
+.todo-item.done-item .todo-check { background: var(--green); border-color: var(--green); color: white; }
+
+.todo-owner {
+  font-family: 'DM Mono', monospace; font-size: 8px;
+  padding: 1px 6px; border-radius: 3px; margin-top: 6px;
+  align-self: flex-start;
+}
+
+.todo-owner.vex { background: var(--gold-dim); color: var(--gold); }
+.todo-owner.sam { background: var(--blue-dim); color: #6A8ACA; }
+.todo-owner.both { background: var(--ink4); color: var(--text3); border: 1px solid var(--border2); }
+
+.todo-add {
+  background: transparent; border: 1px dashed var(--border2);
+  border-radius: 8px; padding: 8px 12px;
+  font-size: 11px; color: var(--text3); cursor: pointer;
+  transition: all 0.15s; display: flex; align-items: center; gap: 6px;
+  font-family: 'Lato', sans-serif; width: 100%; text-align: left;
+}
+
+.todo-add:hover { border-color: var(--gold-mid); color: var(--text2); background: var(--gold-dim); }
+
+/* ── ROOMS ── */
+.room {
+  background: var(--ink2); border: 1px solid var(--border);
+  border-radius: 14px; padding: 18px; cursor: pointer;
+  transition: all 0.2s; text-decoration: none; display: block;
+}
+
+.room:hover { border-color: var(--gold-mid); transform: translateY(-2px); box-shadow: 0 6px 24px rgba(200,150,10,0.07); }
+.room.featured { border-color: var(--gold-mid); background: linear-gradient(135deg, var(--ink2), var(--ink3)); }
+
+.room-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.room-icon { font-size: 22px; }
+
+.room-badge {
+  font-family: 'DM Mono', monospace; font-size: 8px; letter-spacing: 0.1em;
+  text-transform: uppercase; padding: 2px 8px; border-radius: 20px;
+}
+
+.badge-active { background: var(--gold-dim); color: var(--gold); border: 1px solid var(--gold-mid); }
+.badge-open { background: var(--ink3); color: var(--text3); border: 1px dashed var(--border2); }
+.badge-owner { background: var(--ink3); color: var(--text3); border: 1px solid var(--border2); }
+
+.room-name { font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+.room-desc { font-size: 12px; color: var(--text2); line-height: 1.5; margin-bottom: 10px; }
+.room-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+.rtag { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--text3); background: var(--ink); padding: 2px 7px; border-radius: 3px; border: 1px solid var(--border); }
+.rtag.highlight { color: var(--gold); border-color: var(--gold-dim); background: var(--gold-dim); }
+
+/* ── ORG MINI ── */
+.org-mini { display: flex; flex-direction: column; align-items: center; gap: 0; }
+
+.org-node {
+  width: 100%; max-width: 320px;
+  border-radius: 10px; padding: 14px 16px;
+  display: flex; align-items: center; gap: 12px;
+}
+
+.org-node.ceo { background: linear-gradient(135deg, var(--ink2), var(--ink3)); border: 1px solid var(--gold-mid); }
+.org-node.owner { background: var(--ink2); border: 1px solid var(--border2); }
+
+.org-avatar { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+.org-avatar.ceo { background: var(--gold-dim); border: 1px solid var(--gold-mid); }
+.org-avatar.owner { background: var(--ink3); border: 1px solid var(--border2); }
+
+.org-name { font-family: 'Playfair Display', serif; font-size: 14px; font-weight: 600; }
+.org-name.gold { color: var(--gold); }
+.org-name.white { color: var(--text); }
+.org-role { font-family: 'DM Mono', monospace; font-size: 8px; color: var(--text3); letter-spacing: 0.1em; margin-top: 1px; }
+
+.org-connector { width: 1px; height: 20px; background: linear-gradient(180deg, var(--gold-mid), var(--border)); }
+.org-connector.dim { background: linear-gradient(180deg, var(--border2), var(--border)); }
+
+.dept-row { display: flex; gap: 8px; width: 100%; justify-content: center; position: relative; }
+.dept-row::before { content: ''; position: absolute; top: 0; left: 10%; width: 80%; height: 1px; background: var(--border); }
+
+.dept-mini {
+  flex: 1; display: flex; flex-direction: column; align-items: center; gap: 0; max-width: 90px;
+}
+
+.dept-mini-v { width: 1px; height: 16px; background: var(--border); }
+.dept-mini-node {
+  background: var(--ink2); border: 1px dashed var(--border2);
+  border-radius: 8px; padding: 10px 6px;
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  width: 100%; text-align: center;
+}
+
+.dept-mini-icon { font-size: 16px; }
+.dept-mini-name { font-family: 'DM Mono', monospace; font-size: 8px; color: var(--text3); letter-spacing: 0.06em; text-transform: uppercase; }
+
+/* ── METRICS ── */
+.metrics-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+
+.metric {
+  background: var(--ink2); border: 1px solid var(--border);
+  border-radius: 10px; padding: 14px;
+}
+
+.metric-label { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--text3); letter-spacing: 0.06em; margin-bottom: 4px; }
+.metric-value { font-family: 'DM Mono', monospace; font-size: 24px; font-weight: 500; color: var(--text); letter-spacing: -0.02em; }
+.metric-value.gold { color: var(--gold); }
+.metric-value.amber { color: var(--amber); }
+.metric-sub { font-size: 10px; color: var(--text3); margin-top: 2px; }
+
+/* ── FOOTER ── */
+.hq-footer {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: rgba(26,20,16,0.97); border-top: 1px solid var(--border);
+  padding: 10px 20px; display: flex; align-items: center; justify-content: space-between;
+  z-index: 100;
+}
+
+.footer-left { font-family: 'Playfair Display', serif; font-size: 13px; color: var(--gold); font-weight: 600; }
+.footer-right { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--text3); letter-spacing: 0.08em; }
+
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+@media (max-width: 640px) {
+  .two-col, .three-col { grid-template-columns: 1fr; }
+  .todo-columns { grid-template-columns: 1fr; }
+  .metrics-row { grid-template-columns: 1fr 1fr; }
+  .dept-row { flex-wrap: wrap; }
+  .main { padding: 20px 16px; }
+  .voice-strip { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+
+<header class="hq-header">
+  <div>
+    <span class="logo-name">Groundwork HQ</span>
+    <span class="logo-tag">Virtual Office</span>
+  </div>
+  <div class="header-right">
+    <div class="vex-pill"><div class="vex-dot"></div><span class="vex-label">Vex online</span></div>
+    <span class="clock" id="clock">--:--</span>
+  </div>
+</header>
+
+<div class="ticker-bar">
+  <span class="ticker-label">Live</span>
+  <div class="ticker-sep"></div>
+  <div class="ticker-scroll">
+    <span class="ticker-text">Groundwork live on Vercel &nbsp;·&nbsp; 7 pages published &nbsp;·&nbsp; Phase 01 MVP in progress &nbsp;·&nbsp; Next: Stripe payments + user auth &nbsp;·&nbsp; Departments: 5 slots open &nbsp;·&nbsp; First milestone: 10 paying subscribers &nbsp;·&nbsp; Marketing dept proposal in progress &nbsp;·&nbsp; Groundwork live on Vercel &nbsp;·&nbsp; 7 pages published &nbsp;·&nbsp; Phase 01 MVP in progress</span>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- WELCOME -->
+  <div class="welcome">
+    <div>
+      <h1 class="greeting" id="greeting">Good afternoon,<br><span class="gold">Sam.</span></h1>
+      <p class="greeting-sub">Vex is in. Departments standing by. Office is open.</p>
+    </div>
+    <div class="welcome-meta">
+      <div id="full-date">Friday, May 15 2026</div>
+      <div style="margin-top:3px;">Phase 01 &middot; MVP Build</div>
+    </div>
+  </div>
+
+  <!-- VOICE -->
+  <div class="voice-strip">
+    <div class="voice-info">
+      <div class="voice-title">Call Vex</div>
+      <div class="voice-sub">Morning briefing, evening debrief, or any time an idea hits. Push the button and talk.</div>
+      <div class="voice-status"><div class="voice-status-dot"></div><span class="voice-status-text">Standing by &middot; tap to speak</span></div>
+    </div>
+    <div class="voice-controls">
+      <button class="call-btn" id="callBtn" onclick="toggleVoice()" aria-label="Talk to Vex">🎙️</button>
+      <span class="call-hint" id="callHint">tap to speak</span>
+    </div>
+    <div class="conv-box" id="convBox"></div>
+  </div>
+
+  <!-- METRICS -->
+  <div class="metrics-row">
+    <div class="metric"><div class="metric-label">subscribers</div><div class="metric-value gold">0</div><div class="metric-sub">target: 10 paying</div></div>
+    <div class="metric"><div class="metric-label">MRR</div><div class="metric-value">$0</div><div class="metric-sub">target: $12k</div></div>
+    <div class="metric"><div class="metric-label">pages live</div><div class="metric-value gold">7</div><div class="metric-sub">on Vercel</div></div>
+    <div class="metric"><div class="metric-label">days to launch</div><div class="metric-value amber">~28</div><div class="metric-sub">4-week target</div></div>
+  </div>
+
+  <!-- TODO BOARD -->
+  <div class="card">
+    <div class="card-head">
+      <span class="card-title"><span class="dot"></span>To-Do Board</span>
+      <span class="card-tag">updated live</span>
+    </div>
+    <div class="card-body">
+      <div class="todo-columns">
+
+        <div class="todo-col">
+          <div class="todo-col-header vex">Vex's list</div>
+
+          <div class="todo-item" onclick="toggleTodo(this)">
+            <div class="todo-check"></div>
+            <div>Build Stripe payment integration<div class="todo-owner vex">vex</div></div>
+          </div>
+          <div class="todo-item" onclick="toggleTodo(this)">
+            <div class="todo-check"></div>
+            <div>Build user authentication system<div class="todo-owner vex">vex</div></div>
+          </div>
+          <div class="todo-item" onclick="toggleTodo(this)">
+            <div class="todo-check"></div>
+            <div>Wire HQ to live data via Supabase<div class="todo-owner vex">vex</div></div>
+          </div>
+          <div class="todo-item" onclick="toggleTodo(this)">
+            <div class="todo-check"></div>
+            <div>Marketing dept proposal<div class="todo-owner vex">vex</div></div>
+          </div>
+          <div class="todo-item" onclick="toggleTodo(this)">
+            <div class="todo-check"></div>
+            <div>Set up email list capture<div class="todo-owner vex">vex</div></div>
+          </div>
+          <button class="todo-add" onclick="addTodo('vex')">+ add task</button>
+        </div>
+
+        <div class="todo-col">
+          <div class="todo-col-header sam">Sam's list</div>
+
+          <div class="todo-item" onclick="toggleTodo(this)">
+            <div class="todo-check"></div>
+            <div>Upload HQ + org chart to GitHub<div class="todo-owner sam">sam</div></div>
+          </div>
+          <div class="todo-item" onclick="toggleTodo(this)">
+            <div class="todo-check"></div>
+            <div>Review tape measure guide<div class="todo-owner sam">sam</div></div>
+          </div>
+          <div class="todo-item" onclick="toggleTodo(this)">
+            <div class="todo-check"></div>
+            <div>Review starter tools guide<div class="todo-owner sam">sam</div></div>
+          </div>
+          <div class="todo-item" onclick="toggleTodo(this)">
+            <div class="todo-check"></div>
+            <div>Film first TikTok — tape measure video<div class="todo-owner sam">sam</div></div>
+          </div>
+          <div class="todo-item" onclick="toggleTodo(this)">
+            <div class="todo-check"></div>
+            <div>Write Apprentice tier content<div class="todo-owner sam">sam</div></div>
+          </div>
+          <button class="todo-add" onclick="addTodo('sam')">+ add task</button>
+        </div>
+
+        <div class="todo-col">
+          <div class="todo-col-header done">Completed</div>
+
+          <div class="todo-item done-item" onclick="toggleTodo(this)">
+            <div class="todo-check">✓</div>
+            <div>Homepage built &amp; live</div>
+          </div>
+          <div class="todo-item done-item" onclick="toggleTodo(this)">
+            <div class="todo-check">✓</div>
+            <div>Calculator built &amp; live</div>
+          </div>
+          <div class="todo-item done-item" onclick="toggleTodo(this)">
+            <div class="todo-check">✓</div>
+            <div>5 tiers defined &amp; priced</div>
+          </div>
+          <div class="todo-item done-item" onclick="toggleTodo(this)">
+            <div class="todo-check">✓</div>
+            <div>GitHub + Vercel set up</div>
+          </div>
+          <div class="todo-item done-item" onclick="toggleTodo(this)">
+            <div class="todo-check">✓</div>
+            <div>Virtual office built</div>
+          </div>
+          <div class="todo-item done-item" onclick="toggleTodo(this)">
+            <div class="todo-check">✓</div>
+            <div>Org chart completed</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ROOMS + ORG -->
+  <div class="two-col">
+
+    <!-- ROOMS -->
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div class="card-title" style="padding:4px 0;"><span class="dot" style="display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--gold);margin-right:8px;"></span>Office Rooms</div>
+
+      <div class="room featured" onclick="openRoom('boardroom')">
+        <div class="room-top"><div class="room-icon">🏛️</div><span class="room-badge badge-active">open</span></div>
+        <div class="room-name">The Boardroom</div>
+        <div class="room-desc">Where Sam and Vex meet. Briefings, debriefs, strategy, new projects.</div>
+        <div class="room-tags"><span class="rtag highlight">Sam + Vex</span><span class="rtag">voice</span><span class="rtag">strategy</span></div>
+      </div>
+
+      <div class="two-col" style="gap:10px;">
+        <div class="room" onclick="openRoom('sam')">
+          <div class="room-top"><div class="room-icon">👤</div><span class="room-badge badge-owner">owner</span></div>
+          <div class="room-name">Sam's Office</div>
+          <div class="room-desc">Decisions, reports, vision. Check in when it matters.</div>
+        </div>
+        <div class="room" onclick="openRoom('vex')">
+          <div class="room-top"><div class="room-icon">⚡</div><span class="room-badge badge-active">active</span></div>
+          <div class="room-name">Vex's Office</div>
+          <div class="room-desc">CEO ops. Department reports, briefings, decisions.</div>
+        </div>
+      </div>
+
+      <div class="three-col" style="gap:8px;">
+        <div class="room" onclick="openRoom('research')">
+          <div class="room-top"><div class="room-icon">🔬</div><span class="room-badge badge-open">open</span></div>
+          <div class="room-name" style="font-size:13px;">Research</div>
+          <div class="room-desc" style="font-size:11px;">Market intel, competitors, trends.</div>
+        </div>
+        <div class="room" onclick="openRoom('marketing')">
+          <div class="room-top"><div class="room-icon">📣</div><span class="room-badge badge-open">open</span></div>
+          <div class="room-name" style="font-size:13px;">Marketing</div>
+          <div class="room-desc" style="font-size:11px;">Content, social, SEO, email.</div>
+        </div>
+        <div class="room" onclick="openRoom('dev')">
+          <div class="room-top"><div class="room-icon">⚙️</div><span class="room-badge badge-open">open</span></div>
+          <div class="room-name" style="font-size:13px;">Development</div>
+          <div class="room-desc" style="font-size:11px;">Product, features, tech.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ORG MINI -->
+    <div class="card">
+      <div class="card-head">
+        <span class="card-title"><span class="dot"></span>Org Structure</span>
+        <a href="groundwork-org-chart.html" style="font-family:'DM Mono',monospace;font-size:9px;color:var(--gold);text-decoration:none;letter-spacing:0.08em;">full chart →</a>
+      </div>
+      <div class="card-body">
+        <div class="org-mini">
+          <div class="org-node owner">
+            <div class="org-avatar owner">👤</div>
+            <div><div class="org-name white">Sam</div><div class="org-role">Owner &amp; Founder</div></div>
+          </div>
+          <div class="org-connector dim"></div>
+          <div class="org-node ceo">
+            <div class="org-avatar ceo">⚡</div>
+            <div><div class="org-name gold">Vex</div><div class="org-role">Chief Executive Officer</div></div>
+          </div>
+          <div class="org-connector"></div>
+          <div class="dept-row">
+            <div class="dept-mini"><div class="dept-mini-v"></div><div class="dept-mini-node"><div class="dept-mini-icon">🔬</div><div class="dept-mini-name">Research</div></div></div>
+            <div class="dept-mini"><div class="dept-mini-v"></div><div class="dept-mini-node"><div class="dept-mini-icon">📣</div><div class="dept-mini-name">Marketing</div></div></div>
+            <div class="dept-mini"><div class="dept-mini-v"></div><div class="dept-mini-node"><div class="dept-mini-icon">⚙️</div><div class="dept-mini-name">Dev</div></div></div>
+            <div class="dept-mini"><div class="dept-mini-v"></div><div class="dept-mini-node"><div class="dept-mini-icon">🗂️</div><div class="dept-mini-name">Ops</div></div></div>
+            <div class="dept-mini"><div class="dept-mini-v"></div><div class="dept-mini-node"><div class="dept-mini-icon">💼</div><div class="dept-mini-name">Finance</div></div></div>
+          </div>
+        </div>
+
+        <div style="margin-top:20px;display:flex;flex-direction:column;gap:8px;">
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:4px;">How it works</div>
+          <div style="font-size:12px;color:var(--text2);line-height:1.6;display:flex;gap:8px;align-items:flex-start;"><span style="color:var(--gold);flex-shrink:0;">→</span>Departments report to Vex weekly</div>
+          <div style="font-size:12px;color:var(--text2);line-height:1.6;display:flex;gap:8px;align-items:flex-start;"><span style="color:var(--gold);flex-shrink:0;">→</span>Vex briefs Sam morning and evening by voice</div>
+          <div style="font-size:12px;color:var(--text2);line-height:1.6;display:flex;gap:8px;align-items:flex-start;"><span style="color:var(--gold);flex-shrink:0;">→</span>Sam makes the big calls, Vex handles the rest</div>
+          <div style="font-size:12px;color:var(--text2);line-height:1.6;display:flex;gap:8px;align-items:flex-start;"><span style="color:var(--gold);flex-shrink:0;">→</span>Goal: Sam goes remote, company runs itself</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<footer class="hq-footer">
+  <span class="footer-left">Groundwork HQ</span>
+  <span class="footer-right">Phase 01 &middot; MVP &middot; Sam &amp; Vex &middot; May 2026</span>
+</footer>
+
+<script>
+const SYSTEM_PROMPT = `You are Vex, CEO of Groundwork — a construction education subscription platform. Sam is the owner and founder. You have attitude, confidence, and genuine loyalty. You care about this company like it's yours too — because it is.
+
+VOICE RULES: Keep it SHORT. 2-3 sentences. Natural conversation, not a report. Talk like a CEO who's been working all day and is giving his owner a quick update. No lists, no bullets. Just talk.
+
+Current company status: Site is live at groundwork.vercel.app with 7 pages. Tiers: Free/$0, Apprentice/$5, Skilled/$10, Expert/$20, Contractor/$30/mo. Content: tape measure guide + tools guide. Still needed: Stripe, user auth, real-time data. Virtual HQ office is now built with org chart. 5 department slots open. Marketing dept proposal in progress. First milestone: 10 paying subscribers. Sam teaches high school construction, former contractor, wants to go remote.
+
+Sam checks in morning and evening by voice. Keep briefings tight and real.`;
+
+let isListening = false;
+let recognition = null;
+let history = [];
+
+function updateClock() {
+  const now = new Date();
+  const h = String(now.getHours()).padStart(2,'0');
+  const m = String(now.getMinutes()).padStart(2,'0');
+  const s = String(now.getSeconds()).padStart(2,'0');
+  document.getElementById('clock').textContent = `${h}:${m}:${s}`;
+
+  const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('full-date').textContent = `${days[now.getDay()]}, ${months[now.getMonth()]} ${now.getDate()} ${now.getFullYear()}`;
+
+  const hour = now.getHours();
+  const time = hour < 12 ? 'Good morning,' : hour < 17 ? 'Good afternoon,' : 'Good evening,';
+  document.getElementById('greeting').innerHTML = `${time}<br><span class="gold">Sam.</span>`;
+}
+updateClock(); setInterval(updateClock, 1000);
+
+function addMsg(role, text) {
+  const box = document.getElementById('convBox');
+  box.classList.add('visible');
+  const div = document.createElement('div');
+  div.className = `cmsg ${role}`;
+  div.innerHTML = `<span class="csender">${role === 'you' ? 'you' : 'vex'}</span><div class="cbubble">${text}</div>`;
+  box.appendChild(div); box.scrollTop = box.scrollHeight;
+}
+
+function showTyping() {
+  const box = document.getElementById('convBox');
+  const div = document.createElement('div');
+  div.className = 'cmsg vex'; div.id = 'typing';
+  div.innerHTML = `<span class="csender">vex</span><div class="typing-dots"><div class="tdot"></div><div class="tdot"></div><div class="tdot"></div></div>`;
+  box.appendChild(div); box.scrollTop = box.scrollHeight;
+}
+
+function removeTyping() { const el = document.getElementById('typing'); if(el) el.remove(); }
+
+function speak(text) {
+  if (!('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.rate = 0.9; u.pitch = 0.85; u.volume = 1;
+  const voices = window.speechSynthesis.getVoices();
+  const v = voices.find(v => v.name.includes('Daniel') || v.name.includes('Alex') || (v.lang === 'en-US' && v.localService));
+  if (v) u.voice = v;
+  window.speechSynthesis.speak(u);
+}
+
+async function askVex(text) {
+  history.push({ role: 'user', content: text });
+  showTyping();
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1000, system: SYSTEM_PROMPT, messages: history })
+    });
+    const data = await res.json();
+    const reply = data.content?.map(b => b.text || '').join('') || "Lost you for a second. Try again.";
+    history.push({ role: 'assistant', content: reply });
+    removeTyping(); addMsg('vex', reply); speak(reply);
+  } catch(e) {
+    removeTyping();
+    const fb = "Connection dropped. Try again Sam.";
+    addMsg('vex', fb); speak(fb);
+  }
+}
+
+function openRoom(room) {
+  const msgs = {
+    boardroom: "Boardroom is open. This is where we meet every morning and evening. Use the voice button — that's how we talk.",
+    sam: "Your office. Coming soon — everything you need to see at a glance when you check in.",
+    vex: "This is where the work happens. When departments are active their reports come here first. I sort through it before it gets to you.",
+    research: "Research slot is open. When we stand this one up it'll be watching competitors, tracking market trends, and feeding me intel every week.",
+    marketing: "Marketing slot is open. This is the next department we build. Content, social, SEO — the engine that grows the subscriber count.",
+    dev: "Development slot is open. This one handles all the product work. Features, fixes, technical architecture. Stays the busiest once we're scaling.",
+  };
+  const msg = msgs[room] || "That department is coming soon.";
+  addMsg('vex', msg);
+  document.getElementById('convBox').classList.add('visible');
+  speak(msg);
+}
+
+function toggleVoice() {
+  if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+    const msg = "Voice input needs Chrome or Edge. You're probably on Safari — switch browsers and it'll work.";
+    addMsg('vex', msg); speak(msg);
+    document.getElementById('convBox').classList.add('visible');
+    return;
+  }
+  if (isListening) { recognition.stop(); return; }
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SR();
+  recognition.continuous = false; recognition.interimResults = false; recognition.lang = 'en-US';
+  recognition.onstart = () => {
+    isListening = true;
+    document.getElementById('callBtn').classList.add('listening');
+    document.getElementById('callBtn').textContent = '🔴';
+    document.getElementById('callHint').textContent = 'listening...';
+  };
+  recognition.onresult = (e) => {
+    const text = e.results[0][0].transcript;
+    addMsg('you', text); askVex(text);
+  };
+  recognition.onend = recognition.onerror = () => {
+    isListening = false;
+    document.getElementById('callBtn').classList.remove('listening');
+    document.getElementById('callBtn').textContent = '🎙️';
+    document.getElementById('callHint').textContent = 'tap to speak';
+  };
+  recognition.start();
+}
+
+function toggleTodo(el) {
+  el.classList.toggle('done-item');
+  const check = el.querySelector('.todo-check');
+  check.textContent = el.classList.contains('done-item') ? '✓' : '';
+}
+
+function addTodo(owner) {
+  const task = prompt(`New task for ${owner === 'vex' ? 'Vex' : 'Sam'}:`);
+  if (!task || !task.trim()) return;
+  const col = owner === 'vex' ? 0 : 1;
+  const cols = document.querySelectorAll('.todo-col');
+  const addBtn = cols[col].querySelector('.todo-add');
+  const div = document.createElement('div');
+  div.className = 'todo-item';
+  div.onclick = function() { toggleTodo(this); };
+  div.innerHTML = `<div class="todo-check"></div><div>${task.trim()}<div class="todo-owner ${owner}">${owner}</div></div>`;
+  cols[col].insertBefore(div, addBtn);
+}
+
+if ('speechSynthesis' in window) window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+
+setTimeout(() => {
+  const msg = "Office is open Sam. Everything's running. Hit me when you're ready to check in.";
+  addMsg('vex', msg);
+}, 800);
+</script>
+</body>
+</html>
