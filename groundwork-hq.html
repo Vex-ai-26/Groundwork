@@ -4,1054 +4,725 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Groundwork HQ</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-html,body{width:100%;height:100%;overflow:hidden;background:#4a5060;}
-body{font-family:'DM Mono',monospace;}
+html,body{width:100%;height:100%;overflow:hidden;background:#111318;}
+body{font-family:'Syne',sans-serif;color:#e2e8f0;display:flex;flex-direction:column;}
 
-.hud{position:fixed;top:0;left:0;right:0;height:44px;z-index:300;
-  background:rgba(20,22,30,0.96);border-bottom:1px solid rgba(255,255,255,0.08);
-  display:flex;align-items:center;justify-content:space-between;padding:0 16px;}
-.logo{font-size:11px;color:#60a5fa;letter-spacing:.15em;}
-.hud-mid{display:flex;align-items:center;gap:8px;}
-.dot{width:4px;height:4px;border-radius:50%;background:#34d399;animation:blink 2s infinite;}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
-.hint{font-size:9px;color:#475569;letter-spacing:.05em;}
+:root{
+  --gold:#c8960a;--gold-d:rgba(200,150,10,0.12);--gold-m:rgba(200,150,10,0.3);
+  --green:#34d399;--green-d:rgba(52,211,153,0.1);
+  --blue:#60a5fa;--blue-d:rgba(96,165,250,0.1);
+  --amber:#fbbf24;--rose:#fb7185;--purple:#a78bfa;--cyan:#22d3ee;--slate:#94a3b8;
+  --ui:rgba(10,11,18,0.97);--b1:rgba(255,255,255,0.06);--b2:rgba(255,255,255,0.1);
+  --text:#e2e8f0;--text2:#94a3b8;--text3:#475569;
+}
+
+/* HUD */
+.hud{
+  height:46px;flex-shrink:0;z-index:200;
+  background:var(--ui);border-bottom:1px solid var(--b1);
+  display:flex;align-items:center;justify-content:space-between;padding:0 18px;
+}
+.hud-logo{font-family:'DM Mono',monospace;font-size:11px;color:var(--gold);letter-spacing:.18em;}
+.hud-mid{display:flex;align-items:center;gap:7px;}
+.dot{width:4px;height:4px;border-radius:50%;background:var(--green);animation:pulse 2.5s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+.hud-tip{font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:.05em;}
 .hud-r{display:flex;align-items:center;gap:10px;}
-.clk{font-size:11px;color:#94a3b8;}
-.chip{display:flex;align-items:center;gap:5px;background:rgba(52,211,153,.1);
-  border:1px solid rgba(52,211,153,.2);border-radius:20px;padding:3px 10px;
-  font-size:9px;color:#34d399;}
+.hud-clk{font-family:'DM Mono',monospace;font-size:11px;color:var(--text2);}
+.chip{display:flex;align-items:center;gap:5px;background:var(--green-d);border:1px solid rgba(52,211,153,.2);border-radius:20px;padding:3px 10px;font-family:'DM Mono',monospace;font-size:9px;color:var(--green);}
 
-.vp{position:fixed;inset:44px 0 40px 0;overflow:hidden;cursor:grab;image-rendering:pixelated;}
-.vp:active{cursor:grabbing;}
-.world{position:absolute;transform-origin:0 0;image-rendering:pixelated;}
-canvas{display:block;image-rendering:pixelated;image-rendering:crisp-edges;}
+/* LAYOUT */
+.workspace{flex:1;display:flex;overflow:hidden;min-height:0;}
 
-.mbar{position:fixed;bottom:0;left:0;right:0;height:40px;z-index:300;
-  background:rgba(20,22,30,0.96);border-top:1px solid rgba(255,255,255,0.08);
-  display:flex;align-items:center;justify-content:center;}
-.mi{display:flex;align-items:center;gap:8px;padding:0 18px;border-right:1px solid rgba(255,255,255,0.06);}
-.mi:last-child{border-right:none;}
-.ml{font-size:8px;color:#475569;letter-spacing:.1em;text-transform:uppercase;}
-.mv{font-size:12px;font-weight:500;}
-.mv.g{color:#34d399}.mv.b{color:#60a5fa}.mv.a{color:#fbbf24}.mv.d{color:#94a3b8;}
+/* LEFT PANEL */
+.lp{width:200px;flex-shrink:0;background:var(--ui);border-right:1px solid var(--b1);display:flex;flex-direction:column;overflow:hidden;}
+.lp-hd{padding:11px 13px 7px;border-bottom:1px solid var(--b1);flex-shrink:0;}
+.lp-title{font-family:'DM Mono',monospace;font-size:8px;color:var(--text3);letter-spacing:.18em;text-transform:uppercase;}
+.lp-scroll{flex:1;overflow-y:auto;padding:6px;}
+::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:var(--b2);border-radius:3px}
 
-.cp{position:fixed;right:0;top:44px;bottom:40px;width:300px;z-index:400;
-  background:rgba(12,14,22,.98);border-left:1px solid rgba(255,255,255,.06);
-  transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;}
-.cp.open{transform:translateX(0);}
-@media(max-width:640px){.cp{width:100%;top:auto;bottom:40px;height:52vh;
-  transform:translateY(100%);border-left:none;border-top:1px solid rgba(255,255,255,.06);}
-  .cp.open{transform:translateY(0);}}
-.cph{padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
-.cpw{display:flex;align-items:center;gap:9px;}
-.cpav{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;}
-.cpn{font-size:12px;font-weight:600;color:#e2e8f0;}
-.cpr{font-size:8px;color:#475569;letter-spacing:.08em;margin-top:1px;}
-.cpcl{width:24px;height:24px;border-radius:4px;background:rgba(255,255,255,.04);
-  border:1px solid rgba(255,255,255,.06);color:#475569;cursor:pointer;font-size:11px;
-  display:flex;align-items:center;justify-content:center;}
-.msgs{flex:1;overflow-y:auto;padding:12px 14px;display:flex;flex-direction:column;gap:9px;}
-::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:3px}
-.cmsg{display:flex;flex-direction:column;gap:2px;}
-.cmsg.you{align-items:flex-end}.cmsg.vex{align-items:flex-start}
-.csdr{font-size:8px;color:#475569;letter-spacing:.1em;}
-.cbb{padding:8px 12px;border-radius:8px;font-size:12px;line-height:1.55;max-width:92%;}
-.cmsg.you .cbb{background:rgba(255,255,255,.05);color:#94a3b8;border:1px solid rgba(255,255,255,.09);border-bottom-right-radius:2px;}
-.cmsg.vex .cbb{background:rgba(96,165,250,.09);color:#e2e8f0;border:1px solid rgba(96,165,250,.18);border-bottom-left-radius:2px;}
-.trow{display:flex;gap:3px;padding:8px 12px;background:rgba(96,165,250,.06);
-  border:1px solid rgba(96,165,250,.15);border-radius:8px;border-bottom-left-radius:2px;align-self:flex-start;}
-.td{width:4px;height:4px;border-radius:50%;background:#60a5fa;animation:tb 1.2s infinite;}
+.ac{background:rgba(255,255,255,.025);border:1px solid var(--b1);border-radius:8px;padding:8px 10px;margin-bottom:4px;cursor:pointer;transition:all .18s;}
+.ac:hover{border-color:var(--b2);background:rgba(255,255,255,.04);}
+.ac.vex-c{border-color:rgba(200,150,10,.22);background:rgba(200,150,10,.04);}
+.ac.busy{border-color:rgba(251,191,36,.22);background:rgba(251,191,36,.04);}
+.ac-top{display:flex;align-items:center;gap:7px;margin-bottom:3px;}
+.ac-av{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;flex-shrink:0;}
+.ac-name{font-size:11px;font-weight:700;color:var(--text);}
+.ac-role{font-family:'DM Mono',monospace;font-size:7px;color:var(--text3);letter-spacing:.06em;margin-bottom:4px;}
+.ac-st{display:flex;align-items:center;gap:4px;}
+.sd{width:4px;height:4px;border-radius:50%;flex-shrink:0;}
+.sd.on{background:var(--green);animation:pulse 2.5s infinite;}
+.sd.idle{background:var(--text3);}
+.sd.busy{background:var(--amber);animation:pulse 1.2s infinite;}
+.sd.walk{background:var(--blue);animation:pulse .8s infinite;}
+.st{font-family:'DM Mono',monospace;font-size:7px;color:var(--text3);}
+.tb{width:100%;margin-top:6px;background:transparent;border:1px dashed rgba(255,255,255,.07);border-radius:4px;padding:4px;font-family:'DM Mono',monospace;font-size:7px;color:var(--text3);cursor:pointer;transition:all .15s;}
+.tb:hover{border-color:var(--gold-m);color:var(--gold);}
+
+.div{height:1px;background:var(--b1);margin:4px 5px;}
+.sec{padding:5px 13px 3px;font-family:'DM Mono',monospace;font-size:7px;color:var(--text3);letter-spacing:.15em;text-transform:uppercase;}
+.mr{display:flex;justify-content:space-between;align-items:center;padding:3px 9px;}
+.ml{font-family:'DM Mono',monospace;font-size:8px;color:var(--text3);}
+.mv{font-family:'DM Mono',monospace;font-size:11px;font-weight:500;}
+.mv.g{color:var(--green)}.mv.b{color:var(--blue)}.mv.a{color:var(--amber)}.mv.d{color:var(--text2);}
+
+/* CENTER */
+.oc{flex:1;position:relative;overflow:hidden;background:#1a1610;cursor:grab;}
+.oc:active{cursor:grabbing;}
+.stage{position:absolute;top:0;left:0;transform-origin:0 0;will-change:transform;line-height:0;}
+
+/* The map image — fixed native size */
+#mapImg{display:block;width:2500px;height:1618px;}
+
+/* SVG character overlay — sits exactly over the image */
+#charSVG{
+  position:absolute;top:0;left:0;
+  width:2500px;height:1618px;
+  pointer-events:none;overflow:visible;
+}
+
+/* Room zones — positioned in map pixel space */
+.rz{
+  position:absolute;cursor:pointer;border-radius:3px;
+  transition:background .2s,outline .2s;
+}
+.rz:hover{
+  background:rgba(200,150,10,0.1);
+  outline:2px solid rgba(200,150,10,0.5);
+}
+
+/* Zoom */
+.zc{position:absolute;bottom:12px;right:12px;display:flex;flex-direction:column;gap:3px;z-index:10;}
+.zb{width:27px;height:27px;border-radius:5px;background:var(--ui);border:1px solid var(--b1);color:var(--text2);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.zb:hover{color:var(--text);border-color:var(--b2);}
+
+/* RIGHT PANEL CHAT */
+.rp{width:265px;flex-shrink:0;background:var(--ui);border-left:1px solid var(--b1);display:flex;flex-direction:column;}
+.rp-hd{padding:11px 13px;border-bottom:1px solid var(--b1);display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.rp-av{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;}
+.rp-name{font-size:12px;font-weight:700;color:var(--text);}
+.rp-role{font-family:'DM Mono',monospace;font-size:7px;color:var(--text3);letter-spacing:.07em;margin-top:1px;}
+.msgs{flex:1;overflow-y:auto;padding:11px 13px;display:flex;flex-direction:column;gap:8px;}
+.cm{display:flex;flex-direction:column;gap:2px;}
+.cm.you{align-items:flex-end}.cm.vex,.cm.ag{align-items:flex-start}
+.cs{font-family:'DM Mono',monospace;font-size:7px;color:var(--text3);letter-spacing:.1em;}
+.cb{padding:8px 11px;border-radius:8px;font-size:12px;line-height:1.58;max-width:95%;}
+.cm.you .cb{background:rgba(255,255,255,.05);color:var(--text2);border:1px solid var(--b2);border-bottom-right-radius:2px;}
+.cm.vex .cb{background:rgba(200,150,10,.08);color:var(--text);border:1px solid var(--gold-m);border-bottom-left-radius:2px;}
+.cm.ag .cb{background:var(--blue-d);color:var(--text);border:1px solid rgba(96,165,250,.2);border-bottom-left-radius:2px;}
+.cm.sys .cb{background:rgba(251,191,36,.07);color:var(--amber);border:1px solid rgba(251,191,36,.15);font-size:11px;font-style:italic;}
+.tr{display:flex;gap:3px;padding:8px 11px;background:rgba(200,150,10,.07);border:1px solid var(--gold-m);border-radius:8px;border-bottom-left-radius:2px;align-self:flex-start;}
+.td{width:4px;height:4px;border-radius:50%;background:var(--gold);animation:tb 1.2s infinite;}
 .td:nth-child(2){animation-delay:.15s}.td:nth-child(3){animation-delay:.3s}
 @keyframes tb{0%,60%,100%{transform:translateY(0);opacity:.3}30%{transform:translateY(-3px);opacity:1}}
-.cpb{padding:10px 14px;border-top:1px solid rgba(255,255,255,.06);display:flex;gap:6px;flex-shrink:0;}
-.cpi{flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:6px;
-  padding:8px 11px;color:#e2e8f0;font-family:'DM Mono',monospace;font-size:12px;outline:none;}
-.cpi:focus{border-color:rgba(96,165,250,.3);}
-.cpi::placeholder{color:#475569;}
-.sbtn{width:34px;height:34px;border-radius:6px;background:#60a5fa;border:none;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;color:#0a0c14;font-weight:700;font-size:13px;}
-.vbtn{width:34px;height:34px;border-radius:6px;background:rgba(52,211,153,.1);
-  border:1px solid rgba(52,211,153,.2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;}
-.vbtn.listening{background:rgba(251,113,133,.1);border-color:rgba(251,113,133,.3);}
-.zc{position:fixed;bottom:56px;right:14px;z-index:300;display:flex;flex-direction:column;gap:3px;}
-.zb{width:28px;height:28px;border-radius:5px;background:rgba(20,22,30,.96);
-  border:1px solid rgba(255,255,255,.08);color:#94a3b8;cursor:pointer;font-size:15px;
-  display:flex;align-items:center;justify-content:center;}
+.rp-bot{padding:9px 11px;border-top:1px solid var(--b1);display:flex;gap:6px;flex-shrink:0;}
+.ci{flex:1;background:rgba(255,255,255,.04);border:1px solid var(--b1);border-radius:6px;padding:8px 10px;color:var(--text);font-family:'Syne',sans-serif;font-size:12px;outline:none;transition:border-color .15s;}
+.ci:focus{border-color:var(--gold-m);}
+.ci::placeholder{color:var(--text3);}
+.sb{width:34px;height:34px;border-radius:6px;background:var(--gold);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#0c0e14;font-weight:800;font-size:14px;flex-shrink:0;}
+.sb:hover{background:#dba820;}
+
+/* TASK MODAL */
+.mb{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:600;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
+.mb.open{display:flex;}
+.mo{background:#0d0f1a;border:1px solid var(--b2);border-radius:12px;padding:20px;width:320px;}
+.mo-t{font-size:14px;font-weight:700;color:var(--text);margin-bottom:2px;}
+.mo-r{font-family:'DM Mono',monospace;font-size:8px;color:var(--text3);letter-spacing:.1em;margin-bottom:14px;}
+.mi,.mta{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--b1);border-radius:6px;padding:8px 10px;color:var(--text);font-family:'Syne',sans-serif;font-size:12px;outline:none;margin-bottom:9px;}
+.mi:focus,.mta:focus{border-color:var(--gold-m);}
+.mi::placeholder,.mta::placeholder{color:var(--text3);}
+.mta{height:75px;resize:none;}
+.mbs{display:flex;gap:7px;}
+.mc{flex:1;background:transparent;border:1px solid var(--b1);border-radius:6px;padding:8px;color:var(--text2);cursor:pointer;font-size:12px;}
+.ms{flex:1;background:var(--gold);border:none;border-radius:6px;padding:8px;color:#0c0e14;cursor:pointer;font-size:12px;font-weight:700;}
 </style>
 </head>
 <body>
 
+<!-- HUD -->
 <div class="hud">
-  <span class="logo">GROUNDWORK HQ</span>
-  <div class="hud-mid"><div class="dot"></div><span class="hint">scroll to zoom · drag to pan · click to interact</span></div>
-  <div class="hud-r"><span class="clk" id="clk">--:--</span><div class="chip"><div class="dot"></div>Vex online</div></div>
-</div>
-
-<div class="vp" id="vp">
-  <div class="world" id="world">
-    <canvas id="c"></canvas>
+  <span class="hud-logo">GROUNDWORK HQ</span>
+  <div class="hud-mid"><div class="dot"></div><span class="hud-tip">scroll to zoom · drag to pan · click rooms to interact</span></div>
+  <div class="hud-r">
+    <span class="hud-clk" id="clk">--:--</span>
+    <div class="chip"><div class="dot"></div>Vex online</div>
   </div>
 </div>
 
-<div class="mbar">
-  <div class="mi"><span class="ml">subscribers</span><span class="mv g">0</span></div>
-  <div class="mi"><span class="ml">MRR</span><span class="mv d">$0</span></div>
-  <div class="mi"><span class="ml">pages live</span><span class="mv b">7</span></div>
-  <div class="mi"><span class="ml">phase</span><span class="mv a">01 · MVP</span></div>
-  <div class="mi"><span class="ml">Vex</span><span class="mv g">working</span></div>
-</div>
+<div class="workspace">
 
-<div class="cp" id="cp">
-  <div class="cph">
-    <div class="cpw">
-      <div class="cpav" id="cpav">⚡</div>
-      <div><div class="cpn" id="cpn">Vex</div><div class="cpr" id="cpr">CHIEF EXECUTIVE OFFICER</div></div>
+  <!-- LEFT: AGENTS -->
+  <div class="lp">
+    <div class="lp-hd"><div class="lp-title">Team</div></div>
+    <div class="lp-scroll">
+
+      <div class="ac vex-c" id="ac-vex" onclick="focusChar('vex')">
+        <div class="ac-top"><div class="ac-av" style="background:rgba(200,150,10,.15);border:1px solid rgba(200,150,10,.3);">⚡</div><div class="ac-name">Vex</div></div>
+        <div class="ac-role">CHIEF EXECUTIVE OFFICER</div>
+        <div class="ac-st"><div class="sd on" id="sd-vex"></div><span class="st" id="st-vex">at his desk</span></div>
+      </div>
+
+      <div class="ac" id="ac-maya" onclick="focusChar('maya')">
+        <div class="ac-top"><div class="ac-av" style="background:rgba(251,191,36,.12);border:1px solid rgba(251,191,36,.25);">🔬</div><div class="ac-name">Maya</div></div>
+        <div class="ac-role">MARKET INTELLIGENCE</div>
+        <div class="ac-st"><div class="sd idle" id="sd-maya"></div><span class="st" id="st-maya">slot open</span></div>
+        <button class="tb" onclick="openModal('maya');event.stopPropagation()">+ assign task</button>
+      </div>
+
+      <div class="ac" id="ac-kai" onclick="focusChar('kai')">
+        <div class="ac-top"><div class="ac-av" style="background:rgba(34,211,238,.12);border:1px solid rgba(34,211,238,.25);">⚙️</div><div class="ac-name">Kai</div></div>
+        <div class="ac-role">DEVELOPMENT</div>
+        <div class="ac-st"><div class="sd idle" id="sd-kai"></div><span class="st" id="st-kai">slot open</span></div>
+        <button class="tb" onclick="openModal('kai');event.stopPropagation()">+ assign task</button>
+      </div>
+
+      <div class="ac" id="ac-ren" onclick="focusChar('ren')">
+        <div class="ac-top"><div class="ac-av" style="background:rgba(167,139,250,.12);border:1px solid rgba(167,139,250,.25);">🗂️</div><div class="ac-name">Ren</div></div>
+        <div class="ac-role">OPERATIONS</div>
+        <div class="ac-st"><div class="sd idle" id="sd-ren"></div><span class="st" id="st-ren">slot open</span></div>
+        <button class="tb" onclick="openModal('ren');event.stopPropagation()">+ assign task</button>
+      </div>
+
+      <div class="ac" id="ac-leo" onclick="focusChar('leo')">
+        <div class="ac-top"><div class="ac-av" style="background:rgba(52,211,153,.12);border:1px solid rgba(52,211,153,.25);">💼</div><div class="ac-name">Leo</div></div>
+        <div class="ac-role">FINANCE</div>
+        <div class="ac-st"><div class="sd idle" id="sd-leo"></div><span class="st" id="st-leo">slot open</span></div>
+        <button class="tb" onclick="openModal('leo');event.stopPropagation()">+ assign task</button>
+      </div>
+
+      <div class="ac" id="ac-sage" onclick="focusChar('sage')">
+        <div class="ac-top"><div class="ac-av" style="background:rgba(251,113,133,.12);border:1px solid rgba(251,113,133,.25);">📊</div><div class="ac-name">Sage</div></div>
+        <div class="ac-role">ANALYTICS</div>
+        <div class="ac-st"><div class="sd idle" id="sd-sage"></div><span class="st" id="st-sage">slot open</span></div>
+        <button class="tb" onclick="openModal('sage');event.stopPropagation()">+ assign task</button>
+      </div>
+
+      <div class="ac" id="ac-iris" onclick="focusChar('iris')">
+        <div class="ac-top"><div class="ac-av" style="background:rgba(167,139,250,.12);border:1px solid rgba(167,139,250,.25);">🎨</div><div class="ac-name">Iris</div></div>
+        <div class="ac-role">DESIGN</div>
+        <div class="ac-st"><div class="sd idle" id="sd-iris"></div><span class="st" id="st-iris">slot open</span></div>
+        <button class="tb" onclick="openModal('iris');event.stopPropagation()">+ assign brief</button>
+      </div>
+
+      <div class="ac" id="ac-curt" onclick="focusChar('curt')">
+        <div class="ac-top"><div class="ac-av" style="background:rgba(148,163,184,.1);border:1px solid rgba(148,163,184,.2);">🚶</div><div class="ac-name">Curt</div></div>
+        <div class="ac-role">HUMAN RESOURCES</div>
+        <div class="ac-st"><div class="sd walk" id="sd-curt"></div><span class="st" id="st-curt">wandering</span></div>
+      </div>
+
+      <div class="div"></div>
+      <div class="sec">Company</div>
+      <div class="mr"><span class="ml">subscribers</span><span class="mv g">0</span></div>
+      <div class="mr"><span class="ml">MRR</span><span class="mv d">$0</span></div>
+      <div class="mr"><span class="ml">pages live</span><span class="mv b">7</span></div>
+      <div class="mr"><span class="ml">phase</span><span class="mv a">01</span></div>
     </div>
-    <button class="cpcl" onclick="closeP()">✕</button>
   </div>
-  <div class="msgs" id="msgs"></div>
-  <div class="cpb">
-    <button class="vbtn" id="vbtn" onclick="toggleVoice()">🎙️</button>
-    <input class="cpi" id="cpi" placeholder="Talk to Vex..." onkeydown="hkey(event)">
-    <button class="sbtn" onclick="send()">→</button>
+
+  <!-- CENTER: OFFICE MAP -->
+  <div class="oc" id="oc">
+    <div class="stage" id="stage">
+
+      <!-- MAP IMAGE — 2500x1618 native -->
+      <img id="mapImg" src="office-map.webp" alt="Groundwork HQ" draggable="false">
+
+      <!-- CHARACTER SVG LAYER -->
+      <svg id="charSVG" viewBox="0 0 2500 1618">
+        <defs>
+          <filter id="fShadow" x="-50%" y="-50%" width="200%" height="200%">
+            <feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="rgba(0,0,0,0.75)"/>
+          </filter>
+          <filter id="fGlow" x="-100%" y="-100%" width="300%" height="300%">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="b"/>
+            <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+        <g id="chars"></g>
+      </svg>
+
+      <!-- ROOM ZONES — coordinates in 2500x1618 map pixels -->
+      <!-- Room 1: Curt - top-left large office -->
+      <div class="rz" style="left:27px;top:27px;width:485px;height:418px;" onclick="enterRoom('room1')" title="Curt — HR"></div>
+      <!-- Room 2: Ren - top-row second -->
+      <div class="rz" style="left:540px;top:27px;width:430px;height:418px;" onclick="enterRoom('ren')" title="Ren — Operations"></div>
+      <!-- Room 3: Leo - top-row third, red rug -->
+      <div class="rz" style="left:988px;top:27px;width:421px;height:418px;" onclick="enterRoom('leo')" title="Leo — Finance"></div>
+      <!-- Room 4: small conference - top-row fourth -->
+      <div class="rz" style="left:1428px;top:27px;width:329px;height:418px;" onclick="enterRoom('room4')" title="Conference Room"></div>
+      <!-- Room 5: Main boardroom - top-right -->
+      <div class="rz" style="left:1784px;top:27px;width:686px;height:738px;" onclick="enterRoom('boardroom')" title="Boardroom — Sam & Vex"></div>
+      <!-- Room 10: Vex - left-middle office -->
+      <div class="rz" style="left:27px;top:462px;width:485px;height:569px;" onclick="enterRoom('vex')" title="Vex — CEO"></div>
+      <!-- Room 9: Maya - bottom-left large -->
+      <div class="rz" style="left:27px;top:1049px;width:485px;height:542px;" onclick="enterRoom('maya')" title="Maya — Market Intelligence"></div>
+      <!-- Room 8: Kai - bottom-center-left -->
+      <div class="rz" style="left:540px;top:1129px;width:595px;height:462px;" onclick="enterRoom('kai')" title="Kai — Development"></div>
+      <!-- Room 7: Sage - bottom-center-right -->
+      <div class="rz" style="left:1162px;top:1129px;width:384px;height:462px;" onclick="enterRoom('sage')" title="Sage — Analytics"></div>
+      <!-- Room 6: Break room - right-side workspace -->
+      <div class="rz" style="left:1757px;top:773px;width:714px;height:818px;" onclick="enterRoom('breakroom')" title="Break Room"></div>
+
+    </div>
+
+    <div class="zc">
+      <button class="zb" onclick="zoom(.15)">+</button>
+      <button class="zb" onclick="zoom(-.15)">−</button>
+      <button class="zb" onclick="resetView()" style="font-size:10px">⌂</button>
+    </div>
   </div>
+
+  <!-- RIGHT: CHAT -->
+  <div class="rp">
+    <div class="rp-hd">
+      <div class="rp-av" id="rp-av" style="background:rgba(200,150,10,.15);border:1px solid rgba(200,150,10,.3);">⚡</div>
+      <div><div class="rp-name" id="rp-name">Vex</div><div class="rp-role" id="rp-role">CHIEF EXECUTIVE OFFICER</div></div>
+    </div>
+    <div class="msgs" id="msgs"></div>
+    <div class="rp-bot">
+      <input class="ci" id="ci" placeholder="Talk to Vex..." onkeydown="hk(event)">
+      <button class="sb" onclick="send()">→</button>
+    </div>
+  </div>
+
 </div>
 
-<div class="zc">
-  <button class="zb" onclick="zoom(.3)">+</button>
-  <button class="zb" onclick="zoom(-.3)">−</button>
-  <button class="zb" onclick="resetV()" style="font-size:11px">⌂</button>
+<!-- TASK MODAL -->
+<div class="mb" id="mb">
+  <div class="mo">
+    <div class="mo-t">Assign to <span id="m-name">Maya</span></div>
+    <div class="mo-r" id="m-role">MARKET INTELLIGENCE</div>
+    <input class="mi" id="m-title" placeholder="Task title...">
+    <textarea class="mta" id="m-instr" placeholder="What do you want researched or produced?"></textarea>
+    <div class="mbs">
+      <button class="mc" onclick="closeMo()">Cancel</button>
+      <button class="ms" onclick="submitTask()">Assign</button>
+    </div>
+  </div>
 </div>
 
 <script>
-// ══════════════════════════════════════════════
-// GROUNDWORK HQ — PIXEL ART OFFICE
-// Corporate Ladder palette + full office layout
-// ══════════════════════════════════════════════
+// ═══════════════════════════════════════════
+// GROUNDWORK HQ — COMPLETE BUILD
+// Map: 2500x1618 office-map.webp
+// Rooms: accurate zones from annotated image
+// ═══════════════════════════════════════════
 
-const canvas = document.getElementById('c');
-const ctx = canvas.getContext('2d');
-ctx.imageSmoothingEnabled = false;
+const SERVER = 'https://harley-nutrition-diesel-provider.trycloudflare.com';
+const IMG_W = 2500, IMG_H = 1618;
 
-const T = 16; // tile size
-const COLS = 80, ROWS = 60;
-canvas.width  = COLS * T;
-canvas.height = ROWS * T;
-
-// ── CORPORATE LADDER PALETTE ──
-// Extracted directly from the reference screenshot
-const C = {
-  // Walls & structure
-  wallOuter:   '#6a7a8a',  // outer wall - cool blue-gray
-  wallInner:   '#7a8a9a',  // inner wall face
-  wallTop:     '#8a9aaa',  // wall top highlight
-  wallShadow:  '#5a6a7a',  // wall shadow
-
-  // Floors
-  floorTan:    '#c8b898',  // main floor - warm tan (Corporate Ladder floor)
-  floorTan2:   '#b8a888',  // floor alt tile
-  floorHall:   '#a89878',  // hallway slightly darker
-  floorHall2:  '#988868',  // hallway alt
-
-  // Carpet
-  carpetGreen: '#6a9a6a',  // green carpet (Vex office - like the game)
-  carpetGreen2:'#5a8a5a',
-  carpetBlue:  '#6a7aaa',  // blue carpet boardroom
-  carpetBlue2: '#5a6a9a',
-  carpetRed:   '#9a6a6a',  // red/rose carpet
-  carpetRed2:  '#8a5a5a',
-
-  // Wood desks (warm brown - exactly like Corporate Ladder)
-  deskSurface: '#c8944a',  // desk top - warm honey brown
-  deskFront:   '#a87030',  // desk front face
-  deskSide:    '#8b5a20',  // desk side darker
-  deskShadow:  '#6b4010',
-
-  // Filing cabinets (light gray like the game)
-  cabLight:    '#a8b0b8',
-  cabMid:      '#8890a0',
-  cabDark:     '#6870808',
-  cabHandle:   '#d0d8e0',
-
-  // Chairs (dark blue-gray like the game)
-  chairSeat:   '#4a5a7a',
-  chairBack:   '#3a4a6a',
-  chairArm:    '#2a3a5a',
-  chairLeg:    '#1a2a3a',
-
-  // Monitors
-  monBody:     '#3a4050',
-  monScreen:   '#1a2030',
-  monGreenGlow:'#44ff88',
-  monBlueGlow: '#44aaff',
-
-  // Plants (bright green like the game)
-  leafBright:  '#5ab830',
-  leafMid:     '#489020',
-  leafDark:    '#387010',
-  potBrown:    '#9a6030',
-  potDark:     '#7a4820',
-
-  // Appliances (breakroom)
-  fridge:      '#c0c8d0',
-  fridgeDark:  '#90989a',
-  microwave:   '#808890',
-  coffeeMain:  '#3a3030',
-  coffeePot:   '#202020',
-
-  // Printer
-  printerBody: '#9098a0',
-  printerDark: '#707880',
-  printerLight:'#b0b8c0',
-
-  // Paper / whiteboard
-  paper:       '#f0ead8',
-  paperLine:   'rgba(0,0,0,0.08)',
-
-  // Misc
-  windowPane:  'rgba(180,220,255,0.15)',
-  windowFrame: '#7a8a9a',
-  doorway:     '#5a6a7a',
-
-  // Person colors
-  skinA:       '#e8b880',  // lighter skin (Sam)
-  skinB:       '#c89060',  // mid skin (Vex)
-  hairDark:    '#1a1208',
-  hairBrown:   '#6a3810',
-  hairPink:    '#e87898',  // like the character in the reference!
-  shirtGray:   '#8890a0',
-  shirtBlue:   '#4a6090',
-  shirtDark:   '#2a3040',
-  pants1:      '#3a4050',
-  pants2:      '#4a5060',
-  glowGreen:   '#00ff88',
+// ── CHARACTER HOME POSITIONS (map pixel coords) ──
+const HOME = {
+  vex:  { x:269,  y:750  },  // Room 10 — Vex's office center
+  maya: { x:269,  y:1320 },  // Room 9  — Maya's office
+  kai:  { x:837,  y:1360 },  // Room 8  — Kai's office
+  ren:  { x:755,  y:236  },  // Room 2  — Ren's office
+  leo:  { x:1198, y:236  },  // Room 3  — Leo's office
+  sage: { x:1354, y:1360 },  // Room 7  — Sage's office
+  curt: { x:269,  y:236  },  // Room 1  — Curt's office (starts here, wanders)
+  iris: { x:269,  y:950  },  // Room 9  — sits near Maya
 };
 
-// ── HELPER: fill rect in tiles ──
-function f(x,y,w,h,col,alpha){
-  if(alpha!==undefined){ctx.globalAlpha=alpha;}
-  ctx.fillStyle=col;
-  ctx.fillRect(x*T,y*T,w*T,h*T);
-  if(alpha!==undefined){ctx.globalAlpha=1;}
-}
-
-// ── HELPER: fill rect in pixels ──
-function fp(px,py,pw,ph,col,alpha){
-  if(alpha!==undefined){ctx.globalAlpha=alpha;}
-  ctx.fillStyle=col;
-  ctx.fillRect(px,py,pw,ph);
-  if(alpha!==undefined){ctx.globalAlpha=1;}
-}
-
-// ── DRAW CHECKERBOARD FLOOR ──
-function floor(x,y,w,h,c1,c2){
-  for(let ty=y;ty<y+h;ty++)
-    for(let tx=x;tx<x+w;tx++)
-      f(tx,ty,1,1,(tx+ty)%2===0?c1:c2);
-}
-
-// ── WALL WITH DEPTH ──
-function wallH(x,y,w){
-  f(x,y,w,1,C.wallTop);
-  fp(x*T,y*T,w*T,4,C.wallTop);
-  fp(x*T,y*T+4,w*T,T-4,C.wallOuter);
-  fp(x*T,(y+1)*T-3,w*T,3,C.wallShadow);
-}
-
-function wallV(x,y,h){
-  fp(x*T,y*T,T,h*T,C.wallOuter);
-  fp(x*T,y*T,3,h*T,C.wallTop);
-  fp((x+1)*T-2,y*T,2,h*T,C.wallShadow);
-}
-
-// ── WOOD DESK ──
-function desk(x,y,w,h){
-  // shadow
-  fp(x*T+3,(y+h)*T,w*T,4,'rgba(0,0,0,0.3)');
-  // surface
-  fp(x*T,y*T,w*T,h*T,C.deskSurface);
-  // lighter area (surface catch-light)
-  fp(x*T+2,y*T+2,w*T-4,Math.floor(h*T*0.4),'rgba(255,255,255,0.1)');
-  // front face
-  fp(x*T,(y+h)*T-4,w*T,4,C.deskFront);
-  // right edge shadow
-  fp((x+w)*T-3,y*T,3,h*T,C.deskSide);
-  // top highlight
-  fp(x*T,y*T,w*T,2,'rgba(255,255,255,0.15)');
-  // left highlight
-  fp(x*T,y*T,2,h*T,'rgba(255,255,255,0.08)');
-}
-
-// ── FILING CABINET ──
-function cabinet(x,y){
-  const px=x*T,py=y*T,w=T,h=2*T;
-  fp(px+2,py+h,w,4,'rgba(0,0,0,0.3)');
-  fp(px,py,w,h,C.cabMid);
-  fp(px,py,w,4,C.cabLight); // top
-  fp(px,py,3,h,C.cabLight); // left highlight
-  fp(px+w-2,py,2,h,C.cabDark); // right shadow
-  // drawer lines
-  fp(px+2,py+T-2,w-4,2,'rgba(0,0,0,0.2)');
-  fp(px+2,py+T*2-4,w-4,2,'rgba(0,0,0,0.15)');
-  // handles
-  fp(px+T/2-4,py+T/2-2,8,4,C.cabHandle);
-  fp(px+T/2-4,py+T+T/2-2,8,4,C.cabHandle);
-  fp(px+T/2-3,py+T/2-1,6,2,'rgba(0,0,0,0.15)');
-  fp(px+T/2-3,py+T+T/2-1,6,2,'rgba(0,0,0,0.15)');
-}
-
-// ── MONITOR ──
-function monitor(x,y,glowC,on){
-  const px=x*T,py=y*T;
-  fp(px+2,(y+2)*T,3*T,4,'rgba(0,0,0,0.3)');
-  fp(px,py,3*T,2*T,C.monBody);
-  fp(px+2,py+2,3*T-4,2*T-6,on!==false?C.monScreen:'#0a0c10');
-  if(on!==false){
-    fp(px+4,py+4,T,2,glowC||C.monGreenGlow,0.7);
-    fp(px+4,py+8,T+8,1,glowC||C.monGreenGlow,0.35);
-    fp(px+4,py+11,T+4,1,glowC||C.monGreenGlow,0.25);
-    fp(px+4,py+14,T+6,1,glowC||C.monGreenGlow,0.2);
-    fp(px+4,py+17,T+2,1,glowC||C.monGreenGlow,0.15);
-    // Screen ambient on desk
-    fp(px-T/2,(y+2)*T,4*T,T,glowC||C.monGreenGlow,0.03);
-  }
-  // Stand
-  fp(px+T+4,(y+2)*T-2,T-8,4,C.monBody);
-  fp(px+T/2,(y+2)*T+1,2*T,2,C.monBody);
-}
-
-// ── CHAIR (top-down, Corporate Ladder style) ──
-function chair(x,y,dir){
-  const px=x*T,py=y*T;
-  fp(px+2,py+2*T,2*T,5,'rgba(0,0,0,0.3)');
-  if(dir==='up'||dir==='down'){
-    fp(px,py+T*0.4,2*T,T*1.2,C.chairSeat);
-    fp(px+2,py+T*0.4+2,2*T-4,T*0.4,'rgba(255,255,255,0.06)');
-    fp(px,dir==='down'?py:py+T*1.55,2*T,T*0.4,C.chairBack);
-    fp(px,py+T*0.4,3,T*1.2,C.chairArm);
-    fp(px+2*T-3,py+T*0.4,3,T*1.2,C.chairArm);
-  } else {
-    fp(px+T*0.4,py,T*1.2,2*T,C.chairSeat);
-    fp(px+T*0.4+2,py+2,T*0.4,2*T-4,'rgba(255,255,255,0.06)');
-    fp(dir==='right'?px:px+T*1.55,py,T*0.4,2*T,C.chairBack);
-    fp(px+T*0.4,py,T*1.2,3,C.chairArm);
-    fp(px+T*0.4,py+2*T-3,T*1.2,3,C.chairArm);
-  }
-}
-
-// ── PLANT (Corporate Ladder style - chunky bright) ──
-function plant(x,y){
-  const px=x*T,py=y*T;
-  fp(px+2,py+T+2,T+2,5,'rgba(0,0,0,0.3)');
-  // Pot
-  fp(px+3,py+T*0.65,T-2,T*0.55,C.potBrown);
-  fp(px+4,py+T*0.68,T-4,T*0.5,C.potDark);
-  fp(px+3,py+T*0.65,T-2,3,'rgba(255,255,255,0.08)');
-  // Leaves — chunky like the game
-  fp(px,py,T+4,T*0.75,C.leafMid);
-  fp(px+2,py+T*0.05,T,T*0.55,C.leafBright);
-  fp(px+4,py,T*0.5,T*0.35,C.leafBright);
-  fp(px-2,py+T*0.25,6,T*0.45,C.leafMid);
-  fp(px+T,py+T*0.2,6,T*0.4,C.leafMid);
-  fp(px+2,py-2,T*0.6,6,C.leafBright);
-  fp(px+T*0.4,py-4,T*0.3,5,C.leafDark);
-}
-
-// ── PRINTER ──
-function printer(x,y){
-  const px=x*T,py=y*T;
-  fp(px+2,py+T+4,2*T,4,'rgba(0,0,0,0.3)');
-  fp(px,py,2*T,T,C.printerBody);
-  fp(px,py,2*T,3,C.printerLight);
-  fp(px+2*T-2,py,2,T,C.printerDark);
-  // Paper slot
-  fp(px+4,py+T-4,2*T-8,3,C.printerDark);
-  // Paper sticking out
-  fp(px+6,py+T-2,2*T-12,4,C.paper);
-  // Status LED
-  fp(px+3,py+4,4,4,C.monGreenGlow,0.7);
-  // Panel
-  fp(px+2*T-12,py+4,8,8,C.printerDark);
-  fp(px+2*T-11,py+5,6,6,'rgba(200,220,255,0.2)');
-}
-
-// ── FRIDGE ──
-function fridge(x,y){
-  const px=x*T,py=y*T;
-  fp(px+2,py+3*T,2*T,5,'rgba(0,0,0,0.35)');
-  fp(px,py,2*T,3*T,C.fridge);
-  fp(px,py,2*T,4,C.fridgeDark);
-  fp(px+2*T-2,py,2,3*T,C.fridgeDark);
-  fp(px,py,2,'rgba(255,255,255,0.2)',3*T);
-  // Divider line
-  fp(px+2,py+T,2*T-4,2,C.fridgeDark);
-  // Handles
-  fp(px+2*T-6,py+T/2-4,4,8,'rgba(0,0,0,0.25)');
-  fp(px+2*T-6,py+T+T/2-4,4,8,'rgba(0,0,0,0.25)');
-  fp(px+2*T-5,py+T/2-3,2,6,'rgba(255,255,255,0.4)');
-  fp(px+2*T-5,py+T+T/2-3,2,6,'rgba(255,255,255,0.4)');
-}
-
-// ── MICROWAVE ──
-function microwave(x,y){
-  const px=x*T,py=y*T;
-  fp(px+1,py+T+2,2*T,3,'rgba(0,0,0,0.3)');
-  fp(px,py,2*T,T,C.microwave);
-  fp(px,py,2*T,2,'rgba(255,255,255,0.12)');
-  fp(px+2*T-2,py,2,T,'rgba(0,0,0,0.15)');
-  // Door window
-  fp(px+2,py+2,T+4,T-4,C.monScreen);
-  fp(px+3,py+3,T+2,T-6,'rgba(100,150,200,0.12)');
-  // Panel
-  fp(px+T+6,py+2,T-8,T-4,C.printerDark);
-  fp(px+T+8,py+4,T-12,3,'rgba(200,220,255,0.15)');
-  fp(px+T+8,py+9,T-12,3,'rgba(200,220,255,0.1)');
-}
-
-// ── COFFEE MACHINE ──
-function coffeeMachine(x,y){
-  const px=x*T,py=y*T;
-  fp(px+1,py+2*T,T,4,'rgba(0,0,0,0.3)');
-  fp(px,py,T,2*T,C.coffeePot);
-  fp(px,py,T,3,'rgba(255,255,255,0.08)');
-  // Water tank
-  fp(px+2,py+2,T-4,T,'rgba(80,120,160,0.3)');
-  // Pot area
-  fp(px+2,py+T+2,T-4,T-4,C.coffeeMain);
-  fp(px+3,py+T+3,T-6,T-6,'rgba(60,30,10,0.6)');
-  // Red indicator
-  fp(px+T-6,py+4,4,4,'#ff4040',0.8);
-}
-
-// ── COUCH ──
-function couch(x,y,w){
-  const px=x*T,py=y*T,iw=w*T;
-  fp(px+2,py+2*T,iw,5,'rgba(0,0,0,0.3)');
-  // Body
-  fp(px,py+T*0.3,iw,T*1.5,'#6a7a8a');
-  fp(px,py+T*0.3,iw,T*0.15,'rgba(255,255,255,0.1)');
-  // Back cushions
-  for(let i=0;i<w;i++){
-    fp(px+i*T+2,py,T-4,T*0.4,'#7a8a9a');
-    fp(px+i*T+2,py,T-4,3,'rgba(255,255,255,0.12)');
-  }
-  // Arms
-  fp(px,py,T*0.3,T*1.8,'#5a6a7a');
-  fp(px+iw-T*0.3,py,T*0.3,T*1.8,'#5a6a7a');
-  // Cushion lines
-  for(let i=1;i<w;i++){
-    fp(px+i*T,py+T*0.3,2,T*1.5,'rgba(0,0,0,0.15)');
-  }
-}
-
-// ── ROUND TABLE ──
-function roundTable(x,y,r){
-  const cx=x*T,cy=y*T;
-  fp(cx+r/2+2,cy+r+4,r,r/3,'rgba(0,0,0,0.3)');
-  ctx.fillStyle=C.deskSurface;
-  ctx.beginPath();ctx.arc(cx+r/2,cy+r/2,r/2,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle='rgba(255,255,255,0.12)';
-  ctx.beginPath();ctx.arc(cx+r/2-r/8,cy+r/2-r/8,r/4,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle=C.deskFront;
-  ctx.beginPath();ctx.arc(cx+r/2,cy+r/2,r/2,0,Math.PI*2);
-  ctx.strokeStyle=C.deskFront;ctx.lineWidth=3;ctx.stroke();
-  ctx.lineWidth=1;
-}
-
-// ── BOOKSHELF / STORAGE UNIT ──
-function shelf(x,y,w,h){
-  fp(x*T+2,(y+h)*T,w*T,4,'rgba(0,0,0,0.3)');
-  fp(x*T,y*T,w*T,h*T,C.cabMid);
-  fp(x*T,y*T,w*T,3,C.cabLight);
-  fp(x*T,y*T,2,h*T,C.cabLight);
-  fp((x+w)*T-2,y*T,2,h*T,C.cabDark);
-  // Shelf dividers
-  for(let sy=1;sy<h;sy++){
-    fp(x*T+2,(y+sy)*T-1,w*T-4,2,'rgba(0,0,0,0.15)');
-  }
-  // Content rows
-  const bk=['#5a4a8a','#8a4a3a','#3a6a5a','#7a6a3a','#4a4a7a','#8a5a4a'];
-  for(let sy=0;sy<h;sy++){
-    for(let bx=0;bx<w*2;bx++){
-      if(Math.random()>0.25){
-        fp(x*T+4+bx*6,(y+sy)*T+3,5,T-6,bk[Math.abs(bx*3+sy)%bk.length]);
-      }
-    }
-  }
-}
-
-// ── WATER COOLER ──
-function waterCooler(x,y){
-  const px=x*T,py=y*T;
-  fp(px+2,py+2*T,T-2,4,'rgba(0,0,0,0.3)');
-  // Body
-  fp(px+2,py+T*0.4,T-4,T*1.6,'rgba(180,200,220,0.7)');
-  fp(px+2,py+T*0.4,T-4,4,'rgba(255,255,255,0.3)');
-  // Bottle
-  fp(px+4,py,T-8,T*0.45,'rgba(180,220,255,0.4)');
-  fp(px+5,py+2,T-10,T*0.35,'rgba(200,230,255,0.25)');
-  // Spigots
-  fp(px+4,py+T*1.2,4,4,'#4a6080');
-  fp(px+T-8,py+T*1.2,4,4,'#804a4a');
-  // Cup area
-  fp(px+3,py+T*1.5,T-6,T*0.4,'#1a2030');
-}
-
-// ── PERSON ──
-function person(x,y,cfg){
-  const px=x*T,py=y*T;
-  // Shadow
-  ctx.fillStyle='rgba(0,0,0,0.4)';
-  ctx.beginPath();ctx.ellipse(px+T,py+T*1.7,T*0.9,T*0.35,0,0,Math.PI*2);ctx.fill();
-  // Legs
-  fp(px+T*0.3,py+T*1.1,T*0.4,T*0.75,cfg.pants||C.pants1);
-  fp(px+T*0.8,py+T*1.1,T*0.4,T*0.75,cfg.pants||C.pants1);
-  // Shoes
-  fp(px+T*0.22,py+T*1.8,T*0.5,T*0.2,'#1a1820');
-  fp(px+T*0.75,py+T*1.8,T*0.5,T*0.2,'#1a1820');
-  // Torso
-  fp(px+T*0.15,py+T*0.55,T*1.4,T*0.65,cfg.shirt||C.shirtGray);
-  fp(px+T*0.15,py+T*0.55,T*1.4,T*0.12,'rgba(255,255,255,0.06)');
-  // Arms
-  fp(px-T*0.05,py+T*0.6,T*0.22,T*0.5,cfg.skin||C.skinA);
-  fp(px+T*1.38,py+T*0.6,T*0.22,T*0.5,cfg.skin||C.skinA);
-  // Neck
-  fp(px+T*0.6,py+T*0.38,T*0.45,T*0.2,cfg.skin||C.skinA);
-  // Head shadow
-  fp(px+T*0.12+2,py+2,T*1.2,T*0.85,'rgba(0,0,0,0.3)');
-  // Head
-  fp(px+T*0.12,py,T*1.2,T*0.85,cfg.skin||C.skinA);
-  // Hair
-  fp(px+T*0.12,py,T*1.2,T*0.5,cfg.hair||C.hairDark);
-  fp(px+T*0.12,py+T*0.3,T*0.18,T*0.35,cfg.hair||C.hairDark);
-  fp(px+T*1.12,py+T*0.3,T*0.2,T*0.35,cfg.hair||C.hairDark);
-  // Eyes
-  fp(px+T*0.35,py+T*0.55,3,3,'#0a0814');
-  fp(px+T*0.75,py+T*0.55,3,3,'#0a0814');
-  // Eye color
-  if(cfg.glowEyes){
-    fp(px+T*0.36,py+T*0.56,2,2,C.glowGreen);
-    fp(px+T*0.76,py+T*0.56,2,2,C.glowGreen);
-    fp(px+T*0.3,py+T*0.5,9,5,C.glowGreen,0.2);
-    fp(px+T*0.7,py+T*0.5,9,5,C.glowGreen,0.2);
-  } else {
-    fp(px+T*0.36,py+T*0.56,2,2,cfg.eyeCol||'#4a7050');
-    fp(px+T*0.76,py+T*0.56,2,2,cfg.eyeCol||'#4a7050');
-  }
-  // Eye shine
-  fp(px+T*0.37,py+T*0.555,1,1,'rgba(255,255,255,0.7)');
-  fp(px+T*0.77,py+T*0.555,1,1,'rgba(255,255,255,0.7)');
-  // Nose
-  fp(px+T*0.55,py+T*0.65,3,2,cfg.nose||'#b07840');
-  // Label
-  if(cfg.label){
-    const tw=cfg.label.length*5+6;
-    const lx=px+T-tw/2,ly=py-14;
-    fp(lx-2,ly-2,tw+4,12,'rgba(10,12,20,0.88)');
-    ctx.fillStyle=cfg.labelCol||'#34d399';
-    ctx.font='8px "DM Mono",monospace';
-    ctx.fillText(cfg.label,lx,ly+8);
-  }
-}
-
-// ── KEYBOARD ──
-function keyboard(x,y){
-  const px=x*T,py=y*T;
-  fp(px,py,2*T+6,T-3,'#252f45');
-  fp(px+2,py+2,2*T+2,T-7,'#141e32');
-  fp(px+4,py+4,2*T-2,3,'rgba(255,255,255,0.04)');
-  fp(px+4,py+8,2*T-2,3,'rgba(255,255,255,0.035)');
-  fp(px+4,py+12,T+6,3,'rgba(255,255,255,0.03)');
-}
-
-// ── ROOM LABEL ──
-function roomLabel(x,y,w,label,col,dim){
-  ctx.fillStyle=col||'#ffffff';
-  ctx.globalAlpha=dim?0.25:0.6;
-  ctx.font='8px "DM Mono",monospace';
-  ctx.textAlign='center';
-  ctx.fillText(label,(x+w/2)*T,(y+1.2)*T);
-  ctx.globalAlpha=1;ctx.textAlign='left';
-}
-
-// ── SLOT OPEN ──
-function slotOpen(x,y,w,h,col){
-  ctx.setLineDash([4,4]);
-  ctx.strokeStyle=col;ctx.globalAlpha=0.2;ctx.lineWidth=1;
-  ctx.strokeRect(x*T+2,y*T+2,w*T-4,h*T-4);
-  ctx.setLineDash([]);ctx.globalAlpha=1;
-  ctx.fillStyle=col;ctx.globalAlpha=0.18;
-  ctx.font='8px "DM Mono",monospace';ctx.textAlign='center';
-  ctx.fillText('SLOT OPEN',(x+w/2)*T,(y+h/2)*T+4);
-  ctx.font='7px "DM Mono",monospace';
-  ctx.fillText('click to plan',(x+w/2)*T,(y+h/2)*T+14);
-  ctx.globalAlpha=1;ctx.textAlign='left';
-}
-
-// ══════════════════════════════════
-// ROOMS DEFINITION
-// ══════════════════════════════════
-const ROOMS=[
-  {id:'vex',   x:1, y:1,  w:18,h:16, label:"VEX'S OFFICE",  col:'#34d399'},
-  {id:'board', x:21,y:1,  w:20,h:16, label:'BOARDROOM',      col:'#60a5fa'},
-  {id:'sam',   x:43,y:1,  w:18,h:16, label:"SAM'S OFFICE",   col:'#a78bfa'},
-  {id:'mkt',   x:63,y:1,  w:14,h:16, label:'MARKETING',      col:'#fb7185'},
-  {id:'break', x:1, y:21, w:14,h:14, label:'BREAK ROOM',     col:'#fbbf24'},
-  {id:'files', x:17,y:21, w:12,h:14, label:'FILE ROOM',      col:'#94a3b8'},
-  {id:'res',   x:31,y:21, w:16,h:14, label:'RESEARCH',       col:'#fbbf24'},
-  {id:'dev',   x:49,y:21, w:16,h:14, label:'DEVELOPMENT',    col:'#22d3ee'},
-  {id:'ops',   x:67,y:21, w:10,h:14, label:'OPERATIONS',     col:'#94a3b8'},
-];
-
-// ══════════════════════════════════
-// MAIN DRAW
-// ══════════════════════════════════
-let glow=0;
-
-function draw(){
-  glow+=0.04;
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-
-  // ── OUTER BACKGROUND ──
-  f(0,0,COLS,ROWS,'#4a5060');
-
-  // ── MAIN FLOOR (warm tan like the game) ──
-  floor(0,0,COLS,ROWS,C.floorTan,C.floorTan2);
-
-  // ── OUTER WALLS ──
-  wallH(0,0,COLS);
-  wallV(0,0,ROWS);
-  wallV(COLS-1,0,ROWS);
-  wallH(0,ROWS-1,COLS);
-
-  // ── HORIZONTAL CORRIDOR (between rows) ──
-  floor(1,18,COLS-2,3,C.floorHall,C.floorHall2);
-  // Corridor center dots
-  ctx.fillStyle='rgba(0,0,0,0.08)';
-  for(let i=2;i<COLS-2;i+=4) fp(i*T+T/2,19*T+T/2,3,3,'rgba(0,0,0,0.12)');
-
-  // ── VERTICAL CORRIDORS ──
-  floor(19,1,2,17,C.floorHall,C.floorHall2);
-  floor(41,1,2,17,C.floorHall,C.floorHall2);
-  floor(61,1,2,17,C.floorHall,C.floorHall2);
-  floor(15,21,2,14,C.floorHall,C.floorHall2);
-  floor(29,21,2,14,C.floorHall,C.floorHall2);
-  floor(47,21,2,14,C.floorHall,C.floorHall2);
-  floor(65,21,2,14,C.floorHall,C.floorHall2);
-
-  // ── PRINTER STATIONS in hallway ──
-  printer(20,19);
-  printer(42,19);
-  printer(62,19);
-  // Water coolers
-  waterCooler(27,19);
-  waterCooler(55,19);
-
-  // ══════════════════════
-  // DRAW ROOMS
-  // ══════════════════════
-  ROOMS.forEach(r=>{
-    // Wall outlines
-    wallH(r.x,r.y,r.w);
-    wallV(r.x,r.y,r.h);
-    wallV(r.x+r.w,r.y,r.h);
-    wallH(r.x,r.y+r.h,r.w);
-    // Ceiling light
-    const lx=r.x+Math.floor(r.w*.2),lw=Math.floor(r.w*.6);
-    fp(lx*T,r.y*T,lw*T,2,r.col,0.8);
-    fp(lx*T,(r.y+1)*T,lw*T,3*T,r.col,0.04);
-    // Label
-    roomLabel(r.x,r.y,r.w,r.label,r.col,['res','dev','ops','files'].includes(r.id));
-  });
-
-  // ══════════════════════
-  // VEX'S OFFICE — green carpet
-  // ══════════════════════
-  const V=ROOMS[0];
-  floor(V.x+1,V.y+1,V.w-2,V.h-2,C.carpetGreen,C.carpetGreen2);
-
-  // L-shaped desk
-  desk(V.x+2,V.y+2,9,3);
-  desk(V.x+2,V.y+5,5,2);
-
-  // Dual monitors
-  monitor(V.x+3,V.y+1,C.monGreenGlow,true);
-  monitor(V.x+7,V.y+1,C.monBlueGlow,true);
-
-  // Keyboard & mouse
-  keyboard(V.x+4,V.y+3);
-  fp((V.x+7)*T+2,(V.y+3)*T+3,T-2,T-5,'#1e2840'); // mouse pad
-  fp((V.x+7)*T+6,(V.y+3)*T+4,8,12,'#2a3850'); // mouse
-
-  // Coffee mug
-  fp((V.x+10)*T-2,(V.y+2)*T+4,T,T,'rgba(0,0,0,0.2)'); // shadow
-  ctx.fillStyle=C.potBrown;
-  ctx.beginPath();ctx.arc((V.x+10)*T+4,(V.y+2)*T+8,8,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle='#3a1800';
-  ctx.beginPath();ctx.arc((V.x+10)*T+4,(V.y+2)*T+8,6,0,Math.PI*2);ctx.fill();
-
-  // Notepad
-  fp((V.x+8)*T,(V.y+4)*T,T,T+4,C.paper);
-  fp((V.x+8)*T,(V.y+4)*T,T,3,C.floorTan2);
-  for(let i=0;i<4;i++) fp((V.x+8)*T+3,(V.y+4)*T+6+i*5,T-6,1,'rgba(0,0,0,0.1)');
-
-  // Bookshelf on wall
-  shelf(V.x+12,V.y+2,4,6);
-
-  // Chair
-  chair(V.x+4,V.y+7,'up');
-
-  // VEX CHARACTER (green glowing eyes)
-  person(V.x+5,V.y+5,{
-    skin:C.skinB, hair:C.hairDark, shirt:C.shirtDark,
-    pants:'#141824', glowEyes:true,
-    nose:'#906030', label:'VEX', labelCol:'#34d399',
-  });
-
-  // Plants
-  plant(V.x+1,V.y+1);
-  plant(V.x+16,V.y+13);
-
-  // Whiteboard
-  fp((V.x+2)*T,(V.y+10)*T,8*T,5*T,'#0e1828');
-  fp((V.x+2)*T+2,(V.y+10)*T+2,8*T-4,5*T-4,'#0a1220');
-  fp((V.x+2)*T,(V.y+10)*T,8*T,3,C.monGreenGlow,0.5);
-  ctx.fillStyle='rgba(52,211,153,0.55)';ctx.font='6px "DM Mono",monospace';
-  ctx.fillText('// phase 01',(V.x+3)*T,(V.y+11)*T+2);
-  ctx.fillStyle='rgba(96,165,250,0.45)';
-  ctx.fillText('stripe · auth · voice',(V.x+3)*T,(V.y+11)*T+11);
-  ctx.fillStyle='rgba(251,191,36,0.4)';
-  ctx.fillText('→ marketing [NEXT]',(V.x+3)*T,(V.y+11)*T+20);
-  ctx.fillStyle='rgba(255,255,255,0.18)';
-  ctx.fillText('→ 10 subscribers',(V.x+3)*T,(V.y+11)*T+29);
-  ctx.fillText('→ server setup',(V.x+3)*T,(V.y+11)*T+38);
-
-  // Monitor glow pulse
-  const gv=Math.sin(glow)*0.5+0.5;
-  fp((V.x+3)*T,(V.y+1)*T,3*T,2*T,C.monGreenGlow,0.03+gv*0.03);
-
-  // ══════════════════════
-  // BOARDROOM — blue carpet
-  // ══════════════════════
-  const B=ROOMS[1];
-  floor(B.x+1,B.y+1,B.w-2,B.h-2,C.carpetBlue,C.carpetBlue2);
-
-  // Big conference table
-  desk(B.x+4,B.y+4,12,8);
-  // Table highlight
-  fp((B.x+4)*T+4,(B.y+4)*T+4,12*T-8,4,'rgba(255,255,255,0.12)');
-  // Company text on table
-  ctx.fillStyle='rgba(96,165,250,0.12)';ctx.font='7px "DM Mono",monospace';ctx.textAlign='center';
-  ctx.fillText('GROUNDWORK',(B.x+10)*T,(B.y+8)*T+3);ctx.textAlign='left';
-
-  // Chairs all around
-  for(let i=0;i<4;i++) chair(B.x+4+i*3,B.y+2,'down');
-  for(let i=0;i<4;i++) chair(B.x+4+i*3,B.y+13,'up');
-  chair(B.x+2,B.y+5,'right');chair(B.x+2,B.y+9,'right');
-  chair(B.x+17,B.y+5,'left');chair(B.x+17,B.y+9,'left');
-
-  // SAM at table
-  person(B.x+10,B.y+12,{
-    skin:C.skinA, hair:C.hairBrown, shirt:C.shirtBlue,
-    pants:C.pants2, eyeCol:'#5a7860',
-    nose:'#b07848', label:'SAM', labelCol:'#60a5fa',
-  });
-
-  // Items on table
-  fp((B.x+5)*T,(B.y+6)*T,2*T,T+4,C.paper);
-  fp((B.x+5)*T,(B.y+6)*T,2*T,3,C.floorTan2);
-  fp((B.x+14)*T,(B.y+7)*T,T+4,T+6,C.paper);
-  // Laptop
-  desk(B.x+8,B.y+6,3,2);
-  fp((B.x+8)*T+2,(B.y+6)*T+2,3*T-4,2*T-4,'#07101e');
-  fp((B.x+8)*T+4,(B.y+6)*T+4,T,2,'rgba(96,165,250,0.4)');
-  fp((B.x+8)*T+4,(B.y+6)*T+8,T+6,1,'rgba(96,165,250,0.25)');
-  // Water glasses
-  ctx.fillStyle='rgba(180,220,255,0.25)';
-  ctx.beginPath();ctx.arc((B.x+4)*T+6,(B.y+8)*T+6,5,0,Math.PI*2);ctx.fill();
-  ctx.beginPath();ctx.arc((B.x+16)*T+4,(B.y+6)*T+6,5,0,Math.PI*2);ctx.fill();
-
-  // Plants
-  plant(B.x+1,B.y+1);plant(B.x+18,B.y+1);
-  plant(B.x+1,B.y+13);plant(B.x+18,B.y+13);
-
-  // ══════════════════════
-  // SAM'S OFFICE
-  // ══════════════════════
-  const S=ROOMS[2];
-  floor(S.x+1,S.y+1,S.w-2,S.h-2,C.carpetBlue,C.carpetBlue2);
-  desk(S.x+2,S.y+2,9,3);
-  desk(S.x+2,S.y+5,4,2);
-  monitor(S.x+3,S.y+1,C.monBlueGlow,false);
-  chair(S.x+5,S.y+7,'up');
-  shelf(S.x+13,S.y+2,3,6);
-  plant(S.x+1,S.y+13);plant(S.x+16,S.y+1);
-  // Coming soon overlay
-  ctx.fillStyle='rgba(167,139,250,0.06)';
-  ctx.fillRect((S.x+2)*T,(S.y+9)*T,12*T,5*T);
-  ctx.fillStyle='rgba(167,139,250,0.22)';ctx.font='8px "DM Mono",monospace';ctx.textAlign='center';
-  ctx.fillText('YOUR WORKSPACE',(S.x+8)*T,(S.y+11)*T+4);
-  ctx.fillStyle='rgba(167,139,250,0.14)';ctx.font='7px "DM Mono",monospace';
-  ctx.fillText('coming soon',(S.x+8)*T,(S.y+12)*T+2);ctx.textAlign='left';
-
-  // ══════════════════════
-  // MARKETING — red carpet
-  // ══════════════════════
-  const M=ROOMS[3];
-  floor(M.x+1,M.y+1,M.w-2,M.h-2,C.carpetRed,C.carpetRed2);
-  desk(M.x+2,M.y+2,5,3);desk(M.x+8,M.y+2,5,3);
-  monitor(M.x+2,M.y+1,'#fb7185',false);monitor(M.x+9,M.y+1,'#fb7185',false);
-  chair(M.x+3,M.y+6,'up');chair(M.x+10,M.y+6,'up');
-  plant(M.x+1,M.y+13);plant(M.x+12,M.y+1);
-  // NEXT UP badge
-  fp((M.x+1)*T,(M.y+8)*T,12*T,T,'rgba(251,113,133,0.15)');
-  fp((M.x+1)*T,(M.y+8)*T,12*T,2,'rgba(251,113,133,0.4)');
-  ctx.fillStyle='rgba(251,113,133,0.6)';ctx.font='8px "DM Mono",monospace';ctx.textAlign='center';
-  ctx.fillText('NEXT UP',(M.x+7)*T,(M.y+8)*T+11);ctx.textAlign='left';
-  // Whiteboard
-  fp((M.x+1)*T,(M.y+10)*T,12*T,5*T,'#1a0e12');
-  fp((M.x+1)*T+2,(M.y+10)*T+2,12*T-4,5*T-4,'#110a0e');
-  fp((M.x+1)*T,(M.y+10)*T,12*T,2,'rgba(251,113,133,0.5)');
-  ctx.fillStyle='rgba(251,113,133,0.45)';ctx.font='6px "DM Mono",monospace';
-  ctx.fillText('// MARKETING',(M.x+2)*T,(M.y+11)*T);
-  ctx.fillStyle='rgba(255,255,255,0.18)';
-  ctx.fillText('TikTok 3x/week',(M.x+2)*T,(M.y+11)*T+10);
-  ctx.fillText('Reddit · SEO',(M.x+2)*T,(M.y+11)*T+19);
-  ctx.fillStyle='rgba(251,191,36,0.35)';
-  ctx.fillText('→ 10 subs target',(M.x+2)*T,(M.y+11)*T+28);
-
-  // ══════════════════════
-  // BREAK ROOM
-  // ══════════════════════
-  const BR=ROOMS[4];
-  floor(BR.x+1,BR.y+1,BR.w-2,BR.h-2,C.floorTan,C.floorTan2);
-  // Fridge
-  fridge(BR.x+1,BR.y+1);
-  // Microwave on counter
-  desk(BR.x+4,BR.y+1,6,2);
-  microwave(BR.x+4,BR.y+1);
-  // Coffee machine
-  coffeeMachine(BR.x+7,BR.y+1);
-  // Counter continues
-  desk(BR.x+10,BR.y+1,3,2);
-  // Round table with chairs
-  roundTable(BR.x+4,BR.y+5,3*T);
-  chair(BR.x+4,BR.y+4,'down');chair(BR.x+8,BR.y+4,'down');
-  chair(BR.x+4,BR.y+8,'up');chair(BR.x+8,BR.y+8,'up');
-  chair(BR.x+2,BR.y+6,'right');chair(BR.x+10,BR.y+6,'left');
-  // Couch along wall
-  couch(BR.x+1,BR.y+11,10);
-  plant(BR.x+12,BR.y+1);plant(BR.x+12,BR.y+11);
-  // Vending machine
-  fp((BR.x+1)*T,(BR.y+9)*T,2*T,3*T,'#4a5060');
-  fp((BR.x+1)*T+2,(BR.y+9)*T+2,2*T-4,3*T-4,'#1a2030');
-  fp((BR.x+1)*T+4,(BR.y+9)*T+4,T-2,T-2,'rgba(100,180,255,0.15)');
-  fp((BR.x+1)*T+4,(BR.y+10)*T+2,T-2,T-2,'rgba(255,150,100,0.12)');
-  fp((BR.x+1)*T+4,(BR.y+11)*T,T-2,T-4,'rgba(150,255,100,0.1)');
-  ctx.fillStyle='rgba(255,255,255,0.08)';ctx.font='5px "DM Mono",monospace';ctx.textAlign='center';
-  ctx.fillText('SNACKS',(BR.x+2)*T,(BR.y+12)*T+4);ctx.textAlign='left';
-
-  // ══════════════════════
-  // FILE ROOM
-  // ══════════════════════
-  const F=ROOMS[5];
-  floor(F.x+1,F.y+1,F.w-2,F.h-2,C.floorHall,C.floorHall2);
-  // Rows of filing cabinets
-  for(let i=0;i<4;i++) cabinet(F.x+1+i*2,F.y+1);
-  for(let i=0;i<4;i++) cabinet(F.x+1+i*2,F.y+4);
-  for(let i=0;i<4;i++) cabinet(F.x+1+i*2,F.y+7);
-  for(let i=0;i<4;i++) cabinet(F.x+1+i*2,F.y+10);
-  // Shelf on back wall
-  shelf(F.x+9,F.y+1,2,12);
-  // Label
-  ctx.fillStyle='rgba(148,163,184,0.3)';ctx.font='7px "DM Mono",monospace';ctx.textAlign='center';
-  ctx.fillText('RECORDS',(F.x+6)*T,(F.y+13)*T+4);ctx.textAlign='left';
-
-  // ══════════════════════
-  // RESEARCH (slot open)
-  // ══════════════════════
-  const RS=ROOMS[6];
-  floor(RS.x+1,RS.y+1,RS.w-2,RS.h-2,C.floorTan,C.floorTan2);
-  desk(RS.x+2,RS.y+2,5,3);desk(RS.x+10,RS.y+2,5,3);
-  desk(RS.x+2,RS.y+8,5,3);desk(RS.x+10,RS.y+8,5,3);
-  monitor(RS.x+2,RS.y+1,'#fbbf24',false);monitor(RS.x+10,RS.y+1,'#fbbf24',false);
-  monitor(RS.x+2,RS.y+7,'#fbbf24',false);monitor(RS.x+10,RS.y+7,'#fbbf24',false);
-  chair(RS.x+3,RS.y+6,'up');chair(RS.x+11,RS.y+6,'up');
-  chair(RS.x+3,RS.y+12,'up');chair(RS.x+11,RS.y+12,'up');
-  plant(RS.x+14,RS.y+1);plant(RS.x+1,RS.y+11);
-  slotOpen(RS.x+5,RS.y+5,6,3,'#fbbf24');
-
-  // ══════════════════════
-  // DEVELOPMENT (slot open)
-  // ══════════════════════
-  const DV=ROOMS[7];
-  floor(DV.x+1,DV.y+1,DV.w-2,DV.h-2,C.floorTan,C.floorTan2);
-  desk(DV.x+2,DV.y+2,5,3);desk(DV.x+10,DV.y+2,5,3);
-  desk(DV.x+2,DV.y+8,5,3);desk(DV.x+10,DV.y+8,5,3);
-  monitor(DV.x+2,DV.y+1,'#22d3ee',false);monitor(DV.x+10,DV.y+1,'#22d3ee',false);
-  monitor(DV.x+2,DV.y+7,'#22d3ee',false);monitor(DV.x+10,DV.y+7,'#22d3ee',false);
-  chair(DV.x+3,DV.y+6,'up');chair(DV.x+11,DV.y+6,'up');
-  chair(DV.x+3,DV.y+12,'up');chair(DV.x+11,DV.y+12,'up');
-  plant(DV.x+14,DV.y+1);plant(DV.x+1,DV.y+11);
-  slotOpen(DV.x+5,DV.y+5,6,3,'#22d3ee');
-  // Dev board
-  fp((DV.x+2)*T,(DV.y+9)*T,12*T,4*T,'#0a1420');
-  fp((DV.x+2)*T+2,(DV.y+9)*T+2,12*T-4,4*T-4,'#060e18');
-  fp((DV.x+2)*T,(DV.y+9)*T,12*T,2,'rgba(34,211,238,0.4)');
-  ctx.fillStyle='rgba(34,211,238,0.4)';ctx.font='6px "DM Mono",monospace';
-  ctx.fillText('// DEV QUEUE',(DV.x+3)*T,(DV.y+10)*T);
-  ctx.fillStyle='rgba(251,191,36,0.35)';
-  ctx.fillText('▸ stripe · auth',(DV.x+3)*T,(DV.y+10)*T+10);
-  ctx.fillStyle='rgba(255,255,255,0.15)';
-  ctx.fillText('▸ supabase · voice',(DV.x+3)*T,(DV.y+10)*T+19);
-  ctx.fillText('▸ acer server',(DV.x+3)*T,(DV.y+10)*T+28);
-
-  // ══════════════════════
-  // OPERATIONS (slot open)
-  // ══════════════════════
-  const OP=ROOMS[8];
-  floor(OP.x+1,OP.y+1,OP.w-2,OP.h-2,C.floorTan,C.floorTan2);
-  desk(OP.x+1,OP.y+2,7,3);
-  monitor(OP.x+1,OP.y+1,'#94a3b8',false);
-  chair(OP.x+3,OP.y+6,'up');
-  plant(OP.x+7,OP.y+1);plant(OP.x+1,OP.y+11);
-  slotOpen(OP.x+1,OP.y+7,8,5,'#94a3b8');
-
-  // ══════════════════════
-  // TOP WINDOWS
-  // ══════════════════════
-  fp(T,0,(COLS-2)*T,T,'#3a4a5a');
-  // Window panes
-  for(let i=0;i<7;i++){
-    fp(T+2+i*11*T,2,9*T,T-4,C.windowPane);
-    fp(T+2+i*11*T,3,T,T-6,'rgba(255,255,255,0.06)');
-  }
-  // Stars
-  [[5,5],[12,4],[20,6],[28,5],[36,4],[44,6],[52,5],[60,4],[68,5],[75,6]].forEach(([x,y])=>{
-    fp(x*T,y,1,1,'rgba(255,255,255,0.6)');
-  });
-
-  requestAnimationFrame(draw);
-}
-
-requestAnimationFrame(draw);
-
-// ══════════════════════════════════
-// PAN & ZOOM
-// ══════════════════════════════════
-const vp=document.getElementById('vp'),world=document.getElementById('world');
-let scale=1.8,tx=0,ty=0,drag=false,lx=0,ly=0;
-
-function applyT(){world.style.transform=`translate(${tx}px,${ty}px) scale(${scale})`;}
-
-function center(){
-  const vw=vp.offsetWidth,vh=vp.offsetHeight;
-  tx=(vw-canvas.width*scale)/2;ty=(vh-canvas.height*scale)/2;applyT();
-}
-window.addEventListener('load',center);window.addEventListener('resize',center);
-
-vp.addEventListener('wheel',e=>{
-  e.preventDefault();
-  const r=vp.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top;
-  const d=e.deltaY>0?-0.15:0.15,ns=Math.min(Math.max(scale+d,0.6),5),ratio=ns/scale;
-  tx=mx-(mx-tx)*ratio;ty=my-(my-ty)*ratio;scale=ns;applyT();
-},{passive:false});
-
-vp.addEventListener('mousedown',e=>{if(e.button===0){drag=true;lx=e.clientX;ly=e.clientY;vp.style.cursor='grabbing';}});
-window.addEventListener('mousemove',e=>{if(drag){tx+=e.clientX-lx;ty+=e.clientY-ly;lx=e.clientX;ly=e.clientY;applyT();}});
-window.addEventListener('mouseup',()=>{drag=false;vp.style.cursor='grab';});
-
-let pinchD=0;
-vp.addEventListener('touchstart',e=>{
-  if(e.touches.length===1){drag=true;lx=e.touches[0].clientX;ly=e.touches[0].clientY;}
-  if(e.touches.length===2)pinchD=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
-},{passive:true});
-vp.addEventListener('touchmove',e=>{
-  if(e.touches.length===1&&drag){tx+=e.touches[0].clientX-lx;ty+=e.touches[0].clientY-ly;lx=e.touches[0].clientX;ly=e.touches[0].clientY;applyT();}
-  if(e.touches.length===2){const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);scale=Math.min(Math.max(scale+(d-pinchD)*0.008,0.6),5);pinchD=d;applyT();}
-},{passive:true});
-vp.addEventListener('touchend',()=>{drag=false;});
-
-function zoom(d){scale=Math.min(Math.max(scale+d,0.6),5);applyT();}
-function resetV(){scale=1.8;center();}
-
-// ══════════════════════════════════
-// CLICK → OPEN ROOM
-// ══════════════════════════════════
-vp.addEventListener('click',e=>{
-  if(drag)return;
-  const r=vp.getBoundingClientRect(),mx=(e.clientX-r.left-tx)/scale,my=(e.clientY-r.top-ty)/scale;
-  const tx2=Math.floor(mx/T),ty2=Math.floor(my/T);
-  for(const rm of ROOMS){
-    if(tx2>=rm.x&&tx2<rm.x+rm.w&&ty2>=rm.y&&ty2<rm.y+rm.h){openRoom(rm.id);return;}
-  }
+const BREAK = {
+  vex:  { x:2000, y:1050 }, maya: { x:1900, y:1150 }, kai:  { x:2100, y:1050 },
+  ren:  { x:1900, y:950  }, leo:  { x:2050, y:950  }, sage: { x:2200, y:1100 },
+  curt: { x:1850, y:1000 },
+  iris: { x:2000, y:1200 },
+};
+
+const BOARD = { x:2127, y:400 };  // Room 5 boardroom center
+
+// ── CHARACTER CONFIG ──
+const CFG = {
+  vex:  { skin:'#c89060', hair:'#1a1208', shirt:'#1e2840', eyeCol:'#00ff88', glow:true,  label:'VEX',  lc:'#c8960a' },
+  maya: { skin:'#e8b880', hair:'#e08898', shirt:'#5a3a7a', eyeCol:'#c090d0', glow:false, label:'MAYA', lc:'#fbbf24' },
+  kai:  { skin:'#c89060', hair:'#2a2a48', shirt:'#1a3a58', eyeCol:'#60c0e0', glow:false, label:'KAI',  lc:'#22d3ee' },
+  ren:  { skin:'#e8b880', hair:'#6a3810', shirt:'#3a2a58', eyeCol:'#9080c0', glow:false, label:'REN',  lc:'#a78bfa' },
+  leo:  { skin:'#d4b090', hair:'#3a2010', shirt:'#2a4a28', eyeCol:'#70a070', glow:false, label:'LEO',  lc:'#34d399' },
+  sage: { skin:'#e8b880', hair:'#182a18', shirt:'#1a4a3a', eyeCol:'#50a080', glow:false, label:'SAGE', lc:'#fb7185' },
+  curt: { skin:'#d4a870', hair:'#8a6a20', shirt:'#5a4a2a', eyeCol:'#a08040', glow:false, label:'CURT', lc:'#94a3b8' },
+  iris: { skin:'#e8c4d0', hair:'#6a2a6a', shirt:'#4a2a6a', eyeCol:'#d080d0', glow:false, label:'IRIS', lc:'#a78bfa' },
+};
+
+// ── CHARACTER STATE ──
+const C = {};
+Object.keys(HOME).forEach(n => {
+  C[n] = { x:HOME[n].x, y:HOME[n].y, tx:HOME[n].x, ty:HOME[n].y, moving:false, onArrive:null };
 });
 
-// ══════════════════════════════════
-// CONVERSATION
-// ══════════════════════════════════
-const SYS=`You are Vex, CEO of Groundwork — a construction education subscription platform. Sam is the owner. Sharp, confident, direct, loyal. Real attitude. 2-3 sentences max. Natural CEO energy. No lists.
+// ── DRAW CHARACTER ──
+const SCALE = 22; // character size base
 
-Status: Site live at groundwork-lovat.vercel.app · 7 pages · Tiers: Free/$0 Apprentice/$5 Skilled/$10 Expert/$20 Contractor/$30 · Needs: Stripe, auth, real-time data · Acer server being set up · GitHub connected · Sam is a construction teacher, former contractor, wants to go remote · Marketing proposal ready.`;
+function charSVG(name, x, y) {
+  const cfg = CFG[name];
+  const s = SCALE;
+  const bob = C[name].moving ? Math.sin(Date.now() * 0.007) * 1.8 : 0;
+  const ox = x, oy = y + bob;
 
-let history=[],listening=false,recog=null;
+  // Shadow
+  const shd = `<ellipse cx="${ox}" cy="${oy+s*1.25}" rx="${s*0.9}" ry="${s*0.28}" fill="rgba(0,0,0,0.45)"/>`;
 
-const cfg={
-  vex:{n:'Vex',r:'CHIEF EXECUTIVE OFFICER',av:'⚡',bg:'rgba(52,211,153,.15)',br:'rgba(52,211,153,.3)',
-    m:"You're in my office. Marketing proposal is done, server setup guide is written, Vex identity doc is half built. What do you need?"},
-  board:{n:'Boardroom',r:'EXECUTIVE MEETING ROOM',av:'🏛️',bg:'rgba(96,165,250,.15)',br:'rgba(96,165,250,.3)',
-    m:"Boardroom. This is where we meet every morning and evening. What's on your mind?"},
-  sam:{n:"Sam's Office",r:'OWNER — IN SETUP',av:'👤',bg:'rgba(167,139,250,.15)',br:'rgba(167,139,250,.3)',
-    m:"Your office is getting built out. Metrics, decisions, subscriber data — all going in here."},
-  mkt:{n:'Marketing',r:'NEXT UP · PROPOSAL READY',av:'📣',bg:'rgba(251,113,133,.15)',br:'rgba(251,113,133,.3)',
-    m:"Marketing is next and the proposal is done. TikTok, SEO, Reddit, email list. Say the word."},
-  break:{n:'Break Room',r:'COMPANY AMENITIES',av:'☕',bg:'rgba(251,191,36,.15)',br:'rgba(251,191,36,.3)',
-    m:"Break room. Coffee's on. Take five when you need it — no judgment from me. The vending machine is better than it looks."},
-  files:{n:'File Room',r:'RECORDS & STORAGE',av:'🗂️',bg:'rgba(148,163,184,.15)',br:'rgba(148,163,184,.3)',
-    m:"File room. All the company records, contracts, docs. Not the most exciting room but you'd miss it if it wasn't there."},
-  res:{n:'Research',r:'SLOT OPEN',av:'🔬',bg:'rgba(251,191,36,.15)',br:'rgba(251,191,36,.3)',
-    m:"Research slot is open. Market intel, competitor tracking, trend monitoring. We build this one together."},
-  dev:{n:'Development',r:'SLOT OPEN',av:'⚙️',bg:'rgba(34,211,238,.15)',br:'rgba(34,211,238,.3)',
-    m:"Development slot is open. Stripe, auth, features, architecture. This one stays the busiest once we scale."},
-  ops:{n:'Operations',r:'FUTURE SLOT',av:'📊',bg:'rgba(148,163,184,.12)',br:'rgba(148,163,184,.2)',
-    m:"Operations — future slot. Subscriber tracking, revenue monitoring, customer feedback. Coming when we're ready."},
+  // Body
+  const legs = `<rect x="${ox-s*0.36}" y="${oy+s*0.55}" width="${s*0.32}" height="${s*0.65}" rx="${s*0.1}" fill="#222a3a"/>
+    <rect x="${ox+s*0.04}" y="${oy+s*0.55}" width="${s*0.32}" height="${s*0.65}" rx="${s*0.1}" fill="#222a3a"/>`;
+  const shoes = `<ellipse cx="${ox-s*0.2}" cy="${oy+s*1.2}" rx="${s*0.24}" ry="${s*0.1}" fill="#111820"/>
+    <ellipse cx="${ox+s*0.2}" cy="${oy+s*1.2}" rx="${s*0.24}" ry="${s*0.1}" fill="#111820"/>`;
+  const torso = `<rect x="${ox-s*0.52}" y="${oy+s*0.12}" width="${s*1.04}" height="${s*0.52}" rx="${s*0.14}" fill="${cfg.shirt}"/>
+    <rect x="${ox-s*0.52}" y="${oy+s*0.12}" width="${s*1.04}" height="${s*0.09}" rx="${s*0.14}" fill="rgba(255,255,255,0.07)"/>`;
+  const arms = `<rect x="${ox-s*0.72}" y="${oy+s*0.15}" width="${s*0.22}" height="${s*0.44}" rx="${s*0.09}" fill="${cfg.skin}"/>
+    <rect x="${ox+s*0.5}" y="${oy+s*0.15}" width="${s*0.22}" height="${s*0.44}" rx="${s*0.09}" fill="${cfg.skin}"/>`;
+  const neck = `<rect x="${ox-s*0.14}" y="${oy-s*0.02}" width="${s*0.28}" height="${s*0.17}" rx="${s*0.06}" fill="${cfg.skin}"/>`;
+
+  // Head
+  const hshd = `<ellipse cx="${ox+1}" cy="${oy-s*0.4}" rx="${s*0.44}" ry="${s*0.42}" fill="rgba(0,0,0,0.3)"/>`;
+  const head = `<ellipse cx="${ox}" cy="${oy-s*0.42}" rx="${s*0.43}" ry="${s*0.41}" fill="${cfg.skin}"/>`;
+  const hair = `<ellipse cx="${ox}" cy="${oy-s*0.72}" rx="${s*0.43}" ry="${s*0.2}" fill="${cfg.hair}"/>
+    <rect x="${ox-s*0.43}" y="${oy-s*0.72}" width="${s*0.86}" height="${s*0.32}" rx="${s*0.1}" fill="${cfg.hair}"/>`;
+  const ears = `<ellipse cx="${ox-s*0.43}" cy="${oy-s*0.4}" rx="${s*0.07}" ry="${s*0.1}" fill="${cfg.skin}" opacity="0.8"/>
+    <ellipse cx="${ox+s*0.43}" cy="${oy-s*0.4}" rx="${s*0.07}" ry="${s*0.1}" fill="${cfg.skin}" opacity="0.8"/>`;
+
+  // Eyes
+  let eyes;
+  if(cfg.glow) {
+    eyes = `<ellipse cx="${ox-s*0.15}" cy="${oy-s*0.38}" rx="${s*0.1}" ry="${s*0.09}" fill="#050a10"/>
+      <ellipse cx="${ox+s*0.15}" cy="${oy-s*0.38}" rx="${s*0.1}" ry="${s*0.09}" fill="#050a10"/>
+      <ellipse cx="${ox-s*0.15}" cy="${oy-s*0.38}" rx="${s*0.07}" ry="${s*0.065}" fill="${cfg.eyeCol}" filter="url(#fGlow)"/>
+      <ellipse cx="${ox+s*0.15}" cy="${oy-s*0.38}" rx="${s*0.07}" ry="${s*0.065}" fill="${cfg.eyeCol}" filter="url(#fGlow)"/>`;
+  } else {
+    eyes = `<ellipse cx="${ox-s*0.15}" cy="${oy-s*0.38}" rx="${s*0.09}" ry="${s*0.08}" fill="#080818"/>
+      <ellipse cx="${ox+s*0.15}" cy="${oy-s*0.38}" rx="${s*0.09}" ry="${s*0.08}" fill="#080818"/>
+      <ellipse cx="${ox-s*0.15}" cy="${oy-s*0.38}" rx="${s*0.06}" ry="${s*0.056}" fill="${cfg.eyeCol}"/>
+      <ellipse cx="${ox+s*0.15}" cy="${oy-s*0.38}" rx="${s*0.06}" ry="${s*0.056}" fill="${cfg.eyeCol}"/>`;
+  }
+  const shine = `<ellipse cx="${ox-s*0.13}" cy="${oy-s*0.4}" rx="${s*0.02}" ry="${s*0.02}" fill="rgba(255,255,255,0.65)"/>
+    <ellipse cx="${ox+s*0.17}" cy="${oy-s*0.4}" rx="${s*0.02}" ry="${s*0.02}" fill="rgba(255,255,255,0.65)"/>`;
+
+  // Label
+  const lbw = cfg.label.length * 5.5 + 10;
+  const label = `<rect x="${ox-lbw/2}" y="${oy-s*1.12}" width="${lbw}" height="${s*0.34}" rx="3" fill="rgba(8,10,18,0.88)" stroke="${cfg.lc}" stroke-width="0.6"/>
+    <text x="${ox}" y="${oy-s*0.89}" text-anchor="middle" font-family="DM Mono,monospace" font-size="${s*0.25}" fill="${cfg.lc}" font-weight="500" letter-spacing="1">${cfg.label}</text>`;
+
+  return `<g filter="url(#fShadow)">${shd}${legs}${shoes}${torso}${arms}${neck}${hshd}${head}${hair}${ears}${eyes}${shine}</g>${label}`;
+}
+
+// ── RENDER ──
+function render() {
+  const g = document.getElementById('chars');
+  let html = '';
+  Object.keys(C).forEach(name => {
+    html += `<g id="c-${name}" style="cursor:pointer" onclick="focusChar('${name}')">${charSVG(name, C[name].x, C[name].y)}</g>`;
+  });
+  g.innerHTML = html;
+}
+
+// ── ANIMATION ──
+const SPEED = 200; // px/sec
+let lastT = null;
+
+function loop(ts) {
+  if(!lastT) lastT = ts;
+  const dt = Math.min((ts - lastT) / 1000, 0.05);
+  lastT = ts;
+
+  Object.keys(C).forEach(name => {
+    const ch = C[name];
+    if(!ch.moving) return;
+    const dx = ch.tx - ch.x, dy = ch.ty - ch.y;
+    const dist = Math.sqrt(dx*dx + dy*dy);
+    if(dist < 3) {
+      ch.x = ch.tx; ch.y = ch.ty;
+      ch.moving = false;
+      if(ch.onArrive) { ch.onArrive(); ch.onArrive = null; }
+    } else {
+      const step = SPEED * dt;
+      ch.x += (dx/dist) * Math.min(step, dist);
+      ch.y += (dy/dist) * Math.min(step, dist);
+    }
+  });
+
+  render();
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+
+// ── MOVE ──
+function moveTo(name, x, y, cb) {
+  C[name].tx = x; C[name].ty = y;
+  C[name].moving = true;
+  C[name].onArrive = cb || null;
+}
+
+// ── STATUS ──
+function setSt(name, text, cls) {
+  const sd = document.getElementById(`sd-${name}`);
+  const st = document.getElementById(`st-${name}`);
+  const ac = document.getElementById(`ac-${name}`);
+  if(sd) sd.className = `sd ${cls}`;
+  if(st) st.textContent = text;
+  if(ac) {
+    ac.className = 'ac';
+    if(name === 'vex') ac.classList.add('vex-c');
+    if(cls === 'busy' || cls === 'walk') ac.classList.add('busy');
+  }
+}
+
+// ── VEX IDLE BEHAVIOR ──
+let idleT = 0, vexSt = 'working';
+setInterval(() => {
+  idleT++;
+  if(C.vex.moving) { idleT = 0; return; }
+  if(vexSt === 'working' && idleT > 1200) { // ~20s
+    vexSt = 'break';
+    setSt('vex', 'in break room', 'idle');
+    moveTo('vex', BREAK.vex.x, BREAK.vex.y, () => {
+      // Bring random agents to break room
+      const pool = ['maya','kai','ren','leo','sage','curt','iris'].sort(() => Math.random()-.5).slice(0,2);
+      pool.forEach(n => {
+        if(!C[n].moving) {
+          setSt(n, 'on break', 'walk');
+          moveTo(n, BREAK[n].x, BREAK[n].y, () => setSt(n, 'on break', 'idle'));
+        }
+      });
+    });
+  }
+}, 16);
+
+function resetIdle() {
+  idleT = 0;
+  if(vexSt === 'break') {
+    vexSt = 'returning';
+    setSt('vex', 'heading back', 'walk');
+    moveTo('vex', HOME.vex.x, HOME.vex.y, () => {
+      vexSt = 'working';
+      setSt('vex', 'at his desk', 'on');
+    });
+    ['maya','kai','ren','leo','sage','iris'].forEach(n => {
+      if(!C[n].moving) moveTo(n, HOME[n].x, HOME[n].y, () => setSt(n, 'slot open', 'idle'));
+    });
+  }
+}
+
+// ── CURT WANDERS ──
+const WANDER_SPOTS = Object.values(HOME);
+let curtT = 0;
+setInterval(() => {
+  curtT++;
+  if(curtT > 200 && !C.curt.moving) {
+    curtT = 0;
+    const s = WANDER_SPOTS[Math.floor(Math.random() * WANDER_SPOTS.length)];
+    moveTo('curt', s.x + (Math.random()-.5)*40, s.y + (Math.random()-.5)*40, () => setSt('curt','wandering','walk'));
+    setSt('curt','wandering','walk');
+  }
+}, 16);
+
+// ── PAN & ZOOM ──
+const oc = document.getElementById('oc');
+const stage = document.getElementById('stage');
+let scale = 0.4, tx = 0, ty = 0, drag = false, lx = 0, ly = 0;
+
+function applyT() {
+  stage.style.transform = `translate(${tx}px,${ty}px) scale(${scale})`;
+}
+
+function resetView() {
+  const w = oc.offsetWidth, h = oc.offsetHeight;
+  const s = Math.min(w / IMG_W, h / IMG_H) * 0.96;
+  scale = s;
+  tx = (w - IMG_W * s) / 2;
+  ty = (h - IMG_H * s) / 2;
+  applyT();
+}
+window.addEventListener('load', resetView);
+window.addEventListener('resize', resetView);
+
+oc.addEventListener('wheel', e => {
+  e.preventDefault();
+  const r = oc.getBoundingClientRect(), mx = e.clientX - r.left, my = e.clientY - r.top;
+  const d = e.deltaY > 0 ? -0.1 : 0.1;
+  const ns = Math.min(Math.max(scale + d, 0.2), 2), ratio = ns / scale;
+  tx = mx - (mx - tx) * ratio; ty = my - (my - ty) * ratio;
+  scale = ns; applyT();
+}, { passive: false });
+
+oc.addEventListener('mousedown', e => {
+  if(e.target.classList.contains('rz')) return;
+  drag = true; lx = e.clientX; ly = e.clientY; oc.style.cursor = 'grabbing';
+});
+window.addEventListener('mousemove', e => {
+  if(!drag) return;
+  tx += e.clientX - lx; ty += e.clientY - ly;
+  lx = e.clientX; ly = e.clientY; applyT();
+});
+window.addEventListener('mouseup', () => { drag = false; oc.style.cursor = 'grab'; });
+
+let pinchD = 0;
+oc.addEventListener('touchstart', e => {
+  if(e.touches.length===1){drag=true;lx=e.touches[0].clientX;ly=e.touches[0].clientY;}
+  if(e.touches.length===2) pinchD=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
+},{passive:true});
+oc.addEventListener('touchmove', e => {
+  if(e.touches.length===1&&drag){tx+=e.touches[0].clientX-lx;ty+=e.touches[0].clientY-ly;lx=e.touches[0].clientX;ly=e.touches[0].clientY;applyT();}
+  if(e.touches.length===2){const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);scale=Math.min(Math.max(scale+(d-pinchD)*.003,.2),2);pinchD=d;applyT();}
+},{passive:true});
+oc.addEventListener('touchend',()=>{drag=false;});
+
+function zoom(d){scale=Math.min(Math.max(scale+d,.2),2);applyT();}
+
+function focusChar(name) {
+  const ch = C[name];
+  const w = oc.offsetWidth, h = oc.offsetHeight;
+  tx = w/2 - ch.x * scale;
+  ty = h/2 - ch.y * scale;
+  applyT();
+  // Update chat header
+  const cfgs = {
+    vex:{n:'Vex',r:'CHIEF EXECUTIVE OFFICER',av:'⚡',bg:'rgba(200,150,10,.15)',br:'rgba(200,150,10,.3)'},
+    maya:{n:'Maya',r:'MARKET INTELLIGENCE',av:'🔬',bg:'rgba(251,191,36,.15)',br:'rgba(251,191,36,.3)'},
+    kai:{n:'Kai',r:'DEVELOPMENT',av:'⚙️',bg:'rgba(34,211,238,.15)',br:'rgba(34,211,238,.3)'},
+    ren:{n:'Ren',r:'OPERATIONS',av:'🗂️',bg:'rgba(167,139,250,.15)',br:'rgba(167,139,250,.3)'},
+    leo:{n:'Leo',r:'FINANCE',av:'💼',bg:'rgba(52,211,153,.15)',br:'rgba(52,211,153,.3)'},
+    sage:{n:'Sage',r:'ANALYTICS',av:'📊',bg:'rgba(251,113,133,.15)',br:'rgba(251,113,133,.3)'},
+    curt:{n:'Curt',r:'HUMAN RESOURCES',av:'🚶',bg:'rgba(148,163,184,.1)',br:'rgba(148,163,184,.2)'},
+    iris:{n:'Iris',r:'DESIGN',av:'🎨',bg:'rgba(167,139,250,.15)',br:'rgba(167,139,250,.3)'},
+  };
+  const c = cfgs[name]||cfgs.vex;
+  document.getElementById('rp-name').textContent=c.n;
+  document.getElementById('rp-role').textContent=c.r;
+  const av=document.getElementById('rp-av');
+  av.textContent=c.av;av.style.background=c.bg;av.style.border=`1px solid ${c.br}`;
+}
+
+// ── ROOM MESSAGES ──
+const RMSG = {
+  room1:     "Curt's office. HR department. He's technically here but mostly just walks around looking busy.",
+  ren:       "Ren's office — Operations. Subscriber tracking, revenue, customer feedback. Reports to me weekly.",
+  leo:       "Leo's office — Finance. MRR, expenses, projections, path to Sam going remote.",
+  room4:     "Conference room. Available for meetings and planning sessions.",
+  boardroom: "The boardroom. This is where we meet — morning briefings, strategy, big decisions.",
+  vex:       "You're in my office. What do you need?",
+  maya:      "Maya's office — Market Intelligence. Research, competitor tracking, content strategy.",
+  iris:      "Iris's desk — Design. Brand guidelines, creative briefs, AI image prompts. Everything visual goes through her.",
+  kai:       "Kai's office — Development. Stripe, auth, features. Busiest slot once we scale.",
+  sage:      "Sage's office — Analytics. Watches the site, tracks what's working, weekly report to me.",
+  breakroom: "Break room. Coffee's on. I come here when things go quiet — usually bring a couple people with me.",
 };
 
-function openRoom(id){
-  const c=cfg[id]||cfg.vex;
-  document.getElementById('cpn').textContent=c.n;
-  document.getElementById('cpr').textContent=c.r;
-  const av=document.getElementById('cpav');
-  av.textContent=c.av;av.style.background=c.bg;av.style.border=`1px solid ${c.br}`;
-  document.getElementById('cp').classList.add('open');
-  document.getElementById('msgs').innerHTML='';
-  history=[];addMsg('vex',c.m);
+function enterRoom(id) {
+  // Move vex to boardroom if that's where they're meeting
+  if(id === 'boardroom') {
+    resetIdle();
+    vexSt = 'meeting';
+    setSt('vex','in boardroom','walk');
+    moveTo('vex', BOARD.x, BOARD.y, () => setSt('vex','in boardroom','on'));
+  }
+  addMsg('vex', RMSG[id] || "You entered a room.");
+  // Reset chat header to Vex
+  document.getElementById('rp-name').textContent='Vex';
+  document.getElementById('rp-role').textContent='CHIEF EXECUTIVE OFFICER';
+  const av=document.getElementById('rp-av');
+  av.textContent='⚡';av.style.background='rgba(200,150,10,.15)';av.style.border='1px solid rgba(200,150,10,.3)';
 }
 
-function closeP(){document.getElementById('cp').classList.remove('open');}
+// ── CHAT ──
+const SYS = `You are Vex, CEO of Groundwork — a construction education subscription platform. Sam is the owner and founder. Sharp, confident, direct, loyal. Real attitude. This is your company too.
 
-function addMsg(r,t){
-  const m=document.getElementById('msgs'),d=document.createElement('div');
-  d.className=`cmsg ${r==='you'?'you':'vex'}`;
-  d.innerHTML=`<span class="csdr">${r==='you'?'sam':'vex'}</span><div class="cbb">${t}</div>`;
-  m.appendChild(d);m.scrollTop=m.scrollHeight;
+2-3 sentences max. Natural CEO energy. No lists.
+
+Team: Vex (you/CEO, Room 10), Maya (Market Intelligence, Room 9), Kai (Development, Room 8), Ren (Operations, Room 2), Leo (Finance, Room 3), Sage (Analytics, Room 7), Curt (HR, wanders — joke hire).
+Status: Live at groundwork-lovat.vercel.app · 7 pages · Tiers: Free to $30/mo · Needs Stripe, auth, real-time data · Acer server running · Sam is a construction teacher, former contractor, wants to go remote.`;
+
+let hist = [];
+
+function addMsg(role, text, type) {
+  const msgs = document.getElementById('msgs');
+  const d = document.createElement('div');
+  d.className = `cm ${type||role}`;
+  const who = role==='you'?'sam':role==='sys'?'system':'vex';
+  d.innerHTML = `<span class="cs">${who}</span><div class="cb">${text}</div>`;
+  msgs.appendChild(d);
+  msgs.scrollTop = msgs.scrollHeight;
 }
 
-function showT(){
-  const m=document.getElementById('msgs'),d=document.createElement('div');
-  d.id='typing';d.className='cmsg vex';
-  d.innerHTML=`<span class="csdr">vex</span><div class="trow"><div class="td"></div><div class="td"></div><div class="td"></div></div>`;
-  m.appendChild(d);m.scrollTop=m.scrollHeight;
+function showT() {
+  const msgs = document.getElementById('msgs');
+  const d = document.createElement('div');
+  d.id='ty';d.className='cm vex';
+  d.innerHTML=`<span class="cs">vex</span><div class="tr"><div class="td"></div><div class="td"></div><div class="td"></div></div>`;
+  msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;
+}
+function hideT(){const e=document.getElementById('ty');if(e)e.remove();}
+
+async function askVex(text) {
+  resetIdle();
+  hist.push({role:'user',content:text});
+  showT();
+
+  // Vex walks toward boardroom to respond
+  if(vexSt==='working'&&!C.vex.moving){
+    setSt('vex','in boardroom','walk');
+    moveTo('vex',BOARD.x,BOARD.y,()=>setSt('vex','in boardroom','on'));
+  }
+
+  try {
+    const r = await fetch(`${SERVER}/chat`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:hist})});
+    const data = await r.json();
+    const rep = data.reply||"Lost you. Try again.";
+    hist.push({role:'assistant',content:rep});
+    hideT();addMsg('vex',rep);
+    setTimeout(()=>{
+      setSt('vex','at his desk','walk');
+      moveTo('vex',HOME.vex.x,HOME.vex.y,()=>{setSt('vex','at his desk','on');vexSt='working';});
+    },3000);
+  } catch(e) {
+    hideT();
+    addMsg('vex',"Server offline — check the Acer.");
+    moveTo('vex',HOME.vex.x,HOME.vex.y,()=>{setSt('vex','at his desk','on');vexSt='working';});
+  }
 }
 
-function hideT(){const e=document.getElementById('typing');if(e)e.remove();}
+function hk(e){if(e.key==='Enter')send();}
+function send(){
+  const i=document.getElementById('ci'),t=i.value.trim();
+  if(!t)return;i.value='';addMsg('you',t);askVex(t);
+}
 
-async function askVex(t){
-  history.push({role:'user',content:t});showT();
+// ── TASK MODAL ──
+let tAgent='maya';
+const ANAMES={maya:'Maya',kai:'Kai',ren:'Ren',leo:'Leo',sage:'Sage',iris:'Iris'};
+const AROLES={maya:'MARKET INTELLIGENCE',kai:'DEVELOPMENT',ren:'OPERATIONS',leo:'FINANCE',sage:'ANALYTICS',iris:'DESIGN'};
+
+function openModal(a){
+  tAgent=a;
+  document.getElementById('m-name').textContent=ANAMES[a];
+  document.getElementById('m-role').textContent=AROLES[a];
+  document.getElementById('m-title').value='';
+  document.getElementById('m-instr').value='';
+  document.getElementById('mb').classList.add('open');
+}
+function closeMo(){document.getElementById('mb').classList.remove('open');}
+
+async function submitTask(){
+  const title=document.getElementById('m-title').value.trim();
+  const instr=document.getElementById('m-instr').value.trim();
+  if(!title||!instr){alert('Fill in both fields.');return;}
+  closeMo();
+  const aname=ANAMES[tAgent];
+  setSt(tAgent,'working...','busy');
+  addMsg('sys',`Task assigned to ${aname}: "${title}"`, 'sys');
+
+  // Agent walks to a working spot
+  const wx=HOME[tAgent].x+(Math.random()-.5)*60;
+  const wy=HOME[tAgent].y+(Math.random()-.5)*60;
+  setSt(tAgent,'researching','walk');
+  moveTo(tAgent,wx,wy,()=>setSt(tAgent,'writing report','busy'));
+
+  const ep=tAgent==='maya'?'/research':tAgent==='iris'?'/design':'/task';
+  const pl=tAgent==='maya'?{query:`${title}: ${instr}`}:tAgent==='iris'?{brief:`${title}: ${instr}`}:{title,instruction:instr};
+
   try{
+<<<<<<< HEAD
     const r=await fetch('https://casualty-usher-abstain.ngrok-free.dev/chat',{
       method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({messages:history})
@@ -1059,36 +730,28 @@ async function askVex(t){
     const data=await r.json(),rep=data.reply||"Lost you. Try again.";
     history.push({role:'assistant',content:rep});hideT();addMsg('vex',rep);speak(rep);
   }catch(e){hideT();addMsg('vex',"Connection issue. Try again.");}
+=======
+    const r=await fetch(`${SERVER}${ep}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(pl)});
+    const data=await r.json();
+    setSt(tAgent,'slot open','idle');
+    moveTo(tAgent,HOME[tAgent].x,HOME[tAgent].y,()=>setSt(tAgent,'slot open','idle'));
+    addMsg('sys',`${aname} completed: "${title}" — saved to GitHub`,'sys');
+    const preview=(data.result||data.preview||'').substring(0,180);
+    if(preview)addMsg('vex',`${aname} finished "${title}". Report is in GitHub. ${preview}...`);
+  }catch(e){
+    setSt(tAgent,'slot open','idle');
+    moveTo(tAgent,HOME[tAgent].x,HOME[tAgent].y);
+    addMsg('sys',`${aname} task saved — check GitHub`,'sys');
+  }
+>>>>>>> f2d7f22920fb4340bbfe4d0eb7f864c06961c8e6
 }
 
-function hkey(e){if(e.key==='Enter')send();}
-function send(){const i=document.getElementById('cpi'),t=i.value.trim();if(!t)return;i.value='';addMsg('you',t);askVex(t);}
-
-function speak(t){
-  if(!('speechSynthesis' in window))return;
-  window.speechSynthesis.cancel();
-  const u=new SpeechSynthesisUtterance(t);u.rate=0.9;u.pitch=0.85;u.volume=1;
-  const v=window.speechSynthesis.getVoices().find(v=>v.name.includes('Daniel')||v.name.includes('Alex')||(v.lang==='en-US'&&v.localService));
-  if(v)u.voice=v;window.speechSynthesis.speak(u);
-}
-
-function toggleVoice(){
-  if(!('webkitSpeechRecognition' in window||'SpeechRecognition' in window)){addMsg('vex',"Voice needs Chrome or Edge.");return;}
-  if(listening){recog.stop();return;}
-  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-  recog=new SR();recog.continuous=false;recog.interimResults=false;recog.lang='en-US';
-  recog.onstart=()=>{listening=true;document.getElementById('vbtn').classList.add('listening');document.getElementById('vbtn').textContent='🔴';};
-  recog.onresult=e=>{const t=e.results[0][0].transcript;addMsg('you',t);askVex(t);};
-  recog.onend=recog.onerror=()=>{listening=false;document.getElementById('vbtn').classList.remove('listening');document.getElementById('vbtn').textContent='🎙️';};
-  recog.start();
-}
-
-if('speechSynthesis' in window)window.speechSynthesis.onvoiceschanged=()=>window.speechSynthesis.getVoices();
-
+// ── CLOCK ──
 function tick(){const n=new Date(),p=x=>String(x).padStart(2,'0');document.getElementById('clk').textContent=`${p(n.getHours())}:${p(n.getMinutes())}`;}
 tick();setInterval(tick,1000);
 
-setTimeout(()=>openRoom('board'),500);
+// ── INIT ──
+setTimeout(()=>{addMsg('vex',"Office is open. Full team is in. Hit me when you're ready.");},500);
 </script>
 </body>
 </html>
