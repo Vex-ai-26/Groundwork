@@ -1064,17 +1064,9 @@ function hkey(e){if(e.key==='Enter')send();}
 function send(){const i=document.getElementById('cpi'),t=i.value.trim();if(!t)return;i.value='';addMsg('you',t);askVex(t);}
 
 
-  if(listening){recog.stop();return;}
-  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-  recog=new SR();recog.continuous=false;recog.interimResults=false;recog.lang='en-US';
-  recog.onstart=()=>{listening=true;document.getElementById('vbtn').classList.add('listening');document.getElementById('vbtn').textContent='🔴';};
-  recog.onresult=e=>{const t=e.results[0][0].transcript;addMsg('you',t);askVex(t);};
-  recog.onend=recog.onerror=()=>{listening=false;document.getElementById('vbtn').classList.remove('listening');document.getElementById('vbtn').textContent='🎙️';};
-  recog.start();
-}
 
 
-function tick(){const n=new Date(),p=x=>String(x).padStart(2,'0');document.getElementById('clk').textContent=`${p(n.getHours())}:${p(n.getMinutes())}`;}
+function tick(){const n=new Date(),p=x=>String(x).padStart(2,"0");document.getElementById('clk').textContent=`${p(n.getHours())}:${p(n.getMinutes())}`;}
 tick();setInterval(tick,1000);
 
 setTimeout(()=>openRoom('board'),500);
