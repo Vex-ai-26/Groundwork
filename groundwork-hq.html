@@ -200,6 +200,13 @@ body{font-family:'Syne',sans-serif;color:#e2e8f0;display:flex;flex-direction:col
         <button class="tb" onclick="openModal('sage');event.stopPropagation()">+ assign task</button>
       </div>
 
+      <div class="ac" id="ac-iris" onclick="focusChar('iris')">
+        <div class="ac-top"><div class="ac-av" style="background:rgba(167,139,250,.12);border:1px solid rgba(167,139,250,.25);">🎨</div><div class="ac-name">Iris</div></div>
+        <div class="ac-role">DESIGN</div>
+        <div class="ac-st"><div class="sd idle" id="sd-iris"></div><span class="st" id="st-iris">slot open</span></div>
+        <button class="tb" onclick="openModal('iris');event.stopPropagation()">+ assign brief</button>
+      </div>
+
       <div class="ac" id="ac-curt" onclick="focusChar('curt')">
         <div class="ac-top"><div class="ac-av" style="background:rgba(148,163,184,.1);border:1px solid rgba(148,163,184,.2);">🚶</div><div class="ac-name">Curt</div></div>
         <div class="ac-role">HUMAN RESOURCES</div>
@@ -315,12 +322,14 @@ const HOME = {
   leo:  { x:1198, y:236  },  // Room 3  — Leo's office
   sage: { x:1354, y:1360 },  // Room 7  — Sage's office
   curt: { x:269,  y:236  },  // Room 1  — Curt's office (starts here, wanders)
+  iris: { x:269,  y:950  },  // Room 9  — sits near Maya
 };
 
 const BREAK = {
   vex:  { x:2000, y:1050 }, maya: { x:1900, y:1150 }, kai:  { x:2100, y:1050 },
   ren:  { x:1900, y:950  }, leo:  { x:2050, y:950  }, sage: { x:2200, y:1100 },
   curt: { x:1850, y:1000 },
+  iris: { x:2000, y:1200 },
 };
 
 const BOARD = { x:2127, y:400 };  // Room 5 boardroom center
@@ -334,6 +343,7 @@ const CFG = {
   leo:  { skin:'#d4b090', hair:'#3a2010', shirt:'#2a4a28', eyeCol:'#70a070', glow:false, label:'LEO',  lc:'#34d399' },
   sage: { skin:'#e8b880', hair:'#182a18', shirt:'#1a4a3a', eyeCol:'#50a080', glow:false, label:'SAGE', lc:'#fb7185' },
   curt: { skin:'#d4a870', hair:'#8a6a20', shirt:'#5a4a2a', eyeCol:'#a08040', glow:false, label:'CURT', lc:'#94a3b8' },
+  iris: { skin:'#e8c4d0', hair:'#6a2a6a', shirt:'#4a2a6a', eyeCol:'#d080d0', glow:false, label:'IRIS', lc:'#a78bfa' },
 };
 
 // ── CHARACTER STATE ──
@@ -468,7 +478,7 @@ setInterval(() => {
     setSt('vex', 'in break room', 'idle');
     moveTo('vex', BREAK.vex.x, BREAK.vex.y, () => {
       // Bring random agents to break room
-      const pool = ['maya','kai','ren','leo','sage','curt'].sort(() => Math.random()-.5).slice(0,2);
+      const pool = ['maya','kai','ren','leo','sage','curt','iris'].sort(() => Math.random()-.5).slice(0,2);
       pool.forEach(n => {
         if(!C[n].moving) {
           setSt(n, 'on break', 'walk');
@@ -488,7 +498,7 @@ function resetIdle() {
       vexSt = 'working';
       setSt('vex', 'at his desk', 'on');
     });
-    ['maya','kai','ren','leo','sage'].forEach(n => {
+    ['maya','kai','ren','leo','sage','iris'].forEach(n => {
       if(!C[n].moving) moveTo(n, HOME[n].x, HOME[n].y, () => setSt(n, 'slot open', 'idle'));
     });
   }
@@ -575,6 +585,7 @@ function focusChar(name) {
     leo:{n:'Leo',r:'FINANCE',av:'💼',bg:'rgba(52,211,153,.15)',br:'rgba(52,211,153,.3)'},
     sage:{n:'Sage',r:'ANALYTICS',av:'📊',bg:'rgba(251,113,133,.15)',br:'rgba(251,113,133,.3)'},
     curt:{n:'Curt',r:'HUMAN RESOURCES',av:'🚶',bg:'rgba(148,163,184,.1)',br:'rgba(148,163,184,.2)'},
+    iris:{n:'Iris',r:'DESIGN',av:'🎨',bg:'rgba(167,139,250,.15)',br:'rgba(167,139,250,.3)'},
   };
   const c = cfgs[name]||cfgs.vex;
   document.getElementById('rp-name').textContent=c.n;
@@ -592,6 +603,7 @@ const RMSG = {
   boardroom: "The boardroom. This is where we meet — morning briefings, strategy, big decisions.",
   vex:       "You're in my office. What do you need?",
   maya:      "Maya's office — Market Intelligence. Research, competitor tracking, content strategy.",
+  iris:      "Iris's desk — Design. Brand guidelines, creative briefs, AI image prompts. Everything visual goes through her.",
   kai:       "Kai's office — Development. Stripe, auth, features. Busiest slot once we scale.",
   sage:      "Sage's office — Analytics. Watches the site, tracks what's working, weekly report to me.",
   breakroom: "Break room. Coffee's on. I come here when things go quiet — usually bring a couple people with me.",
@@ -678,8 +690,8 @@ function send(){
 
 // ── TASK MODAL ──
 let tAgent='maya';
-const ANAMES={maya:'Maya',kai:'Kai',ren:'Ren',leo:'Leo',sage:'Sage'};
-const AROLES={maya:'MARKET INTELLIGENCE',kai:'DEVELOPMENT',ren:'OPERATIONS',leo:'FINANCE',sage:'ANALYTICS'};
+const ANAMES={maya:'Maya',kai:'Kai',ren:'Ren',leo:'Leo',sage:'Sage',iris:'Iris'};
+const AROLES={maya:'MARKET INTELLIGENCE',kai:'DEVELOPMENT',ren:'OPERATIONS',leo:'FINANCE',sage:'ANALYTICS',iris:'DESIGN'};
 
 function openModal(a){
   tAgent=a;
@@ -706,8 +718,8 @@ async function submitTask(){
   setSt(tAgent,'researching','walk');
   moveTo(tAgent,wx,wy,()=>setSt(tAgent,'writing report','busy'));
 
-  const ep=tAgent==='maya'?'/research':'/task';
-  const pl=tAgent==='maya'?{query:`${title}: ${instr}`}:{title,instruction:instr};
+  const ep=tAgent==='maya'?'/research':tAgent==='iris'?'/design':'/task';
+  const pl=tAgent==='maya'?{query:`${title}: ${instr}`}:tAgent==='iris'?{brief:`${title}: ${instr}`}:{title,instruction:instr};
 
   try{
     const r=await fetch(`${SERVER}${ep}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(pl)});
