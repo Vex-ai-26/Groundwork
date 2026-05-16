@@ -456,15 +456,20 @@ const ROOM_CENTERS = {
 
 // Specific spots within rooms
 const SPOTS = {
-  vex_desk:   {x:5, y:8},
-  vex_break:  {x:8, y:28},
-  board_head: {x:29,y:8},
+  vex_desk:   {x:5,  y:8},
+  vex_break:  {x:5,  y:27},
+  board_head: {x:29, y:8},
   maya_desk:  {x:36, y:26},
+  maya_break: {x:7,  y:28},
   kai_desk:   {x:52, y:26},
+  kai_break:  {x:9,  y:27},
   ren_desk:   {x:66, y:25},
+  ren_break:  {x:5,  y:29},
   leo_desk:   {x:66, y:29},
+  leo_break:  {x:11, y:28},
   sage_desk:  {x:38, y:26},
-  hallway_h:  {x:29,y:19},
+  sage_break: {x:8,  y:30},
+  hallway_h:  {x:29, y:19},
 };
 
 // ── CHARACTERS ──
@@ -546,36 +551,34 @@ function updateCharacters(dt) {
       ch.frame = 0;
       return;
     }
-    const target = ch.path[ch.pathIdx];
-    const dx = target.x - ch.x;
-    const dy = target.y - ch.y;
-    const dist = Math.sqrt(dx*dx+dy*dy);
-
-    if(Math.abs(dx) > Math.abs(dy)) ch.dir = dx > 0 ? 'right' : 'left';
-    else ch.dir = dy > 0 ? 'down' : 'up';
-
-    if(dist < MOVE_SPEED + 0.05) {
-      ch.x = target.x; ch.y = target.y;
+    // Instant teleport — jump 2 tiles per frame for snappy movement
+    const steps = 2;
+    for(let s = 0; s < steps; s++) {
+      if(ch.pathIdx >= ch.path.length) break;
+      const target = ch.path[ch.pathIdx];
+      const dx = target.x - ch.x;
+      const dy = target.y - ch.y;
+      if(Math.abs(dx) > Math.abs(dy)) ch.dir = dx > 0 ? 'right' : 'left';
+      else ch.dir = dy > 0 ? 'down' : 'up';
+      ch.x = target.x;
+      ch.y = target.y;
       ch.pathIdx++;
-      if(ch.pathIdx >= ch.path.length) {
-        ch.moving = false;
-        ch.frame = 0;
-        if(ch.onArrive){ ch.onArrive(); ch.onArrive = null; }
-      }
-    } else {
-      ch.x += (dx/dist) * MOVE_SPEED;
-      ch.y += (dy/dist) * MOVE_SPEED;
     }
-
+    if(ch.pathIdx >= ch.path.length) {
+      ch.moving = false;
+      ch.frame = 0;
+      if(ch.onArrive){ ch.onArrive(); ch.onArrive = null; }
+    }
+    // Walking animation
     ch.frameTimer += dt;
-    if(ch.frameTimer > 180) { ch.frame = (ch.frame + 1) % 4; ch.frameTimer = 0; }
+    if(ch.frameTimer > 120) { ch.frame = (ch.frame + 1) % 4; ch.frameTimer = 0; }
   });
 }
 
 // ── VEX BEHAVIOR ──
 let vexIdleTimer = 0;
 let vexState = 'working';
-const VEX_IDLE_TIMEOUT = 45000; // 45 seconds idle = go to break room
+const VEX_IDLE_TIMEOUT = 20000; // 45 seconds idle = go to break room
 
 function tickVexBehavior(dt) {
   vexIdleTimer += dt;
@@ -583,13 +586,29 @@ function tickVexBehavior(dt) {
   if(vex.moving) return;
 
   if(vexState === 'working' && vexIdleTimer > VEX_IDLE_TIMEOUT) {
-    // Go to break room
     vexState = 'goingbreak';
-    updateAgentStatus('vex', 'heading to break room', 'working');
+    updateAgentStatus('vex', 'in break room', 'idle');
     moveCharTo('vex', SPOTS.vex_break.x, SPOTS.vex_break.y, () => {
       vexState = 'break';
       vex.state = 'idle';
-      updateAgentStatus('vex', 'in break room', 'idle');
+    });
+    // Send random agents to break room too
+    const agentBreaks = [
+      {name:'maya', spot:SPOTS.maya_break},
+      {name:'kai',  spot:SPOTS.kai_break},
+      {name:'ren',  spot:SPOTS.ren_break},
+      {name:'leo',  spot:SPOTS.leo_break},
+      {name:'sage', spot:SPOTS.sage_break},
+    ];
+    // Pick 2 random agents to join
+    const shuffled = agentBreaks.sort(()=>Math.random()-0.5).slice(0,2);
+    shuffled.forEach(({name, spot}) => {
+      const ch = characters[name];
+      if(ch && !ch.moving && ch.state === 'idle') {
+        moveCharTo(name, spot.x, spot.y, () => {
+          updateAgentStatus(name, 'in break room', 'idle');
+        });
+      }
     });
   }
 }
@@ -599,11 +618,20 @@ function resetVexIdle() {
   const vex = characters.vex;
   if(vexState === 'break' || vexState === 'goingbreak') {
     vexState = 'returning';
-    updateAgentStatus('vex', 'heading back to desk', 'working');
+    updateAgentStatus('vex', 'at his desk', 'online');
     moveCharTo('vex', SPOTS.vex_desk.x, SPOTS.vex_desk.y, () => {
       vexState = 'working';
       vex.state = 'working';
-      updateAgentStatus('vex', 'at his desk', 'online');
+    });
+    // Bring agents back to their desks
+    const deskMap = {maya:SPOTS.maya_desk, kai:SPOTS.kai_desk, ren:SPOTS.ren_desk, leo:SPOTS.leo_desk, sage:SPOTS.sage_desk};
+    Object.entries(deskMap).forEach(([name, spot]) => {
+      const ch = characters[name];
+      if(ch && !ch.moving) {
+        moveCharTo(name, spot.x, spot.y, () => {
+          updateAgentStatus(name, 'idle', 'idle');
+        });
+      }
     });
   }
 }
