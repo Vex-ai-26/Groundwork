@@ -456,26 +456,26 @@ const ROOM_CENTERS = {
 
 // Specific spots within rooms
 const SPOTS = {
-  vex_desk:   {x:4,  y:3},
-  vex_break:  {x:4,  y:25},
-  board_head: {x:22, y:3},
-  maya_desk:  {x:35, y:23},
+  vex_desk:   {x:5,  y:8},
+  vex_break:  {x:4,  y:26},
+  board_head: {x:25, y:8},
+  maya_desk:  {x:35, y:26},
   maya_break: {x:6,  y:24},
-  kai_desk:   {x:51, y:23},
+  kai_desk:   {x:51, y:26},
   kai_break:  {x:8,  y:25},
-  ren_desk:   {x:67, y:23},
-  ren_break:  {x:3,  y:26},
-  leo_desk:   {x:68, y:23},
+  ren_desk:   {x:67, y:26},
+  ren_break:  {x:3,  y:27},
+  leo_desk:   {x:68, y:28},
   leo_break:  {x:9,  y:24},
-  sage_desk:  {x:36, y:23},
-  sage_break: {x:5,  y:27},
+  sage_desk:  {x:36, y:26},
+  sage_break: {x:5,  y:28},
   hallway_h:  {x:20, y:19},
 };
 
 // ── CHARACTERS ──
 const characters = {
   vex: {
-    x:3, y:3, tx:3, ty:3,
+    x:5, y:8, tx:5, ty:8,
     path:[], pathIdx:0,
     moving:false, frame:0, frameTimer:0, dir:'down',
     state:'working', // working, idle, walking, meeting
@@ -637,9 +637,8 @@ function resetVexIdle() {
 }
 
 function goToBoard(charName, callback) {
-  updateAgentStatus('vex','heading to boardroom','working');
-  moveCharTo(charName, SPOTS.board_head.x, SPOTS.board_head.y, () => {
-    updateAgentStatus('vex','in boardroom','online');
+  updateAgentStatus('vex','in boardroom','online');
+  moveCharTo(charName, 25, 8, () => {
     if(callback) callback();
   });
 }
@@ -1339,37 +1338,16 @@ async function submitTask(){
 
 // ── INIT ──
 setTimeout(()=>{
-  addMsg('vex',"Office is open Sam. Full team is in.");
-  
-  // Debug: log tile values at character positions
-  Object.entries(characters).forEach(([name, ch])=>{
-    const tx=Math.round(ch.x), ty=Math.round(ch.y);
-    const tile = MAP[ty] ? MAP[ty][tx] : 'OUT_OF_BOUNDS';
-    console.log(name, 'at tile', tx, ty, '= tile type', tile, 'walkable:', walkable(tx,ty));
+  addMsg('vex',"Office is open Sam. Full team is in. Hit me when you're ready.");
+  // Vex does a little patrol on startup to show he's alive
+  moveCharTo('vex', 3, 8, ()=>{
+    moveCharTo('vex', 5, 12, ()=>{
+      moveCharTo('vex', SPOTS.vex_desk.x, SPOTS.vex_desk.y, ()=>{
+        updateAgentStatus('vex','at his desk','online');
+      });
+    });
   });
-  
-  // Force Vex to walk - try simple one-step move
-  const vex = characters.vex;
-  console.log('Vex pos:', vex.x, vex.y);
-  console.log('Target walkable:', walkable(6, 8));
-  console.log('Vex walkable:', walkable(Math.round(vex.x), Math.round(vex.y)));
-  
-  const testPath = findPath(Math.round(vex.x), Math.round(vex.y), 6, 8);
-  console.log('Test path length:', testPath.length, testPath);
-  
-  if(testPath.length > 1) {
-    vex.path = testPath;
-    vex.pathIdx = 1;
-    vex.moving = true;
-    console.log('Movement started');
-  } else {
-    console.log('No path found - checking nearby walkable tiles');
-    for(let dy=-2;dy<=2;dy++) for(let dx=-2;dx<=2;dx++){
-      const tx2=Math.round(vex.x)+dx, ty2=Math.round(vex.y)+dy;
-      if(walkable(tx2,ty2)) console.log('  walkable nearby:', tx2, ty2, 'tile:', MAP[ty2]?.[tx2]);
-    }
-  }
-},800);
+},600);
 </script>
 </body>
 </html>
