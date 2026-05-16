@@ -320,6 +320,16 @@ body{font-family:'Syne',sans-serif;color:#e8edf5;display:flex;flex-direction:col
         <button class="task-btn" onclick="openModal('sage');event.stopPropagation()">+ assign task</button>
       </div>
 
+      <!-- CURT -->
+      <div class="agent-card" id="card-curt" onclick="focusChar('curt')">
+        <div class="ac-top">
+          <div class="ac-av" style="background:rgba(148,163,184,.12);border:1px solid rgba(148,163,184,.25);">🚶</div>
+          <div class="ac-name">Curt</div>
+        </div>
+        <div class="ac-role">HUMAN RESOURCES</div>
+        <div class="ac-status"><div class="sd idle" id="dot-curt"></div><span class="st" id="st-curt">wandering</span></div>
+      </div>
+
       <div class="panel-div"></div>
       <div class="panel-sec">Company</div>
       <div class="metric-row"><span class="metric-label">subscribers</span><span class="metric-val mv-g">0</span></div>
@@ -359,16 +369,15 @@ body{font-family:'Syne',sans-serif;color:#e8edf5;display:flex;flex-direction:col
       <!-- ROOM CLICK ZONES (positioned over the map image) -->
       <!-- Coordinates based on 2500x1618 image -->
 
-      <!-- ═══ ROOM ZONES — pixel coordinates on 2500x1618 image ═══ -->
-      <div class="room-zone" data-room="vex" style="left:18px;top:18px;width:295px;height:258px;" onclick="enterRoom('vex')"></div>
-      <div class="room-zone" data-room="office1" style="left:325px;top:18px;width:220px;height:258px;" onclick="enterRoom('office1')"></div>
-      <div class="room-zone" data-room="office2" style="left:555px;top:18px;width:220px;height:258px;" onclick="enterRoom('office2')"></div>
-      <div class="room-zone" data-room="boardroom1" style="left:785px;top:18px;width:190px;height:258px;" onclick="enterRoom('boardroom1')"></div>
-      <div class="room-zone" data-room="boardroom2" style="left:1470px;top:18px;width:995px;height:620px;" onclick="enterRoom('boardroom2')"></div>
-      <div class="room-zone" data-room="lounge" style="left:18px;top:282px;width:295px;height:218px;" onclick="enterRoom('lounge')"></div>
-      <div class="room-zone" data-room="privateoffice" style="left:18px;top:508px;width:295px;height:235px;" onclick="enterRoom('privateoffice')"></div>
-      <div class="room-zone" data-room="dining" style="left:18px;top:750px;width:295px;height:230px;" onclick="enterRoom('dining')"></div>
-      <div class="room-zone" data-room="workspace" style="left:1470px;top:645px;width:995px;height:950px;" onclick="enterRoom('workspace')"></div>
-      <div class="room-zone" data-room="breakroom" style="left:325px;top:1040px;width:320px;height:555px;" onclick="enterRoom('breakroom')"></div>
-      <div class="room-zone" data-room="lounge2" style="left:655px;top:1040px;width:320px;height:555px;" onclick="enterRoom('lounge2')"></div>
+      <!-- ═══ ROOM ZONES — mapped from annotated floor plan ═══ -->
+      <div class="room-zone" data-room="vex" title="Vex's Office" style="left:18px;top:282px;width:295px;height:235px;" onclick="enterRoom('vex')"></div>
+      <div class="room-zone" data-room="boardroom" title="Boardroom" style="left:1470px;top:18px;width:995px;height:620px;" onclick="enterRoom('boardroom')"></div>
+      <div class="room-zone" data-room="room1" title="HR — Curt's Office" style="left:18px;top:18px;width:295px;height:258px;" onclick="enterRoom('room1')"></div>
+      <div class="room-zone" data-room="ren" title="Ren — Operations" style="left:325px;top:18px;width:220px;height:258px;" onclick="enterRoom('ren')"></div>
+      <div class="room-zone" data-room="leo" title="Leo — Finance" style="left:555px;top:18px;width:220px;height:258px;" onclick="enterRoom('leo')"></div>
+      <div class="room-zone" data-room="room4" title="Conference" style="left:785px;top:18px;width:190px;height:258px;" onclick="enterRoom('room4')"></div>
+      <div class="room-zone" data-room="breakroom" title="Break Room" style="left:1470px;top:645px;width:995px;height:955px;" onclick="enterRoom('breakroom')"></div>
+      <div class="room-zone" data-room="sage" title="Sage — Analytics" style="left:655px;top:1040px;width:320px;height:555px;" onclick="enterRoom('sage')"></div>
+      <div class="room-zone" data-room="kai" title="Kai — Development" style="left:325px;top:1040px;width:320px;height:555px;" onclick="enterRoom('kai')"></div>
+      <div class="room-zone" data-room="maya" title="Maya — Market Intelligence" style="left:18px;top:750px;width:295px;height:845px;" onclick="enterRoom('maya')"></div>
 
