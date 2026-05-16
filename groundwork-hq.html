@@ -880,10 +880,11 @@ function waterCooler(x,y){
 
 // ── MAIN DRAW ──
 let glowT=0;
-let lastTime=0;
+let lastTime=null;
 
 function draw(ts){
-  const dt=ts-lastTime; lastTime=ts;
+  if(lastTime===null)lastTime=ts;
+  const dt=Math.min(ts-lastTime,50); lastTime=ts;
   glowT+=0.04;
 
   updateCharacters(dt);
