@@ -456,26 +456,26 @@ const ROOM_CENTERS = {
 
 // Specific spots within rooms
 const SPOTS = {
-  vex_desk:   {x:5,  y:8},
-  vex_break:  {x:5,  y:27},
-  board_head: {x:29, y:8},
-  maya_desk:  {x:36, y:26},
-  maya_break: {x:7,  y:28},
-  kai_desk:   {x:52, y:26},
-  kai_break:  {x:9,  y:27},
-  ren_desk:   {x:66, y:25},
-  ren_break:  {x:5,  y:29},
-  leo_desk:   {x:66, y:29},
-  leo_break:  {x:11, y:28},
-  sage_desk:  {x:38, y:26},
-  sage_break: {x:8,  y:30},
-  hallway_h:  {x:29, y:19},
+  vex_desk:   {x:5,  y:4},
+  vex_break:  {x:4,  y:25},
+  board_head: {x:22, y:4},
+  maya_desk:  {x:35, y:24},
+  maya_break: {x:5,  y:25},
+  kai_desk:   {x:51, y:24},
+  kai_break:  {x:6,  y:26},
+  ren_desk:   {x:66, y:24},
+  ren_break:  {x:3,  y:25},
+  leo_desk:   {x:67, y:24},
+  leo_break:  {x:8,  y:25},
+  sage_desk:  {x:36, y:24},
+  sage_break: {x:7,  y:27},
+  hallway_h:  {x:20, y:19},
 };
 
 // ── CHARACTERS ──
 const characters = {
   vex: {
-    x:5, y:8, tx:5, ty:8,
+    x:5, y:4, tx:5, ty:4,
     path:[], pathIdx:0,
     moving:false, frame:0, frameTimer:0, dir:'down',
     state:'working', // working, idle, walking, meeting
@@ -484,7 +484,7 @@ const characters = {
     room:'vex',
   },
   maya: {
-    x:36, y:26, tx:36, ty:26,
+    x:35, y:24, tx:35, ty:24,
     path:[], pathIdx:0,
     moving:false, frame:0, frameTimer:0, dir:'down',
     state:'idle',
@@ -493,7 +493,7 @@ const characters = {
     room:'res',
   },
   kai: {
-    x:52, y:26, tx:52, ty:26,
+    x:51, y:24, tx:51, ty:24,
     path:[], pathIdx:0,
     moving:false, frame:0, frameTimer:0, dir:'down',
     state:'idle',
@@ -502,7 +502,7 @@ const characters = {
     room:'dev',
   },
   ren: {
-    x:66, y:25, tx:66, ty:25,
+    x:66, y:24, tx:66, ty:24,
     path:[], pathIdx:0,
     moving:false, frame:0, frameTimer:0, dir:'down',
     state:'idle',
@@ -511,7 +511,7 @@ const characters = {
     room:'ops',
   },
   leo: {
-    x:66, y:29, tx:66, ty:29,
+    x:67, y:24, tx:67, ty:24,
     path:[], pathIdx:0,
     moving:false, frame:0, frameTimer:0, dir:'down',
     state:'idle',
@@ -520,7 +520,7 @@ const characters = {
     room:'ops',
   },
   sage: {
-    x:38, y:26, tx:38, ty:26,
+    x:36, y:24, tx:36, ty:24,
     path:[], pathIdx:0,
     moving:false, frame:0, frameTimer:0, dir:'down',
     state:'idle',
@@ -578,10 +578,10 @@ function updateCharacters(dt) {
 // ── VEX BEHAVIOR ──
 let vexIdleTimer = 0;
 let vexState = 'working';
-const VEX_IDLE_TIMEOUT = 20000; // 45 seconds idle = go to break room
+const VEX_IDLE_TIMEOUT = 600; // ~600 frames at 60fps = ~10 seconds // 45 seconds idle = go to break room
 
 function tickVexBehavior(dt) {
-  vexIdleTimer += dt;
+  vexIdleTimer += 1; // count frames
   const vex = characters.vex;
   if(vex.moving) return;
 
