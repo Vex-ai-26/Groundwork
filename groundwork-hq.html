@@ -1310,14 +1310,36 @@ async function submitTask(){
 
 // ── INIT ──
 setTimeout(()=>{
-  // Show opening message without server
-  addMsg('vex',"Office is open Sam. I'm at my desk — full team is in. Hit me when you're ready.");
-  // Demo movement — Vex walks a short path to show movement works
-  moveCharTo('vex', 7, 8, ()=>{
-    moveCharTo('vex', SPOTS.vex_desk.x, SPOTS.vex_desk.y, ()=>{
-      updateAgentStatus('vex','at his desk','online');
-    });
+  addMsg('vex',"Office is open Sam. Full team is in.");
+  
+  // Debug: log tile values at character positions
+  Object.entries(characters).forEach(([name, ch])=>{
+    const tx=Math.round(ch.x), ty=Math.round(ch.y);
+    const tile = MAP[ty] ? MAP[ty][tx] : 'OUT_OF_BOUNDS';
+    console.log(name, 'at tile', tx, ty, '= tile type', tile, 'walkable:', walkable(tx,ty));
   });
+  
+  // Force Vex to walk - try simple one-step move
+  const vex = characters.vex;
+  console.log('Vex pos:', vex.x, vex.y);
+  console.log('Target walkable:', walkable(6, 8));
+  console.log('Vex walkable:', walkable(Math.round(vex.x), Math.round(vex.y)));
+  
+  const testPath = findPath(Math.round(vex.x), Math.round(vex.y), 6, 8);
+  console.log('Test path length:', testPath.length, testPath);
+  
+  if(testPath.length > 1) {
+    vex.path = testPath;
+    vex.pathIdx = 1;
+    vex.moving = true;
+    console.log('Movement started');
+  } else {
+    console.log('No path found - checking nearby walkable tiles');
+    for(let dy=-2;dy<=2;dy++) for(let dx=-2;dx<=2;dx++){
+      const tx2=Math.round(vex.x)+dx, ty2=Math.round(vex.y)+dy;
+      if(walkable(tx2,ty2)) console.log('  walkable nearby:', tx2, ty2, 'tile:', MAP[ty2]?.[tx2]);
+    }
+  }
 },800);
 </script>
 </body>
