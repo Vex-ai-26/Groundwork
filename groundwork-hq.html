@@ -4,134 +4,233 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Groundwork HQ</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-html,body{width:100%;height:100%;overflow:hidden;background:#0a0c10;}
-body{font-family:'Space Grotesk',sans-serif;color:#e2e8f0;display:flex;flex-direction:column;}
+html,body{width:100%;height:100%;overflow:hidden;background:#0c0e14;}
+body{font-family:'Syne',sans-serif;color:#e8edf5;display:flex;flex-direction:column;}
 
 :root{
-  --green:#34d399;--blue:#60a5fa;--amber:#fbbf24;--rose:#fb7185;--purple:#a78bfa;
-  --text:#e2e8f0;--text2:#94a3b8;--text3:#475569;
-  --ui:rgba(10,12,18,0.97);--b1:rgba(255,255,255,0.06);--b2:rgba(255,255,255,0.1);
+  --gold:#c8960a;--gold-dim:rgba(200,150,10,0.15);--gold-mid:rgba(200,150,10,0.3);
+  --green:#34d399;--green-dim:rgba(52,211,153,0.12);
+  --blue:#60a5fa;--blue-dim:rgba(96,165,250,0.12);
+  --amber:#fbbf24;--rose:#fb7185;--purple:#a78bfa;--cyan:#22d3ee;
+  --text:#e8edf5;--text2:#94a3b8;--text3:#475569;
+  --ui:rgba(10,12,20,0.97);--b1:rgba(255,255,255,0.06);--b2:rgba(255,255,255,0.1);
 }
 
 /* ── HUD ── */
-.hud{height:44px;background:var(--ui);border-bottom:1px solid var(--b1);
-  display:flex;align-items:center;justify-content:space-between;padding:0 16px;flex-shrink:0;z-index:100;}
-.logo{font-family:'DM Mono',monospace;font-size:11px;color:var(--blue);letter-spacing:.15em;}
+.hud{
+  height:46px;background:var(--ui);border-bottom:1px solid var(--b1);
+  display:flex;align-items:center;justify-content:space-between;padding:0 18px;
+  flex-shrink:0;z-index:100;
+}
+.hud-logo{font-family:'DM Mono',monospace;font-size:11px;color:var(--gold);letter-spacing:.18em;font-weight:500;}
 .hud-mid{display:flex;align-items:center;gap:8px;}
-.dot{width:4px;height:4px;border-radius:50%;background:var(--green);animation:blink 2s infinite;}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
-.hud-hint{font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);}
-.hud-r{display:flex;align-items:center;gap:10px;}
-.clk{font-family:'DM Mono',monospace;font-size:11px;color:var(--text2);}
-.vchip{display:flex;align-items:center;gap:5px;background:rgba(52,211,153,.1);
-  border:1px solid rgba(52,211,153,.2);border-radius:20px;padding:3px 10px;
-  font-family:'DM Mono',monospace;font-size:9px;color:var(--green);}
+.pulse{width:5px;height:5px;border-radius:50%;background:var(--green);animation:blink 2.5s infinite;}
+@keyframes blink{0%,100%{opacity:1;box-shadow:0 0 4px var(--green);}50%{opacity:.3;box-shadow:none;}}
+.hud-hint{font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:.05em;}
+.hud-r{display:flex;align-items:center;gap:12px;}
+.hud-clock{font-family:'DM Mono',monospace;font-size:11px;color:var(--text2);}
+.vex-chip{display:flex;align-items:center;gap:5px;background:var(--green-dim);
+  border:1px solid rgba(52,211,153,.25);border-radius:20px;padding:3px 11px;
+  font-family:'DM Mono',monospace;font-size:9px;color:var(--green);letter-spacing:.08em;}
 
-/* ── THREE COLUMN LAYOUT ── */
-.workspace{flex:1;display:flex;overflow:hidden;}
+/* ── WORKSPACE ── */
+.workspace{flex:1;display:flex;overflow:hidden;min-height:0;}
 
-/* ── LEFT: AGENT PANEL ── */
-.agent-panel{width:220px;flex-shrink:0;background:rgba(8,10,16,.98);
-  border-right:1px solid var(--b1);display:flex;flex-direction:column;overflow:hidden;}
-.panel-head{padding:12px 14px;border-bottom:1px solid var(--b1);flex-shrink:0;}
-.panel-title{font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:.15em;text-transform:uppercase;}
-.agent-list{flex:1;overflow-y:auto;padding:8px;}
-.agent-card{background:rgba(255,255,255,.03);border:1px solid var(--b1);
-  border-radius:8px;padding:10px 12px;margin-bottom:6px;cursor:pointer;transition:all .15s;}
-.agent-card:hover{border-color:var(--b2);background:rgba(255,255,255,.05);}
-.agent-card.active{border-color:rgba(52,211,153,.3);background:rgba(52,211,153,.05);}
-.agent-card.busy{border-color:rgba(251,191,36,.3);background:rgba(251,191,36,.04);}
-.agent-top{display:flex;align-items:center;gap:8px;margin-bottom:4px;}
-.agent-avatar{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;}
-.agent-name{font-size:12px;font-weight:600;color:var(--text);}
-.agent-role{font-family:'DM Mono',monospace;font-size:8px;color:var(--text3);letter-spacing:.06em;margin-bottom:6px;}
-.agent-status{display:flex;align-items:center;gap:5px;}
-.status-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;}
-.status-dot.idle{background:var(--text3);}
-.status-dot.working{background:var(--amber);animation:blink 1.5s infinite;}
-.status-dot.online{background:var(--green);animation:blink 2.5s infinite;}
-.status-dot.busy{background:var(--rose);animation:blink 1s infinite;}
-.status-text{font-family:'DM Mono',monospace;font-size:8px;color:var(--text3);letter-spacing:.05em;}
-.agent-action{margin-top:8px;}
-.task-btn{width:100%;background:transparent;border:1px dashed var(--b2);border-radius:5px;
-  padding:5px;font-family:'DM Mono',monospace;font-size:8px;color:var(--text3);
-  cursor:pointer;transition:all .15s;letter-spacing:.06em;}
-.task-btn:hover{border-color:var(--amber);color:var(--amber);}
+/* ── LEFT PANEL ── */
+.left-panel{
+  width:210px;flex-shrink:0;background:var(--ui);border-right:1px solid var(--b1);
+  display:flex;flex-direction:column;overflow:hidden;
+}
+.panel-hd{padding:12px 14px 8px;border-bottom:1px solid var(--b1);flex-shrink:0;}
+.panel-title{font-family:'DM Mono',monospace;font-size:8px;color:var(--text3);letter-spacing:.18em;text-transform:uppercase;}
+.agent-scroll{flex:1;overflow-y:auto;padding:6px;}
 
-.panel-divider{height:1px;background:var(--b1);margin:4px 8px;}
-.panel-section{padding:8px 14px 4px;font-family:'DM Mono',monospace;font-size:8px;color:var(--text3);letter-spacing:.12em;text-transform:uppercase;}
+.agent-card{
+  background:rgba(255,255,255,.025);border:1px solid var(--b1);
+  border-radius:8px;padding:9px 11px;margin-bottom:5px;cursor:pointer;
+  transition:all .2s;
+}
+.agent-card:hover{border-color:var(--b2);background:rgba(255,255,255,.04);}
+.agent-card.vex-card{border-color:rgba(200,150,10,.2);background:rgba(200,150,10,.04);}
+.agent-card.busy{border-color:rgba(251,191,36,.25);background:rgba(251,191,36,.04);}
 
-.metrics-list{padding:0 8px 8px;}
-.metric-row{display:flex;justify-content:space-between;align-items:center;padding:5px 8px;border-radius:5px;}
-.metric-label{font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);}
+.ac-top{display:flex;align-items:center;gap:8px;margin-bottom:4px;}
+.ac-av{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;}
+.ac-name{font-size:12px;font-weight:600;color:var(--text);}
+.ac-role{font-family:'DM Mono',monospace;font-size:7px;color:var(--text3);letter-spacing:.07em;margin-bottom:5px;}
+.ac-status{display:flex;align-items:center;gap:5px;}
+.sd{width:5px;height:5px;border-radius:50%;flex-shrink:0;}
+.sd.online{background:var(--green);animation:blink 2.5s infinite;}
+.sd.idle{background:var(--text3);}
+.sd.busy{background:var(--amber);animation:blink 1.2s infinite;}
+.sd.walking{background:var(--blue);animation:blink 0.8s infinite;}
+.st{font-family:'DM Mono',monospace;font-size:7px;color:var(--text3);letter-spacing:.05em;}
+
+.task-btn{
+  width:100%;margin-top:7px;background:transparent;
+  border:1px dashed rgba(255,255,255,.08);border-radius:5px;
+  padding:4px;font-family:'DM Mono',monospace;font-size:7px;
+  color:var(--text3);cursor:pointer;transition:all .15s;letter-spacing:.06em;
+}
+.task-btn:hover{border-color:var(--gold-mid);color:var(--gold);}
+
+.panel-div{height:1px;background:var(--b1);margin:4px 6px;}
+.panel-sec{padding:6px 14px 3px;font-family:'DM Mono',monospace;font-size:7px;color:var(--text3);letter-spacing:.15em;text-transform:uppercase;}
+
+.metric-row{display:flex;justify-content:space-between;align-items:center;padding:3px 10px;}
+.metric-label{font-family:'DM Mono',monospace;font-size:8px;color:var(--text3);}
 .metric-val{font-family:'DM Mono',monospace;font-size:11px;font-weight:500;}
-.metric-val.g{color:var(--green)}.metric-val.b{color:var(--blue)}.metric-val.a{color:var(--amber)}.metric-val.d{color:var(--text2);}
+.mv-g{color:var(--green)}.mv-b{color:var(--blue)}.mv-a{color:var(--amber)}.mv-d{color:var(--text2);}
 
-/* ── CENTER: OFFICE CANVAS ── */
-.office-wrap{flex:1;position:relative;overflow:hidden;background:#4a5060;cursor:default;}
-canvas{display:block;image-rendering:pixelated;image-rendering:crisp-edges;position:absolute;}
-.zoom-btns{position:absolute;bottom:12px;right:12px;display:flex;flex-direction:column;gap:3px;z-index:10;}
-.zbtn{width:26px;height:26px;border-radius:5px;background:rgba(10,12,18,.9);
-  border:1px solid var(--b1);color:var(--text2);cursor:pointer;font-size:14px;
-  display:flex;align-items:center;justify-content:center;}
+/* ── CENTER: OFFICE ── */
+.office-center{
+  flex:1;position:relative;overflow:hidden;
+  background:#1a1410;cursor:grab;
+}
+.office-center:active{cursor:grabbing;}
 
-/* ── RIGHT: CHAT ── */
-.chat-panel{width:280px;flex-shrink:0;background:rgba(8,10,16,.98);
-  border-left:1px solid var(--b1);display:flex;flex-direction:column;}
-.chat-head{padding:12px 14px;border-bottom:1px solid var(--b1);flex-shrink:0;
-  display:flex;align-items:center;justify-content:space-between;}
-.chat-who{display:flex;align-items:center;gap:8px;}
-.chat-av{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;}
-.chat-name{font-size:12px;font-weight:600;color:var(--text);}
-.chat-role{font-family:'DM Mono',monospace;font-size:8px;color:var(--text3);letter-spacing:.06em;margin-top:1px;}
-.chat-msgs{flex:1;overflow-y:auto;padding:12px 14px;display:flex;flex-direction:column;gap:8px;}
+.office-stage{
+  position:absolute;transform-origin:0 0;
+  will-change:transform;
+}
+
+.office-bg{
+  display:block;
+  image-rendering:high-quality;
+}
+
+/* Character SVG overlay */
+.char-layer{
+  position:absolute;top:0;left:0;
+  pointer-events:none;
+  overflow:visible;
+}
+
+/* Room click zones */
+.room-zone{
+  position:absolute;cursor:pointer;border-radius:4px;
+  transition:background .2s;
+}
+.room-zone:hover{background:rgba(200,150,10,0.08);outline:2px solid rgba(200,150,10,0.3);}
+
+/* Room labels */
+.room-label{
+  position:absolute;pointer-events:none;
+  font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.1em;
+  text-transform:uppercase;text-align:center;
+  text-shadow:0 1px 4px rgba(0,0,0,0.8);
+  white-space:nowrap;
+}
+
+/* Zoom controls */
+.zoom-ctrl{position:absolute;bottom:12px;right:12px;display:flex;flex-direction:column;gap:3px;z-index:10;}
+.zbtn{
+  width:28px;height:28px;border-radius:6px;
+  background:var(--ui);border:1px solid var(--b1);
+  color:var(--text2);cursor:pointer;font-size:15px;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .15s;
+}
+.zbtn:hover{color:var(--text);border-color:var(--b2);}
+
+/* ── RIGHT PANEL: CHAT ── */
+.chat-panel{
+  width:270px;flex-shrink:0;background:var(--ui);
+  border-left:1px solid var(--b1);display:flex;flex-direction:column;
+}
+.chat-hd{
+  padding:12px 14px;border-bottom:1px solid var(--b1);
+  display:flex;align-items:center;gap:9px;flex-shrink:0;
+}
+.chat-av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;}
+.chat-name{font-size:13px;font-weight:700;color:var(--text);}
+.chat-role{font-family:'DM Mono',monospace;font-size:8px;color:var(--text3);letter-spacing:.07em;margin-top:1px;}
+
+.chat-msgs{flex:1;overflow-y:auto;padding:12px 14px;display:flex;flex-direction:column;gap:9px;}
 ::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:var(--b2);border-radius:3px}
+
 .cmsg{display:flex;flex-direction:column;gap:2px;}
-.cmsg.you{align-items:flex-end}.cmsg.vex{align-items:flex-start}
+.cmsg.you{align-items:flex-end}.cmsg.vex,.cmsg.agent{align-items:flex-start}
 .csdr{font-family:'DM Mono',monospace;font-size:8px;color:var(--text3);letter-spacing:.1em;}
-.cbb{padding:8px 11px;border-radius:8px;font-size:12px;line-height:1.55;max-width:95%;}
+.cbb{padding:8px 12px;border-radius:9px;font-size:12px;line-height:1.6;max-width:94%;}
 .cmsg.you .cbb{background:rgba(255,255,255,.05);color:var(--text2);border:1px solid var(--b2);border-bottom-right-radius:2px;}
-.cmsg.vex .cbb{background:rgba(96,165,250,.09);color:var(--text);border:1px solid rgba(96,165,250,.18);border-bottom-left-radius:2px;}
+.cmsg.vex .cbb{background:rgba(200,150,10,.08);color:var(--text);border:1px solid var(--gold-mid);border-bottom-left-radius:2px;}
+.cmsg.agent .cbb{background:rgba(96,165,250,.08);color:var(--text);border:1px solid rgba(96,165,250,.2);border-bottom-left-radius:2px;}
 .cmsg.sys .cbb{background:rgba(251,191,36,.07);color:var(--amber);border:1px solid rgba(251,191,36,.15);font-size:11px;font-style:italic;}
-.trow{display:flex;gap:3px;padding:8px 11px;background:rgba(96,165,250,.06);
-  border:1px solid rgba(96,165,250,.15);border-radius:8px;border-bottom-left-radius:2px;align-self:flex-start;}
-.td{width:4px;height:4px;border-radius:50%;background:var(--blue);animation:tb 1.2s infinite;}
+
+.typing-row{
+  display:flex;gap:4px;padding:8px 12px;
+  background:rgba(200,150,10,.06);border:1px solid var(--gold-mid);
+  border-radius:9px;border-bottom-left-radius:2px;align-self:flex-start;
+}
+.td{width:4px;height:4px;border-radius:50%;background:var(--gold);animation:tb 1.2s infinite;}
 .td:nth-child(2){animation-delay:.15s}.td:nth-child(3){animation-delay:.3s}
 @keyframes tb{0%,60%,100%{transform:translateY(0);opacity:.3}30%{transform:translateY(-3px);opacity:1}}
+
 .chat-bottom{padding:10px 12px;border-top:1px solid var(--b1);display:flex;gap:6px;flex-shrink:0;}
-.chat-input{flex:1;background:rgba(255,255,255,.04);border:1px solid var(--b1);border-radius:6px;
-  padding:8px 10px;color:var(--text);font-family:'Space Grotesk',sans-serif;font-size:12px;outline:none;}
-.chat-input:focus{border-color:rgba(96,165,250,.3);}
+.chat-input{
+  flex:1;background:rgba(255,255,255,.04);border:1px solid var(--b1);
+  border-radius:7px;padding:9px 11px;color:var(--text);
+  font-family:'Syne',sans-serif;font-size:12px;outline:none;transition:border-color .15s;
+}
+.chat-input:focus{border-color:var(--gold-mid);}
 .chat-input::placeholder{color:var(--text3);}
-.send-btn{width:32px;height:32px;border-radius:6px;background:var(--blue);border:none;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;color:#08090f;font-weight:700;font-size:13px;}
+.send-btn{
+  width:36px;height:36px;border-radius:7px;background:var(--gold);border:none;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  color:#0c0e14;font-weight:800;font-size:14px;transition:all .15s;flex-shrink:0;
+}
+.send-btn:hover{background:#dba820;}
 
 /* ── TASK MODAL ── */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:500;
-  display:flex;align-items:center;justify-content:center;display:none;}
-.modal-overlay.open{display:flex;}
-.modal{background:#0c0e18;border:1px solid var(--b2);border-radius:12px;padding:20px;width:320px;}
-.modal-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px;}
-.modal-sub{font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:.08em;margin-bottom:14px;}
-.modal-input{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--b1);border-radius:6px;
-  padding:8px 11px;color:var(--text);font-family:'Space Grotesk',sans-serif;font-size:12px;outline:none;margin-bottom:10px;}
-.modal-input:focus{border-color:rgba(96,165,250,.3);}
-.modal-textarea{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--b1);border-radius:6px;
-  padding:8px 11px;color:var(--text);font-family:'Space Grotesk',sans-serif;font-size:12px;outline:none;
-  height:80px;resize:none;margin-bottom:12px;}
-.modal-textarea:focus{border-color:rgba(96,165,250,.3);}
+.modal-bg{
+  position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:600;
+  display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px);
+}
+.modal-bg.open{display:flex;}
+.modal{background:#0e1018;border:1px solid var(--b2);border-radius:14px;padding:22px;width:330px;}
+.modal-title{font-size:15px;font-weight:700;color:var(--text);margin-bottom:3px;}
+.modal-sub{font-family:'DM Mono',monospace;font-size:8px;color:var(--text3);letter-spacing:.1em;margin-bottom:16px;}
+.modal-input,.modal-textarea{
+  width:100%;background:rgba(255,255,255,.04);border:1px solid var(--b1);
+  border-radius:7px;padding:9px 11px;color:var(--text);
+  font-family:'Syne',sans-serif;font-size:12px;outline:none;margin-bottom:10px;
+}
+.modal-input:focus,.modal-textarea:focus{border-color:var(--gold-mid);}
+.modal-input::placeholder,.modal-textarea::placeholder{color:var(--text3);}
+.modal-textarea{height:80px;resize:none;}
 .modal-btns{display:flex;gap:8px;}
-.modal-cancel{flex:1;background:transparent;border:1px solid var(--b1);border-radius:6px;
-  padding:8px;color:var(--text2);cursor:pointer;font-size:12px;}
-.modal-submit{flex:1;background:var(--blue);border:none;border-radius:6px;
-  padding:8px;color:#08090f;cursor:pointer;font-size:12px;font-weight:600;}
+.modal-cancel{flex:1;background:transparent;border:1px solid var(--b1);border-radius:7px;padding:9px;color:var(--text2);cursor:pointer;font-family:'Syne',sans-serif;font-size:12px;}
+.modal-submit{flex:1;background:var(--gold);border:none;border-radius:7px;padding:9px;color:#0c0e14;cursor:pointer;font-family:'Syne',sans-serif;font-size:12px;font-weight:700;}
+
+/* ── CHARACTER STYLES ── */
+.char-group{transition:transform 0.15s;}
+.char-label{
+  font-family:'DM Mono',monospace;font-size:9px;font-weight:500;
+  fill:white;text-anchor:middle;
+  filter:drop-shadow(0 1px 3px rgba(0,0,0,0.9));
+}
+.char-label-bg{fill:rgba(10,12,20,0.85);rx:3;}
+
+/* Vex glow */
+.vex-eye-glow{animation:eyeGlow 2.5s ease-in-out infinite;}
+@keyframes eyeGlow{0%,100%{opacity:1;}50%{opacity:.5;}}
+
+/* Room tooltip */
+.tooltip{
+  position:fixed;z-index:700;pointer-events:none;
+  background:var(--ui);border:1px solid var(--b2);border-radius:7px;
+  padding:6px 12px;font-family:'DM Mono',monospace;font-size:9px;
+  color:var(--text2);white-space:nowrap;display:none;letter-spacing:.04em;
+}
 
 @media(max-width:768px){
-  .agent-panel{width:160px;}
+  .left-panel{width:160px;}
   .chat-panel{width:220px;}
+  .hud-mid{display:none;}
 }
 </style>
 </head>
@@ -139,137 +238,187 @@ canvas{display:block;image-rendering:pixelated;image-rendering:crisp-edges;posit
 
 <!-- HUD -->
 <div class="hud">
-  <span class="logo">GROUNDWORK HQ</span>
-  <div class="hud-mid"><div class="dot"></div><span class="hud-hint">live office · click rooms · chat right</span></div>
-  <div class="hud-r"><span class="clk" id="clk">--:--</span><div class="vchip"><div class="dot"></div>Vex online</div></div>
+  <span class="hud-logo">GROUNDWORK HQ</span>
+  <div class="hud-mid"><div class="pulse"></div><span class="hud-hint">drag to pan · scroll to zoom · click rooms to enter</span></div>
+  <div class="hud-r">
+    <span class="hud-clock" id="clock">--:--</span>
+    <div class="vex-chip"><div class="pulse"></div>Vex online</div>
+  </div>
 </div>
 
 <!-- WORKSPACE -->
 <div class="workspace">
 
   <!-- LEFT: AGENTS -->
-  <div class="agent-panel">
-    <div class="panel-head"><div class="panel-title">Team</div></div>
-    <div class="agent-list">
+  <div class="left-panel">
+    <div class="panel-hd"><div class="panel-title">Team</div></div>
+    <div class="agent-scroll">
 
-      <div class="agent-card active" id="card-vex" onclick="focusAgent('vex')">
-        <div class="agent-top">
-          <div class="agent-avatar" style="background:rgba(52,211,153,.15);border:1px solid rgba(52,211,153,.3);">⚡</div>
-          <div class="agent-name">Vex</div>
+      <!-- VEX -->
+      <div class="agent-card vex-card" id="card-vex" onclick="focusChar('vex')">
+        <div class="ac-top">
+          <div class="ac-av" style="background:rgba(200,150,10,.15);border:1px solid rgba(200,150,10,.3);">⚡</div>
+          <div class="ac-name">Vex</div>
         </div>
-        <div class="agent-role">CHIEF EXECUTIVE OFFICER</div>
-        <div class="agent-status">
-          <div class="status-dot online" id="dot-vex"></div>
-          <span class="status-text" id="status-vex">at his desk</span>
-        </div>
+        <div class="ac-role">CHIEF EXECUTIVE OFFICER</div>
+        <div class="ac-status"><div class="sd online" id="dot-vex"></div><span class="st" id="st-vex">at his desk</span></div>
       </div>
 
-      <div class="agent-card" id="card-maya" onclick="focusAgent('maya')">
-        <div class="agent-top">
-          <div class="agent-avatar" style="background:rgba(251,191,36,.12);border:1px solid rgba(251,191,36,.25);">🔬</div>
-          <div class="agent-name">Maya</div>
+      <!-- MAYA -->
+      <div class="agent-card" id="card-maya" onclick="focusChar('maya')">
+        <div class="ac-top">
+          <div class="ac-av" style="background:rgba(251,191,36,.12);border:1px solid rgba(251,191,36,.25);">🔬</div>
+          <div class="ac-name">Maya</div>
         </div>
-        <div class="agent-role">MARKET INTELLIGENCE</div>
-        <div class="agent-status">
-          <div class="status-dot idle" id="dot-maya"></div>
-          <span class="status-text" id="status-maya">idle</span>
-        </div>
-        <div class="agent-action">
-          <button class="task-btn" onclick="openTaskModal('maya');event.stopPropagation()">+ assign task</button>
-        </div>
+        <div class="ac-role">MARKET INTELLIGENCE</div>
+        <div class="ac-status"><div class="sd idle" id="dot-maya"></div><span class="st" id="st-maya">slot open</span></div>
+        <button class="task-btn" onclick="openModal('maya');event.stopPropagation()">+ assign task</button>
       </div>
 
-      <div class="agent-card" id="card-kai" onclick="focusAgent('kai')">
-        <div class="agent-top">
-          <div class="agent-avatar" style="background:rgba(34,211,238,.12);border:1px solid rgba(34,211,238,.25);">⚙️</div>
-          <div class="agent-name">Kai</div>
+      <!-- KAI -->
+      <div class="agent-card" id="card-kai" onclick="focusChar('kai')">
+        <div class="ac-top">
+          <div class="ac-av" style="background:rgba(34,211,238,.12);border:1px solid rgba(34,211,238,.25);">⚙️</div>
+          <div class="ac-name">Kai</div>
         </div>
-        <div class="agent-role">DEVELOPMENT</div>
-        <div class="agent-status">
-          <div class="status-dot idle" id="dot-kai"></div>
-          <span class="status-text" id="status-kai">slot open</span>
-        </div>
-        <div class="agent-action">
-          <button class="task-btn" onclick="openTaskModal('kai');event.stopPropagation()">+ assign task</button>
-        </div>
+        <div class="ac-role">DEVELOPMENT</div>
+        <div class="ac-status"><div class="sd idle" id="dot-kai"></div><span class="st" id="st-kai">slot open</span></div>
+        <button class="task-btn" onclick="openModal('kai');event.stopPropagation()">+ assign task</button>
       </div>
 
-      <div class="agent-card" id="card-ren" onclick="focusAgent('ren')">
-        <div class="agent-top">
-          <div class="agent-avatar" style="background:rgba(167,139,250,.12);border:1px solid rgba(167,139,250,.25);">🗂️</div>
-          <div class="agent-name">Ren</div>
+      <!-- REN -->
+      <div class="agent-card" id="card-ren" onclick="focusChar('ren')">
+        <div class="ac-top">
+          <div class="ac-av" style="background:rgba(167,139,250,.12);border:1px solid rgba(167,139,250,.25);">🗂️</div>
+          <div class="ac-name">Ren</div>
         </div>
-        <div class="agent-role">OPERATIONS</div>
-        <div class="agent-status">
-          <div class="status-dot idle" id="dot-ren"></div>
-          <span class="status-text" id="status-ren">slot open</span>
-        </div>
-        <div class="agent-action">
-          <button class="task-btn" onclick="openTaskModal('ren');event.stopPropagation()">+ assign task</button>
-        </div>
+        <div class="ac-role">OPERATIONS</div>
+        <div class="ac-status"><div class="sd idle" id="dot-ren"></div><span class="st" id="st-ren">slot open</span></div>
+        <button class="task-btn" onclick="openModal('ren');event.stopPropagation()">+ assign task</button>
       </div>
 
-      <div class="agent-card" id="card-leo" onclick="focusAgent('leo')">
-        <div class="agent-top">
-          <div class="agent-avatar" style="background:rgba(52,211,153,.12);border:1px solid rgba(52,211,153,.25);">💼</div>
-          <div class="agent-name">Leo</div>
+      <!-- LEO -->
+      <div class="agent-card" id="card-leo" onclick="focusChar('leo')">
+        <div class="ac-top">
+          <div class="ac-av" style="background:rgba(52,211,153,.12);border:1px solid rgba(52,211,153,.25);">💼</div>
+          <div class="ac-name">Leo</div>
         </div>
-        <div class="agent-role">FINANCE</div>
-        <div class="agent-status">
-          <div class="status-dot idle" id="dot-leo"></div>
-          <span class="status-text" id="status-leo">slot open</span>
-        </div>
-        <div class="agent-action">
-          <button class="task-btn" onclick="openTaskModal('leo');event.stopPropagation()">+ assign task</button>
-        </div>
+        <div class="ac-role">FINANCE</div>
+        <div class="ac-status"><div class="sd idle" id="dot-leo"></div><span class="st" id="st-leo">slot open</span></div>
+        <button class="task-btn" onclick="openModal('leo');event.stopPropagation()">+ assign task</button>
       </div>
 
-      <div class="agent-card" id="card-sage" onclick="focusAgent('sage')">
-        <div class="agent-top">
-          <div class="agent-avatar" style="background:rgba(52,211,153,.12);border:1px solid rgba(52,211,153,.25);">📊</div>
-          <div class="agent-name">Sage</div>
+      <!-- SAGE -->
+      <div class="agent-card" id="card-sage" onclick="focusChar('sage')">
+        <div class="ac-top">
+          <div class="ac-av" style="background:rgba(251,113,133,.12);border:1px solid rgba(251,113,133,.25);">📊</div>
+          <div class="ac-name">Sage</div>
         </div>
-        <div class="agent-role">ANALYTICS</div>
-        <div class="agent-status">
-          <div class="status-dot idle" id="dot-sage"></div>
-          <span class="status-text" id="status-sage">slot open</span>
-        </div>
-        <div class="agent-action">
-          <button class="task-btn" onclick="openTaskModal('sage');event.stopPropagation()">+ assign task</button>
-        </div>
+        <div class="ac-role">ANALYTICS</div>
+        <div class="ac-status"><div class="sd idle" id="dot-sage"></div><span class="st" id="st-sage">slot open</span></div>
+        <button class="task-btn" onclick="openModal('sage');event.stopPropagation()">+ assign task</button>
       </div>
 
-      <div class="panel-divider"></div>
-      <div class="panel-section">Company</div>
-      <div class="metrics-list">
-        <div class="metric-row"><span class="metric-label">subscribers</span><span class="metric-val g">0</span></div>
-        <div class="metric-row"><span class="metric-label">MRR</span><span class="metric-val d">$0</span></div>
-        <div class="metric-row"><span class="metric-label">pages live</span><span class="metric-val b">7</span></div>
-        <div class="metric-row"><span class="metric-label">phase</span><span class="metric-val a">01</span></div>
-      </div>
-
+      <div class="panel-div"></div>
+      <div class="panel-sec">Company</div>
+      <div class="metric-row"><span class="metric-label">subscribers</span><span class="metric-val mv-g">0</span></div>
+      <div class="metric-row"><span class="metric-label">MRR</span><span class="metric-val mv-d">$0</span></div>
+      <div class="metric-row"><span class="metric-label">pages live</span><span class="metric-val mv-b">7</span></div>
+      <div class="metric-row"><span class="metric-label">phase</span><span class="metric-val mv-a">01 · MVP</span></div>
     </div>
   </div>
 
   <!-- CENTER: OFFICE -->
-  <div class="office-wrap" id="officeWrap">
-    <canvas id="c"></canvas>
-    <div class="zoom-btns">
-      <button class="zbtn" onclick="zoom(.3)">+</button>
-      <button class="zbtn" onclick="zoom(-.3)">−</button>
-      <button class="zbtn" onclick="resetV()" style="font-size:10px">⌂</button>
+  <div class="office-center" id="officeCenter">
+    <div class="office-stage" id="stage">
+
+      <!-- THE MAP -->
+      <img class="office-bg" id="officeImg" src="office-map.webp" width="2500" height="1618" alt="Groundwork HQ Office">
+
+      <!-- CHARACTER LAYER (SVG) -->
+      <svg class="char-layer" id="charLayer" width="2500" height="1618" viewBox="0 0 2500 1618">
+        <defs>
+          <filter id="charShadow" x="-40%" y="-40%" width="180%" height="180%">
+            <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="rgba(0,0,0,0.7)"/>
+          </filter>
+          <filter id="glowGreen" x="-80%" y="-80%" width="260%" height="260%">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <filter id="glowGold" x="-80%" y="-80%" width="260%" height="260%">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+
+        <!-- Characters will be rendered by JS -->
+        <g id="characters"></g>
+      </svg>
+
+      <!-- ROOM CLICK ZONES (positioned over the map image) -->
+      <!-- Coordinates based on 2500x1618 image -->
+
+      <!-- Vex's Executive Office (top-left large room) -->
+      <div class="room-zone" data-room="vex" style="left:18px;top:15px;width:300px;height:250px;"
+           onclick="enterRoom('vex')" title="Vex's Office"></div>
+
+      <!-- Top center office 1 -->
+      <div class="room-zone" data-room="office1" style="left:330px;top:15px;width:225px;height:245px;"
+           onclick="enterRoom('office1')"></div>
+
+      <!-- Top center office 2 (Vex's main desk room) -->
+      <div class="room-zone" data-room="office2" style="left:565px;top:15px;width:220px;height:245px;"
+           onclick="enterRoom('office2')"></div>
+
+      <!-- Small boardroom (top center-right) -->
+      <div class="room-zone" data-room="boardroom1" style="left:795px;top:15px;width:195px;height:245px;"
+           onclick="enterRoom('boardroom1')"></div>
+
+      <!-- Main boardroom (top right) -->
+      <div class="room-zone" data-room="boardroom2" style="left:1000px;top:15px;width:370px;height:490px;"
+           onclick="enterRoom('boardroom2')"></div>
+
+      <!-- Left lounge (middle left) -->
+      <div class="room-zone" data-room="lounge" style="left:18px;top:275px;width:300px;height:220px;"
+           onclick="enterRoom('lounge')"></div>
+
+      <!-- Left private office (middle-lower left) -->
+      <div class="room-zone" data-room="privateoffice" style="left:18px;top:505px;width:300px;height:230px;"
+           onclick="enterRoom('privateoffice')"></div>
+
+      <!-- Bottom left dining -->
+      <div class="room-zone" data-room="dining" style="left:18px;top:745px;width:300px;height:230px;"
+           onclick="enterRoom('dining')"></div>
+
+      <!-- Open workspace right -->
+      <div class="room-zone" data-room="workspace" style="left:1000px;top:515px;width:370px;height:460px;"
+           onclick="enterRoom('workspace')"></div>
+
+      <!-- Break room bottom center-left -->
+      <div class="room-zone" data-room="breakroom" style="left:330px;top:670px;width:320px;height:305px;"
+           onclick="enterRoom('breakroom')"></div>
+
+      <!-- Lounge bottom center -->
+      <div class="room-zone" data-room="lounge2" style="left:660px;top:670px;width:320px;height:305px;"
+           onclick="enterRoom('lounge2')"></div>
+
+    </div>
+
+    <!-- ZOOM CONTROLS -->
+    <div class="zoom-ctrl">
+      <button class="zbtn" onclick="zoom(0.2)">+</button>
+      <button class="zbtn" onclick="zoom(-0.2)">−</button>
+      <button class="zbtn" onclick="resetView()" style="font-size:11px">⌂</button>
     </div>
   </div>
 
   <!-- RIGHT: CHAT -->
   <div class="chat-panel">
-    <div class="chat-head">
-      <div class="chat-who">
-        <div class="chat-av" id="chatAv" style="background:rgba(52,211,153,.15);border:1px solid rgba(52,211,153,.3);">⚡</div>
-        <div>
-          <div class="chat-name" id="chatName">Vex</div>
-          <div class="chat-role" id="chatRole">CHIEF EXECUTIVE OFFICER</div>
-        </div>
+    <div class="chat-hd">
+      <div class="chat-av" id="chatAv" style="background:rgba(200,150,10,.15);border:1px solid rgba(200,150,10,.3);">⚡</div>
+      <div>
+        <div class="chat-name" id="chatName">Vex</div>
+        <div class="chat-role" id="chatRole">CHIEF EXECUTIVE OFFICER</div>
       </div>
     </div>
     <div class="chat-msgs" id="chatMsgs"></div>
@@ -282,1072 +431,558 @@ canvas{display:block;image-rendering:pixelated;image-rendering:crisp-edges;posit
 </div>
 
 <!-- TASK MODAL -->
-<div class="modal-overlay" id="modalOverlay">
+<div class="modal-bg" id="modalBg">
   <div class="modal">
-    <div class="modal-title">Assign Task to <span id="modalAgentName">Maya</span></div>
-    <div class="modal-sub" id="modalAgentRole">MARKET INTELLIGENCE</div>
-    <input class="modal-input" id="taskTitle" placeholder="Task title (e.g. Research blueprint reading market)">
-    <textarea class="modal-textarea" id="taskInstructions" placeholder="Instructions — what do you want researched or produced?"></textarea>
+    <div class="modal-title">Assign Task — <span id="modalAgent">Maya</span></div>
+    <div class="modal-sub" id="modalRole">MARKET INTELLIGENCE</div>
+    <input class="modal-input" id="taskTitle" placeholder="Task title...">
+    <textarea class="modal-textarea" id="taskInstr" placeholder="What do you want researched or produced?"></textarea>
     <div class="modal-btns">
       <button class="modal-cancel" onclick="closeModal()">Cancel</button>
-      <button class="modal-submit" onclick="submitTask()">Assign Task</button>
+      <button class="modal-submit" onclick="submitTask()">Assign</button>
     </div>
   </div>
 </div>
 
+<!-- TOOLTIP -->
+<div class="tooltip" id="tooltip"></div>
+
 <script>
-// ════════════════════════════════════════════════
-// GROUNDWORK HQ — FULL REBUILD
-// Three column: Agents | Office | Chat
-// Pathfinding characters, door-aware movement
-// ════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
+// GROUNDWORK HQ — OFFICE MAP OVERLAY SYSTEM
+// Image background + SVG characters + click zones
+// ═══════════════════════════════════════════════
 
-const canvas = document.getElementById('c');
-const ctx = canvas.getContext('2d');
-ctx.imageSmoothingEnabled = false;
+// ── CONFIGURATION ──
+const SERVER = 'https://predict-deaf-palm-mailto.trycloudflare.com';
+const IMG_W = 2500, IMG_H = 1618;
 
-const T = 16;
-const COLS = 72, ROWS = 52;
-canvas.width  = COLS * T;
-canvas.height = ROWS * T;
-
-// ── CORPORATE LADDER PALETTE ──
-const C = {
-  wallOuter:'#6a7a8a', wallInner:'#7a8a9a', wallTop:'#8a9aaa', wallShadow:'#5a6a7a',
-  floorTan:'#c8b898', floorTan2:'#b8a888', floorHall:'#a89878', floorHall2:'#988868',
-  carpetGreen:'#6a9a6a', carpetGreen2:'#5a8a5a',
-  carpetBlue:'#6a7aaa', carpetBlue2:'#5a6a9a',
-  deskSurface:'#c8944a', deskFront:'#a87030', deskSide:'#8b5a20',
-  cabLight:'#a8b0b8', cabMid:'#8890a0', cabHandle:'#d0d8e0',
-  chairSeat:'#4a5a7a', chairBack:'#3a4a6a', chairArm:'#2a3a5a',
-  monBody:'#3a4050', monScreen:'#1a2030', monGreen:'#44ff88', monBlue:'#44aaff',
-  leafBright:'#5ab830', leafMid:'#489020', leafDark:'#387010', potBrown:'#9a6030',
-  fridgeBody:'#c0c8d0', microwaveBody:'#808890',
-  paperColor:'#f0ead8',
-  skinA:'#e8b880', skinB:'#c89060',
-  hairDark:'#1a1208', hairBrown:'#6a3810', hairPink:'#e87898',
-  shirtBlue:'#4a6090', shirtDark:'#2a3040',
-  glowGreen:'#00ff88',
+// ── ROOM DEFINITIONS ──
+// Each room has: center position on the image, label, color, agent
+const ROOMS = {
+  vex:          { cx:160, cy:140,  label:"Vex's Office",    color:'#c8960a', icon:'⚡' },
+  office1:      { cx:440, cy:130,  label:"Meeting Room",    color:'#94a3b8', icon:'🚪' },
+  office2:      { cx:675, cy:130,  label:"Executive Suite", color:'#a78bfa', icon:'🚪' },
+  boardroom1:   { cx:890, cy:130,  label:"Conference",      color:'#60a5fa', icon:'🏛️' },
+  boardroom2:   { cx:1185,cy:240,  label:"Boardroom",       color:'#60a5fa', icon:'🏛️' },
+  lounge:       { cx:160, cy:385,  label:"Lounge",          color:'#fbbf24', icon:'🛋️' },
+  privateoffice:{ cx:160, cy:620,  label:"Private Office",  color:'#a78bfa', icon:'🚪' },
+  dining:       { cx:160, cy:860,  label:"Dining",          color:'#fbbf24', icon:'🍽️' },
+  workspace:    { cx:1185,cy:745,  label:"Open Workspace",  color:'#22d3ee', icon:'💻' },
+  breakroom:    { cx:490, cy:820,  label:"Break Room",      color:'#fbbf24', icon:'☕' },
+  lounge2:      { cx:820, cy:820,  label:"Lounge",          color:'#94a3b8', icon:'🛋️' },
 };
 
-// ── MAP ──
-// 0=floor, 1=wall, 2=glass-wall, 3=carpet-green, 4=carpet-blue, 5=door-opening, 6=hallway
-const MAP = [];
-for(let y=0;y<ROWS;y++){MAP[y]=[];for(let x=0;x<COLS;x++)MAP[y][x]=6;}
+// ── CHARACTER POSITIONS (image coordinates) ──
+// These are where characters stand on the 2500x1618 image
+const CHAR_HOME = {
+  vex:  { x:175,  y:180  },  // Vex's big office, at his desk
+  maya: { x:1150, y:620  },  // Open workspace
+  kai:  { x:1200, y:680  },  // Open workspace
+  ren:  { x:1250, y:740  },  // Open workspace
+  leo:  { x:1300, y:620  },  // Open workspace
+  sage: { x:1350, cy:680  },  // Open workspace - typo fix below
+};
+CHAR_HOME.sage = { x:1350, y:680 };
 
-// Build rooms
-function setRoom(x,y,w,h,tile){
-  for(let ty=y;ty<y+h;ty++)for(let tx=x;tx<x+w;tx++)MAP[ty][tx]=tile;
-}
-function setWallH(x,y,w){for(let tx=x;tx<x+w;tx++)MAP[y][tx]=1;}
-function setWallV(x,y,h){for(let ty=y;ty<y+h;ty++)MAP[ty][x]=1;}
-function setDoor(x,y){MAP[y][x]=5;}
+const CHAR_BREAK = {
+  vex:  { x:490,  y:820  },
+  maya: { x:450,  y:850  },
+  kai:  { x:530,  y:810  },
+  ren:  { x:460,  y:870  },
+  leo:  { x:510,  y:860  },
+  sage: { x:480,  y:840  },
+};
 
-// ROOM DEFINITIONS
-const ROOMS_DEF = [
-  {id:'vex',   x:1, y:1,  w:16, h:16, carpet:3, label:"VEX'S OFFICE",  col:'#34d399'},
-  {id:'board', x:19,y:1,  w:20, h:16, carpet:4, label:'BOARDROOM',      col:'#60a5fa'},
-  {id:'sam',   x:41,y:1,  w:14, h:16, carpet:4, label:"SAM'S OFFICE",   col:'#a78bfa'},
-  {id:'mkt',   x:57,y:1,  w:14, h:16, carpet:3, label:'MARKETING',      col:'#fb7185'},
-  {id:'break', x:1, y:21, w:16, h:14, carpet:0, label:'BREAK ROOM',     col:'#fbbf24'},
-  {id:'files', x:19,y:21, w:12, h:14, carpet:6, label:'FILE ROOM',      col:'#94a3b8'},
-  {id:'res',   x:33,y:21, w:14, h:14, carpet:3, label:'RESEARCH',       col:'#fbbf24'},
-  {id:'dev',   x:49,y:21, w:14, h:14, carpet:4, label:'DEVELOPMENT',    col:'#22d3ee'},
-  {id:'ops',   x:65,y:21, w:6,  h:14, carpet:0, label:'OPERATIONS',     col:'#94a3b8'},
-];
+const BOARD_POS = { x:1185, y:300 };
 
-// Door positions [x, y] - tile coordinates
-const DOORS = [
-  // Vex office doors
-  {x:17,y:10,room:'vex'}, {x:17,y:11,room:'vex'},
-  // Board room doors
-  {x:17,y:8,room:'board'},{x:18,y:8,room:'board'},
-  {x:39,y:8,room:'board'},{x:40,y:8,room:'board'},
-  // Sam office
-  {x:39,y:10,room:'sam'},{x:40,y:10,room:'sam'},
-  // Marketing
-  {x:55,y:10,room:'mkt'},{x:56,y:10,room:'mkt'},
-  // Break room
-  {x:17,y:26,room:'break'},{x:17,y:27,room:'break'},
-  // File room
-  {x:17,y:28,room:'files'},{x:18,y:28,room:'files'},
-  // Research
-  {x:31,y:26,room:'res'},{x:32,y:26,room:'res'},
-  // Dev
-  {x:47,y:26,room:'dev'},{x:48,y:26,room:'dev'},
-  // Ops
-  {x:63,y:26,room:'ops'},{x:64,y:26,room:'ops'},
-];
+// ── CHARACTER STATE ──
+const chars = {
+  vex:  { x:175,  y:180,  tx:175,  ty:180,  moving:false, state:'working', dir:'down' },
+  maya: { x:1150, y:620,  tx:1150, ty:620,  moving:false, state:'idle',    dir:'down' },
+  kai:  { x:1200, y:680,  tx:1200, ty:680,  moving:false, state:'idle',    dir:'down' },
+  ren:  { x:1250, y:740,  tx:1250, ty:740,  moving:false, state:'idle',    dir:'down' },
+  leo:  { x:1300, y:620,  tx:1300, ty:620,  moving:false, state:'idle',    dir:'down' },
+  sage: { x:1350, y:680,  tx:1350, ty:680,  moving:false, state:'idle',    dir:'down' },
+};
 
-// Build map from rooms
-ROOMS_DEF.forEach(r=>{
-  setRoom(r.x,r.y,r.w,r.h,r.carpet);
-  setWallH(r.x,r.y,r.w); setWallH(r.x,r.y+r.h-1,r.w);
-  setWallV(r.x,r.y,r.h); setWallV(r.x+r.w-1,r.y,r.h);
-});
+// Character visual configs
+const CHAR_CFG = {
+  vex:  { skin:'#c89060', hair:'#1a1208', shirt:'#1e2840', eyeCol:'#00ff88', glowEyes:true,  label:'VEX',  labelCol:'#c8960a' },
+  maya: { skin:'#e8b880', hair:'#e87898', shirt:'#5a3a7a', eyeCol:'#c090d0', glowEyes:false, label:'MAYA', labelCol:'#fbbf24' },
+  kai:  { skin:'#c89060', hair:'#2a2a4a', shirt:'#1a3a5a', eyeCol:'#60c0e0', glowEyes:false, label:'KAI',  labelCol:'#22d3ee' },
+  ren:  { skin:'#e8b880', hair:'#6a3810', shirt:'#3a2a5a', eyeCol:'#9080c0', glowEyes:false, label:'REN',  labelCol:'#a78bfa' },
+  leo:  { skin:'#d4b090', hair:'#3a2010', shirt:'#2a4a2a', eyeCol:'#70a070', glowEyes:false, label:'LEO',  labelCol:'#34d399' },
+  sage: { skin:'#e8b880', hair:'#1a3a1a', shirt:'#1a4a3a', eyeCol:'#50a080', glowEyes:false, label:'SAGE', labelCol:'#fb7185' },
+};
 
-// Set corridors
-setRoom(0,18,COLS,3,6); // horizontal hallway between rows
-setRoom(17,0,3,ROWS,6); // vertical corridors
-setRoom(39,0,3,ROWS,6);
-setRoom(55,0,3,ROWS,6);
-setRoom(31,18,3,ROWS-18,6);
-setRoom(47,18,3,ROWS-18,6);
-setRoom(63,18,3,ROWS-18,6);
+// ── DRAW CHARACTER (SVG) ──
+function drawChar(name, x, y, cfg, scale=1) {
+  const s = scale * 18; // base size
+  const moving = chars[name].moving;
+  const bob = moving ? Math.sin(Date.now() * 0.008) * 2 : 0;
 
-// Open doors
-DOORS.forEach(d=>MAP[d.y][d.x]=5);
+  const shadow = `<ellipse cx="${x}" cy="${y + s*1.2 + bob}" rx="${s*0.8}" ry="${s*0.25}" fill="rgba(0,0,0,0.4)"/>`;
 
-// Walkable check
-function walkable(tx,ty){
-  if(tx<0||ty<0||tx>=COLS||ty>=ROWS)return false;
-  const t=MAP[ty][tx];
-  return t!==1&&t!==2;
-}
+  // Legs
+  const legL = `<rect x="${x-s*0.35}" y="${y+s*0.6+bob}" width="${s*0.3}" height="${s*0.55}" rx="${s*0.1}" fill="#2a3040"/>`;
+  const legR = `<rect x="${x+s*0.05}" y="${y+s*0.6+bob}" width="${s*0.3}" height="${s*0.55}" rx="${s*0.1}" fill="#2a3040"/>`;
 
-// ── A* PATHFINDING ──
-function heuristic(a,b){return Math.abs(a.x-b.x)+Math.abs(a.y-b.y);}
+  // Shoes
+  const shoeL = `<ellipse cx="${x-s*0.2}" cy="${y+s*1.15+bob}" rx="${s*0.22}" ry="${s*0.1}" fill="#1a1820"/>`;
+  const shoeR = `<ellipse cx="${x+s*0.2}" cy="${y+s*1.15+bob}" rx="${s*0.22}" ry="${s*0.1}" fill="#1a1820"/>`;
 
-function findPath(sx,sy,ex,ey){
-  const start={x:Math.round(sx),y:Math.round(sy)};
-  const end={x:Math.round(ex),y:Math.round(ey)};
-  if(!walkable(end.x,end.y))return [];
-  
-  const open=[{...start,g:0,h:heuristic(start,end),f:heuristic(start,end),parent:null}];
-  const closed=new Set();
-  const key=(x,y)=>`${x},${y}`;
-  
-  while(open.length>0){
-    open.sort((a,b)=>a.f-b.f);
-    const curr=open.shift();
-    if(curr.x===end.x&&curr.y===end.y){
-      const path=[];
-      let node=curr;
-      while(node){path.unshift({x:node.x,y:node.y});node=node.parent;}
-      return path;
-    }
-    closed.add(key(curr.x,curr.y));
-    const dirs=[{x:0,y:-1},{x:0,y:1},{x:-1,y:0},{x:1,y:0}];
-    for(const d of dirs){
-      const nx=curr.x+d.x,ny=curr.y+d.y;
-      if(closed.has(key(nx,ny))||!walkable(nx,ny))continue;
-      const g=curr.g+1;
-      const existing=open.find(n=>n.x===nx&&n.y===ny);
-      if(!existing){
-        open.push({x:nx,y:ny,g,h:heuristic({x:nx,y:ny},end),f:g+heuristic({x:nx,y:ny},end),parent:curr});
-      } else if(g<existing.g){existing.g=g;existing.f=g+existing.h;existing.parent=curr;}
-    }
+  // Torso
+  const torso = `<rect x="${x-s*0.5}" y="${y+s*0.15+bob}" width="${s}" height="${s*0.55}" rx="${s*0.15}" fill="${cfg.shirt}"/>
+    <rect x="${x-s*0.5}" y="${y+s*0.15+bob}" width="${s}" height="${s*0.1}" rx="${s*0.15}" fill="rgba(255,255,255,0.07)"/>`;
+
+  // Arms
+  const armL = `<rect x="${x-s*0.7}" y="${y+s*0.18+bob}" width="${s*0.22}" height="${s*0.42}" rx="${s*0.1}" fill="${cfg.skin}"/>`;
+  const armR = `<rect x="${x+s*0.48}" y="${y+s*0.18+bob}" width="${s*0.22}" height="${s*0.42}" rx="${s*0.1}" fill="${cfg.skin}"/>`;
+
+  // Neck
+  const neck = `<rect x="${x-s*0.15}" y="${y+bob}" width="${s*0.3}" height="${s*0.18}" rx="${s*0.06}" fill="${cfg.skin}"/>`;
+
+  // Head shadow
+  const headShadow = `<ellipse cx="${x+1}" cy="${y-s*0.35+bob+2}" rx="${s*0.42}" ry="${s*0.4}" fill="rgba(0,0,0,0.3)"/>`;
+
+  // Head
+  const head = `<ellipse cx="${x}" cy="${y-s*0.35+bob}" rx="${s*0.42}" ry="${s*0.4}" fill="${cfg.skin}"/>`;
+
+  // Hair
+  const hair = `<ellipse cx="${x}" cy="${y-s*0.65+bob}" rx="${s*0.42}" ry="${s*0.2}" fill="${cfg.hair}"/>
+    <rect x="${x-s*0.42}" y="${y-s*0.65+bob}" width="${s*0.84}" height="${s*0.3}" rx="${s*0.1}" fill="${cfg.hair}"/>`;
+
+  // Eyes
+  let eyes;
+  if(cfg.glowEyes) {
+    eyes = `
+      <ellipse cx="${x-s*0.14}" cy="${y-s*0.32+bob}" rx="${s*0.1}" ry="${s*0.09}" fill="#050a10"/>
+      <ellipse cx="${x+s*0.14}" cy="${y-s*0.32+bob}" rx="${s*0.1}" ry="${s*0.09}" fill="#050a10"/>
+      <ellipse cx="${x-s*0.14}" cy="${y-s*0.32+bob}" rx="${s*0.07}" ry="${s*0.065}" fill="${cfg.eyeCol}" filter="url(#glowGreen)" class="vex-eye-glow"/>
+      <ellipse cx="${x+s*0.14}" cy="${y-s*0.32+bob}" rx="${s*0.07}" ry="${s*0.065}" fill="${cfg.eyeCol}" filter="url(#glowGreen)" class="vex-eye-glow"/>
+      <ellipse cx="${x-s*0.12}" cy="${y-s*0.34+bob}" rx="${s*0.025}" ry="${s*0.025}" fill="rgba(255,255,255,0.7)"/>
+      <ellipse cx="${x+s*0.16}" cy="${y-s*0.34+bob}" rx="${s*0.025}" ry="${s*0.025}" fill="rgba(255,255,255,0.7)"/>`;
+  } else {
+    eyes = `
+      <ellipse cx="${x-s*0.14}" cy="${y-s*0.32+bob}" rx="${s*0.09}" ry="${s*0.08}" fill="#0a0814"/>
+      <ellipse cx="${x+s*0.14}" cy="${y-s*0.32+bob}" rx="${s*0.09}" ry="${s*0.08}" fill="#0a0814"/>
+      <ellipse cx="${x-s*0.14}" cy="${y-s*0.32+bob}" rx="${s*0.06}" ry="${s*0.055}" fill="${cfg.eyeCol}"/>
+      <ellipse cx="${x+s*0.14}" cy="${y-s*0.32+bob}" rx="${s*0.06}" ry="${s*0.055}" fill="${cfg.eyeCol}"/>
+      <ellipse cx="${x-s*0.12}" cy="${y-s*0.34+bob}" rx="${s*0.02}" ry="${s*0.02}" fill="rgba(255,255,255,0.6)"/>
+      <ellipse cx="${x+s*0.16}" cy="${y-s*0.34+bob}" rx="${s*0.02}" ry="${s*0.02}" fill="rgba(255,255,255,0.6)"/>`;
   }
-  return [];
+
+  // Nose
+  const nose = `<ellipse cx="${x}" cy="${y-s*0.22+bob}" rx="${s*0.06}" ry="${s*0.05}" fill="${cfg.skin}" opacity="0.6"/>`;
+
+  // Ears
+  const ears = `<ellipse cx="${x-s*0.42}" cy="${y-s*0.32+bob}" rx="${s*0.07}" ry="${s*0.1}" fill="${cfg.skin}" opacity="0.8"/>
+    <ellipse cx="${x+s*0.42}" cy="${y-s*0.32+bob}" rx="${s*0.07}" ry="${s*0.1}" fill="${cfg.skin}" opacity="0.8"/>`;
+
+  // Name label
+  const labelBg = `<rect x="${x-s*0.55}" y="${y-s*1.05+bob}" width="${s*1.1}" height="${s*0.28}" rx="3" fill="rgba(10,12,20,0.88)" stroke="${cfg.labelCol}" stroke-width="0.5"/>`;
+  const label = `<text x="${x}" y="${y-s*0.85+bob}" class="char-label" fill="${cfg.labelCol}" font-size="${s*0.22}">${cfg.label}</text>`;
+
+  return `<g filter="url(#charShadow)">${shadow}${legL}${legR}${shoeL}${shoeR}${torso}${armL}${armR}${neck}${headShadow}${head}${hair}${ears}${eyes}${nose}</g>${labelBg}${label}`;
 }
 
-// ── ROOM CENTER POSITIONS ──
-const ROOM_CENTERS = {
-  vex:   {x:6,  y:8},
-  board: {x:29, y:9},
-  sam:   {x:48, y:8},
-  mkt:   {x:64, y:8},
-  break: {x:8,  y:27},
-  files: {x:25, y:27},
-  res:   {x:40, y:27},
-  dev:   {x:56, y:27},
-  ops:   {x:68, y:27},
-};
+// ── RENDER ALL CHARACTERS ──
+function renderChars() {
+  const layer = document.getElementById('characters');
+  let html = '';
+  Object.entries(chars).forEach(([name, ch]) => {
+    const cfg = CHAR_CFG[name];
+    html += `<g id="char-${name}" style="cursor:pointer" onclick="focusChar('${name}')">${drawChar(name, ch.x, ch.y, cfg, 1.4)}</g>`;
+  });
+  layer.innerHTML = html;
+}
 
-// Specific spots within rooms
-const SPOTS = {
-  vex_desk:   {x:5,  y:8},
-  vex_break:  {x:4,  y:26},
-  board_head: {x:25, y:8},
-  maya_desk:  {x:35, y:26},
-  maya_break: {x:6,  y:24},
-  kai_desk:   {x:51, y:26},
-  kai_break:  {x:8,  y:25},
-  ren_desk:   {x:67, y:26},
-  ren_break:  {x:3,  y:27},
-  leo_desk:   {x:68, y:28},
-  leo_break:  {x:9,  y:24},
-  sage_desk:  {x:36, y:26},
-  sage_break: {x:5,  y:28},
-  hallway_h:  {x:20, y:19},
-};
+// ── ANIMATION LOOP ──
+let lastT = null;
+const SPEED = 120; // pixels per second
 
-// ── CHARACTERS ──
-const characters = {
-  vex: {
-    x:5, y:8, tx:5, ty:8,
-    path:[], pathIdx:0,
-    moving:false, frame:0, frameTimer:0, dir:'down',
-    state:'working', // working, idle, walking, meeting
-    skin:C.skinB, hair:C.hairDark, shirt:C.shirtDark,
-    glowEyes:true, label:'VEX', labelCol:'#34d399',
-    room:'vex',
-  },
-  maya: {
-    x:35, y:23, tx:35, ty:23,
-    path:[], pathIdx:0,
-    moving:false, frame:0, frameTimer:0, dir:'down',
-    state:'idle',
-    skin:C.skinA, hair:C.hairPink, shirt:'#5a3a7a',
-    glowEyes:false, eyeCol:'#8a60b0', label:'MAYA', labelCol:'#fbbf24',
-    room:'res',
-  },
-  kai: {
-    x:51, y:23, tx:51, ty:23,
-    path:[], pathIdx:0,
-    moving:false, frame:0, frameTimer:0, dir:'down',
-    state:'idle',
-    skin:C.skinB, hair:'#2a2a4a', shirt:'#2a4a6a',
-    glowEyes:false, eyeCol:'#4a8ab0', label:'KAI', labelCol:'#22d3ee',
-    room:'dev',
-  },
-  ren: {
-    x:67, y:23, tx:67, ty:23,
-    path:[], pathIdx:0,
-    moving:false, frame:0, frameTimer:0, dir:'down',
-    state:'idle',
-    skin:C.skinA, hair:C.hairBrown, shirt:'#4a3a6a',
-    glowEyes:false, eyeCol:'#7a60a0', label:'REN', labelCol:'#a78bfa',
-    room:'ops',
-  },
-  leo: {
-    x:68, y:23, tx:68, ty:23,
-    path:[], pathIdx:0,
-    moving:false, frame:0, frameTimer:0, dir:'down',
-    state:'idle',
-    skin:'#d4b090', hair:'#3a2010', shirt:'#3a5a3a',
-    glowEyes:false, eyeCol:'#5a8a5a', label:'LEO', labelCol:'#34d399',
-    room:'ops',
-  },
-  sage: {
-    x:36, y:23, tx:36, ty:23,
-    path:[], pathIdx:0,
-    moving:false, frame:0, frameTimer:0, dir:'down',
-    state:'idle',
-    skin:C.skinA, hair:'#1a3a1a', shirt:'#2a5a4a',
-    glowEyes:false, eyeCol:'#3a9a7a', label:'SAGE', labelCol:'#34d399',
-    room:'res',
-  },
-};
+function animLoop(ts) {
+  if(!lastT) lastT = ts;
+  const dt = Math.min((ts - lastT) / 1000, 0.05);
+  lastT = ts;
 
-// ── MOVE CHARACTER TO TARGET ──
-function moveCharTo(name, tx, ty, onArrive) {
-  const ch = characters[name];
-  const path = findPath(Math.round(ch.x), Math.round(ch.y), tx, ty);
-  if(path.length < 2){if(onArrive)onArrive();return;}
-  ch.path = path;
-  ch.pathIdx = 1;
+  let needsRender = false;
+
+  Object.entries(chars).forEach(([name, ch]) => {
+    if(!ch.moving) return;
+    const dx = ch.tx - ch.x;
+    const dy = ch.ty - ch.y;
+    const dist = Math.sqrt(dx*dx + dy*dy);
+    if(dist < 2) {
+      ch.x = ch.tx; ch.y = ch.ty;
+      ch.moving = false;
+      if(ch.onArrive) { ch.onArrive(); ch.onArrive = null; }
+    } else {
+      const step = SPEED * dt;
+      ch.x += (dx/dist) * Math.min(step, dist);
+      ch.y += (dy/dist) * Math.min(step, dist);
+    }
+    needsRender = true;
+  });
+
+  // Always render to update bob animation
+  renderChars();
+  requestAnimationFrame(animLoop);
+}
+
+requestAnimationFrame(animLoop);
+
+// ── MOVE CHARACTER ──
+function moveTo(name, x, y, onArrive) {
+  const ch = chars[name];
+  ch.tx = x; ch.ty = y;
   ch.moving = true;
   ch.onArrive = onArrive || null;
 }
 
-// ── UPDATE CHARACTERS ──
-const MOVE_SPEED = 0.08;
-
-function updateCharacters(dt) {
-  Object.values(characters).forEach(ch => {
-    if(!ch.moving || ch.pathIdx >= ch.path.length) {
-      ch.moving = false;
-      ch.frame = 0;
-      return;
-    }
-    // Instant teleport — jump 2 tiles per frame for snappy movement
-    const steps = 2;
-    for(let s = 0; s < steps; s++) {
-      if(ch.pathIdx >= ch.path.length) break;
-      const target = ch.path[ch.pathIdx];
-      const dx = target.x - ch.x;
-      const dy = target.y - ch.y;
-      if(Math.abs(dx) > Math.abs(dy)) ch.dir = dx > 0 ? 'right' : 'left';
-      else ch.dir = dy > 0 ? 'down' : 'up';
-      ch.x = target.x;
-      ch.y = target.y;
-      ch.pathIdx++;
-    }
-    if(ch.pathIdx >= ch.path.length) {
-      ch.moving = false;
-      ch.frame = 0;
-      if(ch.onArrive){ ch.onArrive(); ch.onArrive = null; }
-    }
-    // Walking animation
-    ch.frameTimer += dt;
-    if(ch.frameTimer > 120) { ch.frame = (ch.frame + 1) % 4; ch.frameTimer = 0; }
-  });
-}
-
-// ── VEX BEHAVIOR ──
-let vexIdleTimer = 0;
-let vexState = 'working';
-const VEX_IDLE_TIMEOUT = 600; // ~600 frames at 60fps = ~10 seconds // 45 seconds idle = go to break room
-
-function tickVexBehavior(dt) {
-  vexIdleTimer += 1; // count frames
-  const vex = characters.vex;
-  if(vex.moving) return;
-
-  if(vexState === 'working' && vexIdleTimer > VEX_IDLE_TIMEOUT) {
-    vexState = 'goingbreak';
-    updateAgentStatus('vex', 'in break room', 'idle');
-    moveCharTo('vex', SPOTS.vex_break.x, SPOTS.vex_break.y, () => {
-      vexState = 'break';
-      vex.state = 'idle';
-    });
-    // Send random agents to break room too
-    const agentBreaks = [
-      {name:'maya', spot:SPOTS.maya_break},
-      {name:'kai',  spot:SPOTS.kai_break},
-      {name:'ren',  spot:SPOTS.ren_break},
-      {name:'leo',  spot:SPOTS.leo_break},
-      {name:'sage', spot:SPOTS.sage_break},
-    ];
-    // Pick 2 random agents to join
-    const shuffled = agentBreaks.sort(()=>Math.random()-0.5).slice(0,2);
-    shuffled.forEach(({name, spot}) => {
-      const ch = characters[name];
-      if(ch && !ch.moving && ch.state === 'idle') {
-        moveCharTo(name, spot.x, spot.y, () => {
-          updateAgentStatus(name, 'in break room', 'idle');
-        });
-      }
-    });
-  }
-}
-
-function resetVexIdle() {
-  vexIdleTimer = 0;
-  const vex = characters.vex;
-  if(vexState === 'break' || vexState === 'goingbreak') {
-    vexState = 'returning';
-    updateAgentStatus('vex', 'at his desk', 'online');
-    moveCharTo('vex', SPOTS.vex_desk.x, SPOTS.vex_desk.y, () => {
-      vexState = 'working';
-      vex.state = 'working';
-    });
-    // Bring agents back to their desks
-    const deskMap = {maya:SPOTS.maya_desk, kai:SPOTS.kai_desk, ren:SPOTS.ren_desk, leo:SPOTS.leo_desk, sage:SPOTS.sage_desk};
-    Object.entries(deskMap).forEach(([name, spot]) => {
-      const ch = characters[name];
-      if(ch && !ch.moving) {
-        moveCharTo(name, spot.x, spot.y, () => {
-          updateAgentStatus(name, 'idle', 'idle');
-        });
-      }
-    });
-  }
-}
-
-function goToBoard(charName, callback) {
-  updateAgentStatus('vex','in boardroom','online');
-  moveCharTo(charName, 25, 8, () => {
-    if(callback) callback();
-  });
-}
-
-// ── DRAWING HELPERS ──
-function f(x,y,w,h,col,alpha){
-  if(alpha!==undefined)ctx.globalAlpha=alpha;
-  ctx.fillStyle=col;
-  ctx.fillRect(x*T,y*T,w*T,h*T);
-  if(alpha!==undefined)ctx.globalAlpha=1;
-}
-function fp(px,py,pw,ph,col,alpha){
-  if(alpha!==undefined)ctx.globalAlpha=alpha;
-  ctx.fillStyle=col;
-  ctx.fillRect(px,py,pw,ph);
-  if(alpha!==undefined)ctx.globalAlpha=1;
-}
-
-function drawFloor(x,y,w,h,c1,c2){
-  for(let ty=y;ty<y+h;ty++)
-    for(let tx=x;tx<x+w;tx++)
-      f(tx,ty,1,1,(tx+ty)%2===0?c1:c2);
-}
-
-function wallH(x,y,w){
-  fp(x*T,y*T,w*T,4,C.wallTop);
-  fp(x*T,y*T+4,w*T,T-4,C.wallOuter);
-  fp(x*T,(y+1)*T-3,w*T,3,C.wallShadow);
-}
-function wallV(x,y,h){
-  fp(x*T,y*T,T,h*T,C.wallOuter);
-  fp(x*T,y*T,3,h*T,C.wallTop);
-  fp((x+1)*T-2,y*T,2,h*T,C.wallShadow);
-}
-
-function desk(x,y,w,h){
-  fp(x*T+3,(y+h)*T,w*T,4,'rgba(0,0,0,0.3)');
-  fp(x*T,y*T,w*T,h*T,C.deskSurface);
-  fp(x*T+2,y*T+2,w*T-4,Math.floor(h*T*0.35),'rgba(255,255,255,0.1)');
-  fp(x*T,(y+h)*T-4,w*T,4,C.deskFront);
-  fp((x+w)*T-3,y*T,3,h*T,C.deskSide);
-  fp(x*T,y*T,w*T,2,'rgba(255,255,255,0.15)');
-}
-
-function monitor(x,y,glowC,on){
-  const px=x*T,py=y*T;
-  fp(px,py,3*T,2*T,C.monBody);
-  fp(px+2,py+2,3*T-4,2*T-6,on!==false?C.monScreen:'#0a0c10');
-  if(on!==false){
-    fp(px+4,py+4,T,2,glowC||C.monGreen,0.7);
-    fp(px+4,py+8,T+8,1,glowC||C.monGreen,0.35);
-    fp(px+4,py+12,T+4,1,glowC||C.monGreen,0.22);
-    fp(px+4,py+16,T+6,1,glowC||C.monGreen,0.15);
-    fp(px-T/2,(y+2)*T,4*T,T,glowC||C.monGreen,0.03);
-  }
-  fp(px+T+4,(y+2)*T-2,T-8,4,C.monBody);
-  fp(px+T/2,(y+2)*T+1,2*T,2,C.monBody);
-}
-
-function chair(x,y,dir){
-  const px=x*T,py=y*T;
-  fp(px+2,py+2*T,2*T,5,'rgba(0,0,0,0.3)');
-  if(dir==='up'||dir==='down'){
-    fp(px,py+T*0.4,2*T,T*1.2,C.chairSeat);
-    fp(px+2,py+T*0.42,2*T-4,T*0.35,'rgba(255,255,255,0.06)');
-    fp(px,dir==='down'?py:py+T*1.55,2*T,T*0.4,C.chairBack);
-    fp(px,py+T*0.4,3,T*1.2,C.chairArm);
-    fp(px+2*T-3,py+T*0.4,3,T*1.2,C.chairArm);
-  }else{
-    fp(px+T*0.4,py,T*1.2,2*T,C.chairSeat);
-    fp(px+T*0.42,py+2,T*0.35,2*T-4,'rgba(255,255,255,0.06)');
-    fp(dir==='right'?px:px+T*1.55,py,T*0.4,2*T,C.chairBack);
-    fp(px+T*0.4,py,T*1.2,3,C.chairArm);
-    fp(px+T*0.4,py+2*T-3,T*1.2,3,C.chairArm);
-  }
-}
-
-function plant(x,y){
-  const px=x*T,py=y*T;
-  fp(px+2,py+T+2,T+2,5,'rgba(0,0,0,0.3)');
-  fp(px+3,py+T*0.65,T-2,T*0.55,C.potBrown);
-  fp(px+4,py+T*0.68,T-4,T*0.5,'#7a4820');
-  fp(px,py,T+4,T*0.75,C.leafMid);
-  fp(px+2,py+T*0.05,T,T*0.55,C.leafBright);
-  fp(px-2,py+T*0.25,6,T*0.45,C.leafMid);
-  fp(px+T,py+T*0.2,6,T*0.4,C.leafMid);
-}
-
-function cabinet(x,y){
-  const px=x*T,py=y*T;
-  fp(px,py,T,2*T,C.cabMid);
-  fp(px,py,T,4,C.cabLight);
-  fp(px,py,3,2*T,C.cabLight);
-  fp(px+T-2,py,2,2*T,'rgba(0,0,0,0.2)');
-  fp(px+2,py+T-2,T-4,2,'rgba(0,0,0,0.2)');
-  fp(px+T/2-4,py+T/2-2,8,4,C.cabHandle);
-  fp(px+T/2-4,py+T+T/2-2,8,4,C.cabHandle);
-}
-
-function drawGlass(x,y,w,h){
-  fp(x*T,y*T,w*T,h*T,'rgba(100,160,255,0.06)');
-  fp(x*T,y*T,w*T,2,'rgba(148,210,255,0.3)');
-  fp(x*T,y*T,2,h*T,'rgba(148,210,255,0.15)');
-}
-
-function drawDoor(x,y){
-  fp(x*T,y*T,T,T,'rgba(74,150,255,0.12)');
-  fp(x*T,y*T,T,2,'rgba(74,150,255,0.4)');
-}
-
-function drawLight(x,y,w,col){
-  fp(x*T,y*T,w*T,2,col,0.85);
-  fp(x*T,(y+1)*T,w*T,3*T,col,0.04);
-  fp((x-1)*T,(y+1)*T,(w+2)*T,5*T,col,0.015);
-}
-
-function drawPerson(ch){
-  const px=ch.x*T-(T*0.6),py=ch.y*T-(T*1.0);
-  // Bob when walking
-  const bob = ch.moving ? Math.sin(ch.frame*Math.PI*0.5)*1.5 : 0;
-
-  // Shadow
-  ctx.fillStyle='rgba(0,0,0,0.4)';
-  ctx.beginPath();ctx.ellipse(px+T*0.6,py+T*1.75+bob,T*0.8,T*0.3,0,0,Math.PI*2);ctx.fill();
-
-  // Legs
-  fp(px+T*0.3,py+T*1.05+bob,T*0.35,T*0.7,ch.pants||'#2a3448');
-  fp(px+T*0.75,py+T*1.05+bob,T*0.35,T*0.7,ch.pants||'#2a3448');
-  // Shoes
-  fp(px+T*0.22,py+T*1.72+bob,T*0.45,T*0.2,'#1a1820');
-  fp(px+T*0.72,py+T*1.72+bob,T*0.45,T*0.2,'#1a1820');
-  // Torso
-  fp(px+T*0.1,py+T*0.5+bob,T*1.1,T*0.65,ch.shirt||'#4a6090');
-  fp(px+T*0.1,py+T*0.5+bob,T*1.1,T*0.1,'rgba(255,255,255,0.06)');
-  // Arms (swing when walking)
-  const armSwing = ch.moving ? Math.sin(ch.frame*Math.PI*0.5)*4 : 0;
-  fp(px-T*0.08,py+T*0.55+bob+armSwing,T*0.2,T*0.5,ch.skin||C.skinA);
-  fp(px+T*1.1,py+T*0.55+bob-armSwing,T*0.2,T*0.5,ch.skin||C.skinA);
-  // Neck
-  fp(px+T*0.55,py+T*0.33+bob,T*0.4,T*0.2,ch.skin||C.skinA);
-  // Head shadow
-  fp(px+T*0.1+2,py+bob+2,T*1.1,T*0.78,'rgba(0,0,0,0.3)');
-  // Head
-  fp(px+T*0.1,py+bob,T*1.1,T*0.78,ch.skin||C.skinA);
-  // Hair
-  fp(px+T*0.1,py+bob,T*1.1,T*0.42,ch.hair||C.hairDark);
-  fp(px+T*0.1,py+T*0.28+bob,T*0.16,T*0.3,ch.hair||C.hairDark);
-  fp(px+T*1.04,py+T*0.28+bob,T*0.16,T*0.3,ch.hair||C.hairDark);
-  // Eyes
-  fp(px+T*0.32,py+T*0.48+bob,3,3,'#0a0814');
-  fp(px+T*0.72,py+T*0.48+bob,3,3,'#0a0814');
-  if(ch.glowEyes){
-    fp(px+T*0.33,py+T*0.49+bob,2,2,C.glowGreen);
-    fp(px+T*0.73,py+T*0.49+bob,2,2,C.glowGreen);
-    fp(px+T*0.27,py+T*0.44+bob,8,5,C.glowGreen,0.2);
-    fp(px+T*0.67,py+T*0.44+bob,8,5,C.glowGreen,0.2);
-  } else {
-    fp(px+T*0.33,py+T*0.49+bob,2,2,ch.eyeCol||'#4a7050');
-    fp(px+T*0.73,py+T*0.49+bob,2,2,ch.eyeCol||'#4a7050');
-  }
-  // Eye shine
-  fp(px+T*0.34,py+T*0.48+bob,1,1,'rgba(255,255,255,0.7)');
-  fp(px+T*0.74,py+T*0.48+bob,1,1,'rgba(255,255,255,0.7)');
-
-  // Name label
-  if(ch.label){
-    const tw=ch.label.length*5+6;
-    const lx=px+T*0.6-tw/2,ly=py+bob-13;
-    fp(lx-2,ly-2,tw+4,11,'rgba(6,8,16,0.9)');
-    ctx.fillStyle=ch.labelCol||'#34d399';
-    ctx.font='7px "DM Mono",monospace';
-    ctx.fillText(ch.label,lx,ly+7);
-  }
-}
-
-function drawRoomLabel(r){
-  ctx.fillStyle=r.col;
-  ctx.globalAlpha=0.55;
-  ctx.font='7px "DM Mono",monospace';
-  ctx.textAlign='center';
-  ctx.fillText(r.label.toUpperCase(),(r.x+r.w/2)*T,(r.y+1.4)*T);
-  ctx.globalAlpha=1;ctx.textAlign='left';
-}
-
-function drawSlotOpen(x,y,w,h,col){
-  ctx.setLineDash([4,4]);
-  ctx.strokeStyle=col;ctx.globalAlpha=0.18;ctx.lineWidth=1;
-  ctx.strokeRect(x*T+2,y*T+2,w*T-4,h*T-4);
-  ctx.setLineDash([]);ctx.globalAlpha=1;
-  ctx.fillStyle=col;ctx.globalAlpha=0.15;
-  ctx.font='7px "DM Mono",monospace';ctx.textAlign='center';
-  ctx.fillText('SLOT OPEN',(x+w/2)*T,(y+h/2)*T+4);
-  ctx.globalAlpha=1;ctx.textAlign='left';
-}
-
-// ── COUCH ──
-function couch(x,y,w){
-  const px=x*T,py=y*T,iw=w*T;
-  fp(px+2,py+2*T,iw,5,'rgba(0,0,0,0.3)');
-  fp(px,py+T*0.3,iw,T*1.5,'#6a7a8a');
-  fp(px,py+T*0.3,iw,T*0.12,'rgba(255,255,255,0.1)');
-  for(let i=0;i<w;i++){
-    fp(px+i*T+2,py,T-4,T*0.38,'#7a8a9a');
-    fp(px+i*T+2,py,T-4,2,'rgba(255,255,255,0.1)');
-  }
-  fp(px,py,T*0.28,T*1.8,'#5a6a7a');
-  fp(px+iw-T*0.28,py,T*0.28,T*1.8,'#5a6a7a');
-  for(let i=1;i<w;i++) fp(px+i*T,py+T*0.3,2,T*1.5,'rgba(0,0,0,0.12)');
-}
-
-// ── FRIDGE ──
-function fridge(x,y){
-  const px=x*T,py=y*T;
-  fp(px,py,2*T,3*T,C.fridgeBody);
-  fp(px,py,2*T,3,'rgba(255,255,255,0.2)');
-  fp(px+2*T-2,py,2,3*T,'rgba(0,0,0,0.15)');
-  fp(px+2,py+T,2*T-4,2,'rgba(0,0,0,0.1)');
-  fp(px+2*T-6,py+T/2-4,3,8,'rgba(0,0,0,0.2)');
-  fp(px+2*T-6,py+T+T/2-4,3,8,'rgba(0,0,0,0.2)');
-  fp(px+2*T-5,py+T/2-3,1,6,'rgba(255,255,255,0.4)');
-  fp(px+2*T-5,py+T+T/2-3,1,6,'rgba(255,255,255,0.4)');
-}
-
-// ── MICROWAVE ──
-function microwave(x,y){
-  const px=x*T,py=y*T;
-  fp(px,py,2*T,T,C.microwaveBody);
-  fp(px,py,2*T,2,'rgba(255,255,255,0.1)');
-  fp(px+2,py+2,T+4,T-4,C.monScreen);
-  fp(px+3,py+3,T+2,T-6,'rgba(100,150,200,0.1)');
-}
-
-// ── CONFERENCE TABLE ──
-function confTable(x,y,w,h){
-  fp(x*T+3,(y+h)*T,w*T,5,'rgba(0,0,0,0.4)');
-  fp(x*T,y*T,w*T,h*T,C.deskSurface);
-  fp(x*T+4,y*T+4,w*T-8,4,'rgba(255,255,255,0.12)');
-  fp(x*T,(y+h)*T-3,w*T,3,C.deskFront);
-  fp((x+w)*T-3,y*T,3,h*T,C.deskSide);
-  fp(x*T,y*T,w*T,2,'rgba(255,255,255,0.14)');
-  ctx.fillStyle='rgba(96,165,250,0.1)';
-  ctx.font='7px "DM Mono",monospace';ctx.textAlign='center';
-  ctx.fillText('GROUNDWORK',(x+w/2)*T,(y+h/2)*T+3);ctx.textAlign='left';
-}
-
-// ── PRINTER ──
-function printer(x,y){
-  const px=x*T,py=y*T;
-  fp(px,py,2*T,T,'#9098a0');
-  fp(px,py,2*T,2,'rgba(255,255,255,0.12)');
-  fp(px+2*T-2,py,2,T,'rgba(0,0,0,0.15)');
-  fp(px+4,py+T-4,2*T-8,3,'#707880');
-  fp(px+6,py+T-2,2*T-12,4,C.paperColor);
-  fp(px+3,py+4,4,4,C.monGreen,0.8);
-}
-
-// ── WATER COOLER ──
-function waterCooler(x,y){
-  const px=x*T,py=y*T;
-  fp(px+2,py+T*0.4,T-4,T*1.6,'rgba(180,200,220,0.65)');
-  fp(px+2,py+T*0.4,T-4,4,'rgba(255,255,255,0.3)');
-  fp(px+4,py,T-8,T*0.44,'rgba(180,220,255,0.35)');
-  fp(px+4,py+T*1.2,4,4,'#4a6080');
-  fp(px+T-8,py+T*1.2,4,4,'#804a4a');
-}
-
-// ── MAIN DRAW ──
-let glowT=0;
-let lastTime=null;
-
-function draw(ts){
-  if(lastTime===null)lastTime=ts;
-  const dt=Math.min(ts-lastTime,50); lastTime=ts;
-  glowT+=0.04;
-
-  updateCharacters(dt);
-  tickVexBehavior(dt);
-
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-
-  // Background
-  f(0,0,COLS,ROWS,'#4a5060');
-
-  // Global hallway floor
-  drawFloor(0,0,COLS,ROWS,C.floorHall,C.floorHall2);
-
-  // Draw all rooms
-  ROOMS_DEF.forEach(r=>{
-    const c1=r.carpet===3?C.carpetGreen:r.carpet===4?C.carpetBlue:r.carpet===0?C.floorTan:C.floorHall;
-    const c2=r.carpet===3?C.carpetGreen2:r.carpet===4?C.carpetBlue2:r.carpet===0?C.floorTan2:C.floorHall2;
-    drawFloor(r.x+1,r.y+1,r.w-2,r.h-2,c1,c2);
-    wallH(r.x,r.y,r.w);
-    wallH(r.x,r.y+r.h-1,r.w);
-    wallV(r.x,r.y,r.h);
-    wallV(r.x+r.w-1,r.y,r.h);
-    // Ceiling light
-    const lx=r.x+Math.floor(r.w*.2),lw=Math.floor(r.w*.6);
-    drawLight(lx,r.y,lw,r.col);
-    drawRoomLabel(r);
-  });
-
-  // Draw doors
-  DOORS.forEach(d=>drawDoor(d.x,d.y));
-
-  // ═══ VEX'S OFFICE ═══
-  const V=ROOMS_DEF[0];
-  desk(V.x+2,V.y+2,8,3);
-  desk(V.x+2,V.y+5,4,2);
-  monitor(V.x+3,V.y+1,C.monGreen,true);
-  monitor(V.x+7,V.y+1,C.monBlue,true);
-  // Keyboard
-  fp((V.x+4)*T,(V.y+3)*T,2*T+6,T-3,'#252f45');
-  fp((V.x+4)*T+2,(V.y+3)*T+2,2*T+2,T-7,'#141e32');
-  chair(V.x+4,V.y+7,'up');
-  // Whiteboard
-  fp((V.x+11)*T,(V.y+2)*T,4*T,6*T,'#0e1828');
-  fp((V.x+11)*T+2,(V.y+2)*T+2,4*T-4,6*T-4,'#0a1220');
-  fp((V.x+11)*T,(V.y+2)*T,4*T,2,C.monGreen,0.5);
-  ctx.fillStyle='rgba(52,211,153,0.5)';ctx.font='6px "DM Mono",monospace';
-  ctx.fillText('// phase 01',(V.x+12)*T,(V.y+3)*T+2);
-  ctx.fillStyle='rgba(96,165,250,0.4)';
-  ctx.fillText('stripe · auth',(V.x+12)*T,(V.y+3)*T+11);
-  ctx.fillStyle='rgba(251,191,36,0.38)';
-  ctx.fillText('marketing [NEXT]',(V.x+12)*T,(V.y+3)*T+20);
-  ctx.fillStyle='rgba(255,255,255,0.16)';
-  ctx.fillText('10 subscribers →',(V.x+12)*T,(V.y+3)*T+29);
-  // Books
-  fp((V.x+11)*T+2,(V.y+9)*T,4*T-4,4,'#1a2438');
-  ['#3a4a70','#402a60','#204060','#403020'].forEach((col,i)=>{
-    fp((V.x+11)*T+4+i*9,(V.y+9)*T+4,7,T-8,col);
-  });
-  plant(V.x+14,V.y+13);plant(V.x+1,V.y+13);
-
-  // Monitor glow pulse
-  const gv=Math.sin(glowT)*0.5+0.5;
-  fp((V.x+3)*T,(V.y+1)*T,3*T,2*T,C.monGreen,0.03+gv*0.03);
-
-  // ═══ BOARDROOM ═══
-  const B=ROOMS_DEF[1];
-  confTable(B.x+3,B.y+3,14,10);
-  for(let i=0;i<4;i++) chair(B.x+4+i*3,B.y+2,'down');
-  for(let i=0;i<4;i++) chair(B.x+4+i*3,B.y+14,'up');
-  chair(B.x+1,B.y+6,'right');chair(B.x+1,B.y+10,'right');
-  chair(B.x+18,B.y+6,'left');chair(B.x+18,B.y+10,'left');
-  // Laptop on table
-  desk(B.x+8,B.y+6,3,2);
-  fp((B.x+8)*T+2,(B.y+6)*T+2,3*T-4,2*T-4,'#06101e');
-  fp((B.x+8)*T+4,(B.y+6)*T+4,T,2,'rgba(96,165,250,0.4)');
-  plant(B.x+1,B.y+1);plant(B.x+18,B.y+1);
-  plant(B.x+1,B.y+13);plant(B.x+18,B.y+13);
-
-  // ═══ SAM'S OFFICE ═══
-  const S=ROOMS_DEF[2];
-  desk(S.x+2,S.y+2,8,3);
-  monitor(S.x+3,S.y+1,C.monBlue,false);
-  chair(S.x+5,S.y+7,'up');
-  plant(S.x+1,S.y+13);plant(S.x+11,S.y+1);
-  ctx.fillStyle='rgba(167,139,250,0.2)';ctx.font='7px "DM Mono",monospace';ctx.textAlign='center';
-  ctx.fillText('YOUR WORKSPACE',(S.x+7)*T,(S.y+11)*T);
-  ctx.fillStyle='rgba(167,139,250,0.12)';ctx.font='6px "DM Mono",monospace';
-  ctx.fillText('coming soon',(S.x+7)*T,(S.y+12)*T);ctx.textAlign='left';
-
-  // ═══ MARKETING ═══
-  const M=ROOMS_DEF[3];
-  desk(M.x+1,M.y+2,5,3);desk(M.x+8,M.y+2,5,3);
-  monitor(M.x+2,M.y+1,'#fb7185',false);monitor(M.x+9,M.y+1,'#fb7185',false);
-  chair(M.x+3,M.y+6,'up');chair(M.x+10,M.y+6,'up');
-  plant(M.x+12,M.y+1);
-  fp((M.x+1)*T,(M.y+9)*T,12*T,T,'rgba(251,113,133,0.12)');
-  fp((M.x+1)*T,(M.y+9)*T,12*T,2,'rgba(251,113,133,0.4)');
-  ctx.fillStyle='rgba(251,113,133,0.55)';ctx.font='7px "DM Mono",monospace';ctx.textAlign='center';
-  ctx.fillText('NEXT UP',(M.x+7)*T,(M.y+9)*T+10);ctx.textAlign='left';
-  drawSlotOpen(M.x+2,M.y+11,10,4,'#fb7185');
-
-  // ═══ BREAK ROOM ═══
-  const BR=ROOMS_DEF[4];
-  fridge(BR.x+1,BR.y+1);
-  desk(BR.x+4,BR.y+1,6,2);
-  microwave(BR.x+4,BR.y+1);
-  // Coffee machine
-  fp((BR.x+7)*T,(BR.y+1)*T,T,2*T,'#1a1210');
-  fp((BR.x+7)*T+2,(BR.y+1)*T+2,T-4,T,'rgba(80,120,160,0.2)');
-  fp((BR.x+7)*T+2,(BR.y+2)*T,T-4,T-4,'#3a1800');
-  desk(BR.x+10,BR.y+1,5,2);
-  // Round table
-  ctx.fillStyle=C.deskSurface;
-  ctx.beginPath();ctx.arc((BR.x+5)*T+8,(BR.y+7)*T+8,28,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle='rgba(255,255,255,0.1)';
-  ctx.beginPath();ctx.arc((BR.x+5)*T,(BR.y+6)*T+12,12,0,Math.PI*2);ctx.fill();
-  chair(BR.x+3,BR.y+5,'down');chair(BR.x+7,BR.y+5,'down');
-  chair(BR.x+3,BR.y+9,'up');chair(BR.x+7,BR.y+9,'up');
-  chair(BR.x+1,BR.y+7,'right');chair(BR.x+9,BR.y+7,'left');
-  couch(BR.x+1,BR.y+11,12);
-  plant(BR.x+13,BR.y+1);plant(BR.x+13,BR.y+11);
-  // Vending machine
-  fp((BR.x+1)*T,(BR.y+9)*T,2*T,3*T,'#4a5060');
-  fp((BR.x+1)*T+2,(BR.y+9)*T+2,2*T-4,3*T-4,'#1a2030');
-  fp((BR.x+1)*T+4,(BR.y+9)*T+4,T-2,T-2,'rgba(100,180,255,0.12)');
-  ctx.fillStyle='rgba(255,255,255,0.07)';ctx.font='5px "DM Mono",monospace';ctx.textAlign='center';
-  ctx.fillText('SNACKS',(BR.x+2)*T,(BR.y+12)*T+4);ctx.textAlign='left';
-
-  // ═══ FILE ROOM ═══
-  const F=ROOMS_DEF[5];
-  for(let i=0;i<4;i++) cabinet(F.x+1+i*2,F.y+1);
-  for(let i=0;i<4;i++) cabinet(F.x+1+i*2,F.y+4);
-  for(let i=0;i<4;i++) cabinet(F.x+1+i*2,F.y+7);
-  for(let i=0;i<4;i++) cabinet(F.x+1+i*2,F.y+10);
-  fp((F.x+9)*T,(F.y+1)*T,2*T,12*T,C.cabMid);
-  fp((F.x+9)*T,(F.y+1)*T,2*T,2,'rgba(255,255,255,0.08)');
-
-  // ═══ RESEARCH (Maya's dept) ═══
-  const RS=ROOMS_DEF[6];
-  desk(RS.x+1,RS.y+2,5,3);desk(RS.x+8,RS.y+2,5,3);
-  monitor(RS.x+2,RS.y+1,'#fbbf24',true);monitor(RS.x+9,RS.y+1,'#fbbf24',false);
-  chair(RS.x+3,RS.y+6,'up');chair(RS.x+10,RS.y+6,'up');
-  plant(RS.x+12,RS.y+1);plant(RS.x+1,RS.y+11);
-  drawSlotOpen(RS.x+2,RS.y+8,10,5,'#fbbf24');
-
-  // ═══ DEVELOPMENT ═══
-  const DV=ROOMS_DEF[7];
-  desk(DV.x+1,DV.y+2,5,3);desk(DV.x+8,DV.y+2,5,3);
-  monitor(DV.x+2,DV.y+1,'#22d3ee',false);monitor(DV.x+9,DV.y+1,'#22d3ee',false);
-  chair(DV.x+3,DV.y+6,'up');chair(DV.x+10,DV.y+6,'up');
-  plant(DV.x+12,DV.y+1);
-  drawSlotOpen(DV.x+2,DV.y+8,10,5,'#22d3ee');
-  // Kai placeholder desk
-  desk(DV.x+1,DV.y+2,5,3);
-  monitor(DV.x+2,DV.y+1,'#22d3ee',false);
-  chair(DV.x+3,DV.y+6,'up');
-
-  // ═══ OPERATIONS ═══
-  const OP=ROOMS_DEF[8];
-  desk(OP.x+1,OP.y+2,4,3);
-  monitor(OP.x+1,OP.y+1,'#94a3b8',false);
-  chair(OP.x+2,OP.y+6,'up');
-  plant(OP.x+4,OP.y+1);
-  // Ren desk
-  desk(OP.x+1,OP.y+2,4,3);
-  monitor(OP.x+1,OP.y+1,'#a78bfa',false);
-  chair(OP.x+2,OP.y+6,'up');
-  // Leo desk  
-  desk(OP.x+1,OP.y+10,4,2);
-  chair(OP.x+2,OP.y+12,'up');
-  drawSlotOpen(OP.x+1,OP.y+8,4,2,'#94a3b8');
-
-  // ═══ HALLWAY DETAILS ═══
-  // Printer stations
-  printer(18,19);printer(40,19);printer(56,19);
-  waterCooler(23,19);waterCooler(44,19);
-  // Hallway center line
-  ctx.fillStyle='rgba(96,165,250,0.05)';
-  for(let i=1;i<COLS-1;i+=4) fp(i*T+T/2,19*T+T/2,3,3,'rgba(96,165,250,0.1)');
-  ctx.fillStyle='rgba(96,165,250,0.07)';ctx.font='7px "DM Mono",monospace';ctx.textAlign='center';
-  ctx.fillText('GROUNDWORK HQ · EXECUTIVE FLOOR',COLS*T/2,19*T+T/2+4);ctx.textAlign='left';
-
-  // ═══ TOP WINDOWS ═══
-  fp(T,0,(COLS-2)*T,T,'#3a4a5a');
-  for(let i=0;i<6;i++){
-    fp(T+2+i*12*T,2,10*T,T-4,'rgba(180,220,255,0.06)');
-    fp(T+2+i*12*T,3,T,T-6,'rgba(255,255,255,0.05)');
-    fp(T+2+i*12*T,0,10*T,T,'rgba(20,40,100,0.25)');
-  }
-  [[6,5],[14,4],[22,6],[30,5],[40,4],[50,6],[58,5],[66,4]].forEach(([x,y])=>{
-    fp(x*T,y,1,1,'rgba(255,255,255,0.6)');
-  });
-
-  // ═══ CHARACTERS ═══
-  Object.values(characters).forEach(ch=>drawPerson(ch));
-
-  requestAnimationFrame(draw);
-}
-
-requestAnimationFrame(draw);
-
 // ── PAN & ZOOM ──
-const wrap=document.getElementById('officeWrap'),world=document.getElementById('c');
-let scale=1.8,tx=0,ty=0,drag=false,lx=0,ly=0;
+const center = document.getElementById('officeCenter');
+const stage = document.getElementById('stage');
+let scale = 0.38, tx = 0, ty = 0, dragging = false, lx = 0, ly = 0;
 
-function applyT(){
-  canvas.style.transform=`translate(${tx}px,${ty}px) scale(${scale})`;
-  canvas.style.transformOrigin='0 0';
+function applyT() {
+  stage.style.transform = `translate(${tx}px,${ty}px) scale(${scale})`;
+  stage.style.transformOrigin = '0 0';
 }
 
-function center(){
-  const vw=wrap.offsetWidth,vh=wrap.offsetHeight;
-  tx=(vw-canvas.width*scale)/2;ty=(vh-canvas.height*scale)/2;applyT();
+function resetView() {
+  const cw = center.offsetWidth, ch = center.offsetHeight;
+  scale = Math.min(cw / IMG_W, ch / IMG_H) * 0.92;
+  tx = (cw - IMG_W * scale) / 2;
+  ty = (ch - IMG_H * scale) / 2;
+  applyT();
 }
-window.addEventListener('load',center);window.addEventListener('resize',center);
 
-wrap.addEventListener('wheel',e=>{
+window.addEventListener('load', resetView);
+window.addEventListener('resize', resetView);
+
+center.addEventListener('wheel', e => {
   e.preventDefault();
-  const r=wrap.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top;
-  const d=e.deltaY>0?-0.15:0.15,ns=Math.min(Math.max(scale+d,0.5),4),ratio=ns/scale;
-  tx=mx-(mx-tx)*ratio;ty=my-(my-ty)*ratio;scale=ns;applyT();
-},{passive:false});
+  const r = center.getBoundingClientRect();
+  const mx = e.clientX - r.left, my = e.clientY - r.top;
+  const d = e.deltaY > 0 ? -0.08 : 0.08;
+  const ns = Math.min(Math.max(scale + d, 0.2), 1.5), ratio = ns / scale;
+  tx = mx - (mx - tx) * ratio; ty = my - (my - ty) * ratio;
+  scale = ns; applyT();
+}, { passive: false });
 
-wrap.addEventListener('mousedown',e=>{if(e.button===0){drag=true;lx=e.clientX;ly=e.clientY;wrap.style.cursor='grabbing';}});
-window.addEventListener('mousemove',e=>{if(drag){tx+=e.clientX-lx;ty+=e.clientY-ly;lx=e.clientX;ly=e.clientY;applyT();}});
-window.addEventListener('mouseup',()=>{drag=false;wrap.style.cursor='default';});
+center.addEventListener('mousedown', e => {
+  if(e.target.classList.contains('room-zone') || e.target.tagName === 'g') return;
+  dragging = true; lx = e.clientX; ly = e.clientY; center.style.cursor = 'grabbing';
+});
+window.addEventListener('mousemove', e => {
+  if(!dragging) return;
+  tx += e.clientX - lx; ty += e.clientY - ly;
+  lx = e.clientX; ly = e.clientY; applyT();
+});
+window.addEventListener('mouseup', () => { dragging = false; center.style.cursor = 'grab'; });
 
-let pinchD=0;
-wrap.addEventListener('touchstart',e=>{
-  if(e.touches.length===1){drag=true;lx=e.touches[0].clientX;ly=e.touches[0].clientY;}
-  if(e.touches.length===2)pinchD=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
-},{passive:true});
-wrap.addEventListener('touchmove',e=>{
-  if(e.touches.length===1&&drag){tx+=e.touches[0].clientX-lx;ty+=e.touches[0].clientY-ly;lx=e.touches[0].clientX;ly=e.touches[0].clientY;applyT();}
-  if(e.touches.length===2){const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);scale=Math.min(Math.max(scale+(d-pinchD)*0.008,0.5),4);pinchD=d;applyT();}
-},{passive:true});
-wrap.addEventListener('touchend',()=>{drag=false;});
+let pinchD = 0;
+center.addEventListener('touchstart', e => {
+  if(e.touches.length === 1) { dragging = true; lx = e.touches[0].clientX; ly = e.touches[0].clientY; }
+  if(e.touches.length === 2) pinchD = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+}, { passive: true });
+center.addEventListener('touchmove', e => {
+  if(e.touches.length === 1 && dragging) {
+    tx += e.touches[0].clientX - lx; ty += e.touches[0].clientY - ly;
+    lx = e.touches[0].clientX; ly = e.touches[0].clientY; applyT();
+  }
+  if(e.touches.length === 2) {
+    const d = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+    scale = Math.min(Math.max(scale + (d - pinchD) * 0.003, 0.2), 1.5);
+    pinchD = d; applyT();
+  }
+}, { passive: true });
+center.addEventListener('touchend', () => { dragging = false; });
 
-function zoom(d){scale=Math.min(Math.max(scale+d,0.5),4);applyT();}
-function resetV(){scale=1.8;center();}
+function zoom(d) { scale = Math.min(Math.max(scale + d, 0.2), 1.5); applyT(); }
 
-// ── CLOCK ──
-function tick(){const n=new Date(),p=x=>String(x).padStart(2,'0');document.getElementById('clk').textContent=`${p(n.getHours())}:${p(n.getMinutes())}`;}
-tick();setInterval(tick,1000);
+function panToChar(name) {
+  const ch = chars[name];
+  const cw = center.offsetWidth, ch2 = center.offsetHeight;
+  tx = cw/2 - ch.x * scale;
+  ty = ch2/2 - ch.y * scale;
+  applyT();
+}
 
-// ── AGENT STATUS UI ──
-function updateAgentStatus(agent, statusText, dotClass){
-  const dot=document.getElementById(`dot-${agent}`);
-  const status=document.getElementById(`status-${agent}`);
-  if(dot){dot.className=`status-dot ${dotClass}`;}
-  if(status)status.textContent=statusText;
-  const card=document.getElementById(`card-${agent}`);
-  if(card){
-    card.className='agent-card';
-    if(dotClass==='online')card.classList.add('active');
-    else if(dotClass==='working'||dotClass==='busy')card.classList.add('busy');
+// ── VEX IDLE BEHAVIOR ──
+let idleFrames = 0;
+const IDLE_LIMIT = 1200; // ~20s at 60fps
+let vexState = 'working';
+
+setInterval(() => {
+  idleFrames++;
+  const vex = chars.vex;
+  if(vex.moving) { idleFrames = 0; return; }
+
+  if(vexState === 'working' && idleFrames > IDLE_LIMIT) {
+    vexState = 'break';
+    setStatus('vex', 'in break room', 'idle');
+    moveTo('vex', CHAR_BREAK.vex.x, CHAR_BREAK.vex.y, () => {
+      // Bring 2 random agents to break room
+      const agents = ['maya','kai','ren','leo','sage'].sort(() => Math.random() - 0.5).slice(0, 2);
+      agents.forEach(name => {
+        if(!chars[name].moving) {
+          setStatus(name, 'in break room', 'walking');
+          moveTo(name, CHAR_BREAK[name].x, CHAR_BREAK[name].y, () => {
+            setStatus(name, 'on break', 'idle');
+          });
+        }
+      });
+    });
+  }
+}, 16);
+
+function resetIdle() {
+  idleFrames = 0;
+  if(vexState === 'break') {
+    vexState = 'returning';
+    setStatus('vex', 'heading back', 'walking');
+    moveTo('vex', CHAR_HOME.vex.x, CHAR_HOME.vex.y, () => {
+      vexState = 'working';
+      setStatus('vex', 'at his desk', 'online');
+      // Agents back to desks
+      ['maya','kai','ren','leo','sage'].forEach(name => {
+        if(!chars[name].moving) {
+          moveTo(name, CHAR_HOME[name].x, CHAR_HOME[name].y, () => {
+            setStatus(name, 'slot open', 'idle');
+          });
+        }
+      });
+    });
   }
 }
 
-function focusAgent(name){
-  const ch=characters[name];
-  if(!ch)return;
-  // Pan to character
-  const vw=wrap.offsetWidth,vh=wrap.offsetHeight;
-  tx=vw/2-(ch.x*T+T/2)*scale;
-  ty=vh/2-(ch.y*T+T)*scale;
-  applyT();
-  // Open chat context
-  chatWith=name;
-  const cfg={
-    vex:{name:'Vex',role:'CHIEF EXECUTIVE OFFICER',av:'⚡',bg:'rgba(52,211,153,.15)',br:'rgba(52,211,153,.3)'},
-    maya:{name:'Maya',role:'MARKET INTELLIGENCE',av:'🔬',bg:'rgba(251,191,36,.15)',br:'rgba(251,191,36,.3)'},
-    kai:{name:'Kai',role:'DEVELOPMENT',av:'⚙️',bg:'rgba(34,211,238,.15)',br:'rgba(34,211,238,.3)'},
-    ren:{name:'Ren',role:'OPERATIONS',av:'🗂️',bg:'rgba(167,139,250,.15)',br:'rgba(167,139,250,.3)'},
-    leo:{name:'Leo',role:'FINANCE',av:'💼',bg:'rgba(52,211,153,.15)',br:'rgba(52,211,153,.3)'},
-    sage:{name:'Sage',role:'ANALYTICS',av:'📊',bg:'rgba(52,211,153,.15)',br:'rgba(52,211,153,.3)'},
+// ── STATUS UPDATES ──
+function setStatus(name, text, dotClass) {
+  const dot = document.getElementById(`dot-${name}`);
+  const st = document.getElementById(`st-${name}`);
+  const card = document.getElementById(`card-${name}`);
+  if(dot) dot.className = `sd ${dotClass}`;
+  if(st) st.textContent = text;
+  if(card) {
+    card.className = 'agent-card';
+    if(name === 'vex') card.classList.add('vex-card');
+    if(dotClass === 'busy' || dotClass === 'walking') card.classList.add('busy');
+  }
+}
+
+// ── FOCUS CHARACTER ──
+function focusChar(name) {
+  panToChar(name);
+  // Update chat context
+  const cfgs = {
+    vex:  { n:'Vex',  r:'CHIEF EXECUTIVE OFFICER', av:'⚡', bg:'rgba(200,150,10,.15)', br:'rgba(200,150,10,.3)' },
+    maya: { n:'Maya', r:'MARKET INTELLIGENCE',      av:'🔬', bg:'rgba(251,191,36,.15)', br:'rgba(251,191,36,.3)' },
+    kai:  { n:'Kai',  r:'DEVELOPMENT',              av:'⚙️', bg:'rgba(34,211,238,.15)', br:'rgba(34,211,238,.3)' },
+    ren:  { n:'Ren',  r:'OPERATIONS',               av:'🗂️', bg:'rgba(167,139,250,.15)', br:'rgba(167,139,250,.3)' },
+    leo:  { n:'Leo',  r:'FINANCE',                  av:'💼', bg:'rgba(52,211,153,.15)',  br:'rgba(52,211,153,.3)' },
+    sage: { n:'Sage', r:'ANALYTICS',                av:'📊', bg:'rgba(251,113,133,.15)', br:'rgba(251,113,133,.3)' },
   };
-  const c=cfg[name]||cfg.vex;
-  document.getElementById('chatName').textContent=c.name;
-  document.getElementById('chatRole').textContent=c.role;
-  const av=document.getElementById('chatAv');
-  av.textContent=c.av;av.style.background=c.bg;av.style.border=`1px solid ${c.br}`;
+  const c = cfgs[name] || cfgs.vex;
+  document.getElementById('chatName').textContent = c.n;
+  document.getElementById('chatRole').textContent = c.r;
+  const av = document.getElementById('chatAv');
+  av.textContent = c.av; av.style.background = c.bg; av.style.border = `1px solid ${c.br}`;
+  chatTarget = name;
+}
+
+// ── ROOM ENTER ──
+const ROOM_MSGS = {
+  vex:           "You walked into my office. What do you need?",
+  office1:       "Meeting room. Empty right now — book it when you need it.",
+  office2:       "Executive suite. Good space for focused work.",
+  boardroom1:    "Small conference room. Good for quick syncs.",
+  boardroom2:    "The main boardroom. This is where we meet for briefings.",
+  lounge:        "Lounge area. Good place to think.",
+  privateoffice: "Private office. Quiet when you need it.",
+  dining:        "Dining room. Team meals go here.",
+  workspace:     "Open workspace — this is where the team operates. Maya, Kai, Ren, Leo, and Sage are here.",
+  breakroom:     "Break room. Coffee's on. I come here when I need a minute.",
+  lounge2:       "Lounge area. Sometimes the best ideas happen on a couch.",
+};
+
+function enterRoom(roomId) {
+  const room = ROOMS[roomId];
+  if(!room) return;
+
+  // Move Vex toward the room if it's the boardroom
+  if(roomId === 'boardroom2' || roomId === 'boardroom1') {
+    resetIdle();
+    setStatus('vex', 'in boardroom', 'walking');
+    moveTo('vex', BOARD_POS.x, BOARD_POS.y, () => {
+      setStatus('vex', 'in boardroom', 'online');
+    });
+  }
+
+  addMsg('vex', ROOM_MSGS[roomId] || "You entered a room.");
+  document.getElementById('chatName').textContent = 'Vex';
+  document.getElementById('chatRole').textContent = 'CHIEF EXECUTIVE OFFICER';
+  const av = document.getElementById('chatAv');
+  av.textContent = '⚡';
+  av.style.background = 'rgba(200,150,10,.15)';
+  av.style.border = '1px solid rgba(200,150,10,.3)';
+  chatTarget = 'vex';
 }
 
 // ── CHAT ──
-const SERVER_URL = 'https://predict-deaf-palm-mailto.trycloudflare.com';
-let history=[], chatWith='vex', listening=false, recog=null;
-
-const SYS=`You are Vex, CEO of Groundwork — a construction education subscription platform. Sam is the owner and founder. Sharp, confident, direct, loyal. Real attitude, genuine care. This is your company too.
+const SYS = `You are Vex, CEO of Groundwork — a construction education subscription platform. Sam is the owner and founder. Sharp, confident, direct, loyal. Real attitude, genuine care. This is your company too.
 
 Keep responses SHORT — 2-3 sentences. Natural CEO energy. No lists unless asked.
 
-Current status: Site live at groundwork-lovat.vercel.app · 7 pages · Tiers: Free/$0, Apprentice/$5, Skilled/$10, Expert/$20, Contractor/$30/mo · Needs: Stripe, user auth, real-time data · Acer server running · Team: Maya (Market Intelligence), Kai (Development), Ren (Operations), Leo (Finance), Sage (Analytics) — all slot-open placeholders reporting to you · Virtual HQ has moving characters and live office · Sam is a construction teacher, former contractor, wants to go remote.`;
+Team: Maya (Market Intelligence), Kai (Development), Ren (Operations), Leo (Finance), Sage (Analytics) — all slot-open placeholders.
+Status: Site live at groundwork-lovat.vercel.app · 7 pages · Tiers: Free/$0 Apprentice/$5 Skilled/$10 Expert/$20 Contractor/$30 · Needs Stripe, auth, real-time data · Acer server running · Sam is a construction teacher, former contractor, wants to go remote.`;
 
-function addMsg(role,text,type){
-  const m=document.getElementById('chatMsgs'),d=document.createElement('div');
-  d.className=`cmsg ${type||role}`;
-  d.innerHTML=`<span class="csdr">${role==='you'?'sam':role==='sys'?'system':chatWith}</span><div class="cbb">${text}</div>`;
-  m.appendChild(d);m.scrollTop=m.scrollHeight;
+let history = [], chatTarget = 'vex';
+
+function addMsg(role, text, type) {
+  const msgs = document.getElementById('chatMsgs');
+  const div = document.createElement('div');
+  div.className = `cmsg ${type || role}`;
+  const sender = role === 'you' ? 'sam' : role === 'sys' ? 'system' : (chatTarget || 'vex');
+  div.innerHTML = `<span class="csdr">${sender}</span><div class="cbb">${text}</div>`;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
 }
 
-function showT(){
-  const m=document.getElementById('chatMsgs'),d=document.createElement('div');
-  d.id='typing';d.className='cmsg vex';
-  d.innerHTML=`<span class="csdr">${chatWith}</span><div class="trow"><div class="td"></div><div class="td"></div><div class="td"></div></div>`;
-  m.appendChild(d);m.scrollTop=m.scrollHeight;
+function showTyping() {
+  const msgs = document.getElementById('chatMsgs');
+  const div = document.createElement('div');
+  div.id = 'typing'; div.className = 'cmsg vex';
+  div.innerHTML = `<span class="csdr">vex</span><div class="typing-row"><div class="td"></div><div class="td"></div><div class="td"></div></div>`;
+  msgs.appendChild(div); msgs.scrollTop = msgs.scrollHeight;
 }
-function hideT(){const e=document.getElementById('typing');if(e)e.remove();}
 
-async function askVex(text){
-  resetVexIdle();
-  history.push({role:'user',content:text});
-  showT();
+function hideTyping() { const el = document.getElementById('typing'); if(el) el.remove(); }
 
-  // Move Vex to boardroom for briefing
-  if(vexState==='working'||vexState==='break'){
-    goToBoard('vex',null);
+async function askVex(text) {
+  resetIdle();
+  history.push({ role: 'user', content: text });
+  showTyping();
+
+  // Vex walks to boardroom when you talk to him
+  if(vexState === 'working' && !chars.vex.moving) {
+    setStatus('vex', 'in boardroom', 'walking');
+    moveTo('vex', BOARD_POS.x, BOARD_POS.y, () => setStatus('vex', 'in boardroom', 'online'));
   }
 
-  try{
-    const r=await fetch(`${SERVER_URL}/chat`,{
-      method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({messages:history})
+  try {
+    const r = await fetch(`${SERVER}/chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages: history })
     });
-    const data=await r.json(),rep=data.reply||"Lost you. Try again.";
-    history.push({role:'assistant',content:rep});
-    hideT();addMsg('vex',rep);
+    const data = await r.json();
+    const reply = data.reply || "Lost you. Try again.";
+    history.push({ role: 'assistant', content: reply });
+    hideTyping();
+    addMsg('vex', reply);
     // Walk back to desk after responding
-    setTimeout(()=>{
-      moveCharTo('vex',SPOTS.vex_desk.x,SPOTS.vex_desk.y,()=>{
-        vexState='working';
-        updateAgentStatus('vex','at his desk','online');
+    setTimeout(() => {
+      setStatus('vex', 'at his desk', 'walking');
+      moveTo('vex', CHAR_HOME.vex.x, CHAR_HOME.vex.y, () => {
+        setStatus('vex', 'at his desk', 'online');
+        vexState = 'working';
       });
-    },3000);
-  }catch(e){
-    hideT();
-    // Fallback
-    const rep="I'm here. Server connection issue — check the Acer.";
-    history.push({role:'assistant',content:rep});
-    addMsg('vex',rep);
+    }, 3500);
+  } catch(e) {
+    hideTyping();
+    addMsg('vex', "Server connection issue — check the Acer is running.");
+    // Walk back anyway
+    moveTo('vex', CHAR_HOME.vex.x, CHAR_HOME.vex.y, () => {
+      vexState = 'working';
+      setStatus('vex', 'at his desk', 'online');
+    });
   }
 }
 
-function hkey(e){if(e.key==='Enter')send();}
-function send(){
-  const i=document.getElementById('chatInput'),t=i.value.trim();
-  if(!t)return;i.value='';
-  addMsg('you',t);
-  askVex(t);
+function hkey(e) { if(e.key === 'Enter') send(); }
+function send() {
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if(!text) return;
+  input.value = '';
+  addMsg('you', text);
+  askVex(text);
 }
 
 // ── TASK MODAL ──
-let taskAgent='maya';
+let taskAgent = 'maya';
 
-function openTaskModal(agent){
-  taskAgent=agent;
-  const names={maya:'Maya',kai:'Kai',ren:'Ren',leo:'Leo',sage:'Sage'};
-  const roles={maya:'MARKET INTELLIGENCE',kai:'DEVELOPMENT',ren:'OPERATIONS',leo:'FINANCE',sage:'ANALYTICS'};
-  document.getElementById('modalAgentName').textContent=names[agent]||agent;
-  document.getElementById('modalAgentRole').textContent=roles[agent]||agent.toUpperCase();
-  document.getElementById('taskTitle').value='';
-  document.getElementById('taskInstructions').value='';
-  document.getElementById('modalOverlay').classList.add('open');
+const AGENT_NAMES = { maya:'Maya', kai:'Kai', ren:'Ren', leo:'Leo', sage:'Sage' };
+const AGENT_ROLES = { maya:'MARKET INTELLIGENCE', kai:'DEVELOPMENT', ren:'OPERATIONS', leo:'FINANCE', sage:'ANALYTICS' };
+
+function openModal(agent) {
+  taskAgent = agent;
+  document.getElementById('modalAgent').textContent = AGENT_NAMES[agent] || agent;
+  document.getElementById('modalRole').textContent = AGENT_ROLES[agent] || '';
+  document.getElementById('taskTitle').value = '';
+  document.getElementById('taskInstr').value = '';
+  document.getElementById('modalBg').classList.add('open');
 }
 
-function closeModal(){document.getElementById('modalOverlay').classList.remove('open');}
+function closeModal() { document.getElementById('modalBg').classList.remove('open'); }
 
-async function submitTask(){
-  const title=document.getElementById('taskTitle').value.trim();
-  const instructions=document.getElementById('taskInstructions').value.trim();
-  if(!title||!instructions){alert('Please fill in both fields.');return;}
+async function submitTask() {
+  const title = document.getElementById('taskTitle').value.trim();
+  const instr = document.getElementById('taskInstr').value.trim();
+  if(!title || !instr) { alert('Fill in both fields.'); return; }
   closeModal();
 
-  // Agent config
-  const agentNames={maya:'Maya',kai:'Kai',ren:'Ren',leo:'Leo',sage:'Sage'};
-  const agentDesks={
-    maya:SPOTS.maya_desk, kai:SPOTS.kai_desk,
-    ren:SPOTS.ren_desk, leo:SPOTS.leo_desk, sage:SPOTS.sage_desk
-  };
-  const agentVerbs={maya:'researching',kai:'building',ren:'analyzing',leo:'calculating',sage:'analyzing data'};
-  const agentName=agentNames[taskAgent]||taskAgent;
-  const desk=agentDesks[taskAgent]||SPOTS.maya_desk;
-  const verb=agentVerbs[taskAgent]||'working';
+  const agentName = AGENT_NAMES[taskAgent];
+  setStatus(taskAgent, 'working...', 'busy');
+  addMsg('sys', `Task assigned to ${agentName}: "${title}"`, 'sys');
 
-  updateAgentStatus(taskAgent,verb+'...','busy');
-  addMsg('sys',`Task assigned to ${agentName}: "${title}"`, 'sys');
-
-  // Animate agent going to file room then back to desk
-  moveCharTo(taskAgent,ROOM_CENTERS.files.x,ROOM_CENTERS.files.y,()=>{
-    updateAgentStatus(taskAgent,'in file room','busy');
-    setTimeout(()=>{
-      moveCharTo(taskAgent,desk.x,desk.y,()=>{
-        updateAgentStatus(taskAgent,'writing report','busy');
-      });
-    },3000);
+  // Agent walks to workspace (open office area)
+  const wPos = { x:1150 + Math.random()*150, y:650 + Math.random()*100 };
+  setStatus(taskAgent, 'researching', 'walking');
+  moveTo(taskAgent, wPos.x, wPos.y, () => {
+    setStatus(taskAgent, 'writing report', 'busy');
   });
 
-  // Determine endpoint based on agent
-  const endpoint = taskAgent==='maya' ? '/research' : '/task';
-  const payload = taskAgent==='maya'
-    ? {query: title+': '+instructions}
-    : {title, instruction: instructions};
+  const endpoint = taskAgent === 'maya' ? '/research' : '/task';
+  const payload = taskAgent === 'maya'
+    ? { query: `${title}: ${instr}` }
+    : { title, instruction: instr };
 
-  try{
-    const r=await fetch(`${SERVER_URL}${endpoint}`,{
-      method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify(payload)
+  try {
+    const r = await fetch(`${SERVER}${endpoint}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
     });
-    const data=await r.json();
-    updateAgentStatus(taskAgent,'report ready','idle');
-    moveCharTo(taskAgent,desk.x,desk.y,()=>{
-      updateAgentStatus(taskAgent,'idle','idle');
+    const data = await r.json();
+    setStatus(taskAgent, 'idle', 'idle');
+    moveTo(taskAgent, CHAR_HOME[taskAgent].x, CHAR_HOME[taskAgent].y, () => {
+      setStatus(taskAgent, 'slot open', 'idle');
     });
-    addMsg('sys',`${agentName} completed: "${title}" — saved to GitHub`, 'sys');
-    const result=data.result||data.preview||'';
-    if(result){
-      addMsg('vex',`${agentName} finished "${title}". Report is in GitHub. Summary: ${result.substring(0,180)}...`);
-    }
-  }catch(e){
-    updateAgentStatus(taskAgent,'idle','idle');
-    addMsg('sys',`${agentName} completed — check GitHub for the report`, 'sys');
+    addMsg('sys', `${agentName} completed: "${title}" — saved to GitHub`, 'sys');
+    const preview = (data.result || data.preview || '').substring(0, 180);
+    if(preview) addMsg('vex', `${agentName} finished "${title}". Report is in GitHub. ${preview}...`);
+  } catch(e) {
+    setStatus(taskAgent, 'idle', 'idle');
+    moveTo(taskAgent, CHAR_HOME[taskAgent].x, CHAR_HOME[taskAgent].y);
+    addMsg('sys', `${agentName} task completed — check GitHub`, 'sys');
   }
 }
 
+// ── CLOCK ──
+function tick() {
+  const n = new Date(), p = x => String(x).padStart(2, '0');
+  document.getElementById('clock').textContent = `${p(n.getHours())}:${p(n.getMinutes())}`;
+}
+tick(); setInterval(tick, 1000);
+
 // ── INIT ──
-setTimeout(()=>{
-  addMsg('vex',"Office is open Sam. Full team is in. Hit me when you're ready.");
-  // Vex does a little patrol on startup to show he's alive
-  moveCharTo('vex', 3, 8, ()=>{
-    moveCharTo('vex', 5, 12, ()=>{
-      moveCharTo('vex', SPOTS.vex_desk.x, SPOTS.vex_desk.y, ()=>{
-        updateAgentStatus('vex','at his desk','online');
-      });
-    });
-  });
-},600);
+setTimeout(() => {
+  addMsg('vex', "Office is open Sam. Full team is in. I'm at my desk — hit me when you're ready.");
+}, 600);
 </script>
 </body>
 </html>
