@@ -1052,11 +1052,11 @@ function hideT(){const e=document.getElementById('typing');if(e)e.remove();}
 async function askVex(t){
   history.push({role:'user',content:t});showT();
   try{
-    const r=await fetch('https://kinase-factor-rrp-drug.trycloudflare.com/chat',{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{
       method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({messages:history})
+      body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:1000,system:SYS,messages:history})
     });
-    const data=await r.json(),rep=data.reply||"Lost you. Try again.";
+    const data=await r.json(),rep=data.content?.map(b=>b.text||'').join('')||"Lost you. Try again.";
     history.push({role:'assistant',content:rep});hideT();addMsg('vex',rep);speak(rep);
   }catch(e){hideT();addMsg('vex',"Connection issue. Try again.");}
 }
