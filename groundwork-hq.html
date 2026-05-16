@@ -456,26 +456,26 @@ const ROOM_CENTERS = {
 
 // Specific spots within rooms
 const SPOTS = {
-  vex_desk:   {x:5,  y:4},
+  vex_desk:   {x:4,  y:3},
   vex_break:  {x:4,  y:25},
-  board_head: {x:22, y:4},
-  maya_desk:  {x:35, y:24},
-  maya_break: {x:5,  y:25},
-  kai_desk:   {x:51, y:24},
-  kai_break:  {x:6,  y:26},
-  ren_desk:   {x:66, y:24},
-  ren_break:  {x:3,  y:25},
-  leo_desk:   {x:67, y:24},
-  leo_break:  {x:8,  y:25},
-  sage_desk:  {x:36, y:24},
-  sage_break: {x:7,  y:27},
+  board_head: {x:22, y:3},
+  maya_desk:  {x:35, y:23},
+  maya_break: {x:6,  y:24},
+  kai_desk:   {x:51, y:23},
+  kai_break:  {x:8,  y:25},
+  ren_desk:   {x:67, y:23},
+  ren_break:  {x:3,  y:26},
+  leo_desk:   {x:68, y:23},
+  leo_break:  {x:9,  y:24},
+  sage_desk:  {x:36, y:23},
+  sage_break: {x:5,  y:27},
   hallway_h:  {x:20, y:19},
 };
 
 // ── CHARACTERS ──
 const characters = {
   vex: {
-    x:5, y:4, tx:5, ty:4,
+    x:3, y:3, tx:3, ty:3,
     path:[], pathIdx:0,
     moving:false, frame:0, frameTimer:0, dir:'down',
     state:'working', // working, idle, walking, meeting
@@ -484,7 +484,7 @@ const characters = {
     room:'vex',
   },
   maya: {
-    x:35, y:24, tx:35, ty:24,
+    x:35, y:23, tx:35, ty:23,
     path:[], pathIdx:0,
     moving:false, frame:0, frameTimer:0, dir:'down',
     state:'idle',
@@ -493,7 +493,7 @@ const characters = {
     room:'res',
   },
   kai: {
-    x:51, y:24, tx:51, ty:24,
+    x:51, y:23, tx:51, ty:23,
     path:[], pathIdx:0,
     moving:false, frame:0, frameTimer:0, dir:'down',
     state:'idle',
@@ -502,7 +502,7 @@ const characters = {
     room:'dev',
   },
   ren: {
-    x:66, y:24, tx:66, ty:24,
+    x:67, y:23, tx:67, ty:23,
     path:[], pathIdx:0,
     moving:false, frame:0, frameTimer:0, dir:'down',
     state:'idle',
@@ -511,7 +511,7 @@ const characters = {
     room:'ops',
   },
   leo: {
-    x:67, y:24, tx:67, ty:24,
+    x:68, y:23, tx:68, ty:23,
     path:[], pathIdx:0,
     moving:false, frame:0, frameTimer:0, dir:'down',
     state:'idle',
@@ -520,7 +520,7 @@ const characters = {
     room:'ops',
   },
   sage: {
-    x:36, y:24, tx:36, ty:24,
+    x:36, y:23, tx:36, ty:23,
     path:[], pathIdx:0,
     moving:false, frame:0, frameTimer:0, dir:'down',
     state:'idle',
