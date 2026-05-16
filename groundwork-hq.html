@@ -456,21 +456,21 @@ const ROOM_CENTERS = {
 
 // Specific spots within rooms
 const SPOTS = {
-  vex_desk:   {x:5, y:5},
-  vex_break:  {x:8, y:29},
-  board_head: {x:29,y:7},
-  maya_desk:  {x:36, y:24},
-  kai_desk:   {x:51, y:24},
-  ren_desk:   {x:66, y:24},
-  leo_desk:   {x:66, y:28},
-  sage_desk:  {x:36, y:27},
+  vex_desk:   {x:5, y:8},
+  vex_break:  {x:8, y:28},
+  board_head: {x:29,y:8},
+  maya_desk:  {x:36, y:26},
+  kai_desk:   {x:52, y:26},
+  ren_desk:   {x:66, y:25},
+  leo_desk:   {x:66, y:29},
+  sage_desk:  {x:38, y:26},
   hallway_h:  {x:29,y:19},
 };
 
 // ── CHARACTERS ──
 const characters = {
   vex: {
-    x:5, y:5, tx:5, ty:5,
+    x:5, y:8, tx:5, ty:8,
     path:[], pathIdx:0,
     moving:false, frame:0, frameTimer:0, dir:'down',
     state:'working', // working, idle, walking, meeting
@@ -479,7 +479,7 @@ const characters = {
     room:'vex',
   },
   maya: {
-    x:36, y:24, tx:36, ty:24,
+    x:36, y:26, tx:36, ty:26,
     path:[], pathIdx:0,
     moving:false, frame:0, frameTimer:0, dir:'down',
     state:'idle',
@@ -488,7 +488,7 @@ const characters = {
     room:'res',
   },
   kai: {
-    x:51, y:24, tx:51, ty:24,
+    x:52, y:26, tx:52, ty:26,
     path:[], pathIdx:0,
     moving:false, frame:0, frameTimer:0, dir:'down',
     state:'idle',
@@ -497,7 +497,7 @@ const characters = {
     room:'dev',
   },
   ren: {
-    x:66, y:24, tx:66, ty:24,
+    x:66, y:25, tx:66, ty:25,
     path:[], pathIdx:0,
     moving:false, frame:0, frameTimer:0, dir:'down',
     state:'idle',
@@ -506,7 +506,7 @@ const characters = {
     room:'ops',
   },
   leo: {
-    x:66, y:28, tx:66, ty:28,
+    x:66, y:29, tx:66, ty:29,
     path:[], pathIdx:0,
     moving:false, frame:0, frameTimer:0, dir:'down',
     state:'idle',
@@ -515,7 +515,7 @@ const characters = {
     room:'ops',
   },
   sage: {
-    x:36, y:27, tx:36, ty:27,
+    x:38, y:26, tx:38, ty:26,
     path:[], pathIdx:0,
     moving:false, frame:0, frameTimer:0, dir:'down',
     state:'idle',
@@ -1310,9 +1310,15 @@ async function submitTask(){
 
 // ── INIT ──
 setTimeout(()=>{
-  addMsg('vex',"Office is open Sam. I'm at my desk. Maya's on standby. Hit me when you're ready.");
-  resetVexIdle();
-},600);
+  // Show opening message without server
+  addMsg('vex',"Office is open Sam. I'm at my desk — full team is in. Hit me when you're ready.");
+  // Demo movement — Vex walks a short path to show movement works
+  moveCharTo('vex', 7, 8, ()=>{
+    moveCharTo('vex', SPOTS.vex_desk.x, SPOTS.vex_desk.y, ()=>{
+      updateAgentStatus('vex','at his desk','online');
+    });
+  });
+},800);
 </script>
 </body>
 </html>
