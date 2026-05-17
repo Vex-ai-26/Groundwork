@@ -1,0 +1,13 @@
+# Cloudflare Tunnel config for Groundwork / Vex
+# Place this file at: C:\Users\sjfor\.cloudflared\config.yml
+#
+# After running: cloudflared tunnel create groundwork
+# Replace PASTE-YOUR-TUNNEL-UUID-HERE with the UUID it prints
+
+tunnel: groundwork
+credentials-file: C:\Users\sjfor\.cloudflared\PASTE-YOUR-TUNNEL-UUID-HERE.json
+
+ingress:
+  - hostname: vex.vex-ai.com
+    service: http://localhost:3001
+  - service: http_status:404

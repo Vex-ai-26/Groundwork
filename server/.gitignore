@@ -1,0 +1,4 @@
+.env
+vex_memory.db
+node_modules/
+documents/
