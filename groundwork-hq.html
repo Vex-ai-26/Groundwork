@@ -722,15 +722,6 @@ async function submitTask(){
   const pl=tAgent==='maya'?{query:`${title}: ${instr}`}:tAgent==='iris'?{brief:`${title}: ${instr}`}:{title,instruction:instr};
 
   try{
-<<<<<<< HEAD
-    const r=await fetch('https://casualty-usher-abstain.ngrok-free.dev/chat',{
-      method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({messages:history})
-    });
-    const data=await r.json(),rep=data.reply||"Lost you. Try again.";
-    history.push({role:'assistant',content:rep});hideT();addMsg('vex',rep);speak(rep);
-  }catch(e){hideT();addMsg('vex',"Connection issue. Try again.");}
-=======
     const r=await fetch(`${SERVER}${ep}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(pl)});
     const data=await r.json();
     setSt(tAgent,'slot open','idle');
@@ -743,7 +734,6 @@ async function submitTask(){
     moveTo(tAgent,HOME[tAgent].x,HOME[tAgent].y);
     addMsg('sys',`${aname} task saved — check GitHub`,'sys');
   }
->>>>>>> f2d7f22920fb4340bbfe4d0eb7f864c06961c8e6
 }
 
 // ── CLOCK ──
