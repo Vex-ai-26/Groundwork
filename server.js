@@ -2,7 +2,6 @@
 // Replace YOUR_API_KEY_HERE with your actual Anthropic API key
 
 process.env.ANTHROPIC_API_KEY = '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';
-
 const express = require('express');
 const cors = require('cors');
 const Anthropic = require('@anthropic-ai/sdk');
