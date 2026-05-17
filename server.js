@@ -1,7 +1,7 @@
 // GROUNDWORK VEX SERVER v3.2
 // Replace YOUR_API_KEY_HERE with your actual Anthropic API key
 
-process.env.ANTHROPIC_API_KEY = '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';
+process.env.ANTHROPIC_API_KEY = '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';
 
 const express = require('express');
 const cors = require('cors');
@@ -168,3 +168,4 @@ app.listen(3001, function() {
   console.log('Vex Server v3.2 online - port 3001');
   console.log('Maya and Iris active');
 });
+
