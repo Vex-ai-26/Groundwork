@@ -206,7 +206,7 @@ app.post('/design', async function(req, res) {
 app.get('/health', function(req, res) {
   var mem = db.prepare('SELECT COUNT(*) as c FROM conversations').get().c;
   var rpts = db.prepare('SELECT COUNT(*) as c FROM reports').get().c;
-  var pending = db.prepare('SELECT COUNT(*) as c FROM tasks WHERE status IN ("queued", "running")').get().c;
+  var pending = db.prepare("SELECT COUNT(*) as c FROM tasks WHERE status IN ('queued', 'running')").get().c;
   res.json({ status: 'Vex is online', version: '4.0', memory: mem + ' exchanges', reports: rpts + ' filed', tasks_active: pending });
 });
 
