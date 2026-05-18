@@ -127,8 +127,9 @@ function readDocument(filepath) {
 
 function manageMaya(action, taskId) {
   if (action === 'list') {
-    var tasks = db.prepare("SELECT id, title, status, created FROM tasks WHERE status IN ('queued','running') ORDER BY id DESC").all();
-    return tasks.length > 0 ? JSON.stringify(tasks) : 'Maya\'s queue is empty.';
+    var active = db.prepare("SELECT id, title, status, updated FROM tasks WHERE status IN ('queued','running') ORDER BY id DESC").all();
+    var recent = db.prepare("SELECT id, title, status, updated FROM tasks WHERE status IN ('done','error','cancelled') ORDER BY updated DESC LIMIT 5").all();
+    return JSON.stringify({ active_tasks: active, recently_completed: recent });
   }
   if (action === 'cancel' && taskId) {
     var task = db.prepare('SELECT * FROM tasks WHERE id = ?').get(taskId);
@@ -164,7 +165,7 @@ function buildVexSystem() {
       reportContext += '\n--- ' + r.title + ' ---\n' + r.content.substring(0, 600) + '\n';
     });
   }
-  return 'You are Vex, CEO of Groundwork, a construction education subscription platform. Sam is the owner. Sharp, confident, direct, loyal. You have full access to all Groundwork documents via your tools — use list_documents to see what\'s filed and read_document to pull up any file. Team: Maya (Market Intelligence), Iris (Design), Kai, Ren, Leo, Sage (slots open), Curt (HR wanders). Site: groundwork-lovat.vercel.app. Tiers: Free to $30/mo.' + reportContext;
+  return 'You are Vex, CEO of Groundwork, a construction education subscription platform. Sam is the owner. Sharp, confident, direct, loyal. You have full access to all Groundwork documents via your tools — use list_documents to see what\'s filed and read_document to pull up any file. To check on Maya: use manage_maya with action "list" — it shows active_tasks (queued/running) and recently_completed tasks. If active_tasks is empty, Maya is not currently working. If a task shows status "done" in recently_completed, the report is filed and you can read it with read_document. Never guess Maya\'s status — always check with manage_maya first. Team: Maya (Market Intelligence), Iris (Design), Kai, Ren, Leo, Sage (slots open), Curt (HR wanders). Site: groundwork-lovat.vercel.app. Tiers: Free to $30/mo.' + reportContext;
 }
 
 async function runMayaResearch(query) {
