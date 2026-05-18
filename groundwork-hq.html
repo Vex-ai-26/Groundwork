@@ -672,6 +672,7 @@ async function askVex(text) {
     const rep = data.reply||"Lost you. Try again.";
     hist.push({role:'assistant',content:rep});
     hideT();addMsg('vex',rep);vexSpeak(rep);
+    if(data.mayaQueued&&data.task_id) watchTask(data.task_id);
     setTimeout(()=>{
       setSt('vex','at his desk','walk');
       moveTo('vex',HOME.vex.x,HOME.vex.y,()=>{setSt('vex','at his desk','on');vexSt='working';});
@@ -735,6 +736,35 @@ function stopMic(){
   micActive=false;
   document.getElementById('micBtn').textContent='🎙';
   if(recognition){try{recognition.stop();}catch(e){}}
+}
+
+// ── MAYA PING ──
+if(Notification.permission==='default') Notification.requestPermission();
+
+function watchTask(taskId){
+  var interval=setInterval(async function(){
+    try{
+      var r=await fetch(`${SERVER}/task/${taskId}`);
+      var t=await r.json();
+      if(t.status==='done'||t.status==='error'){
+        clearInterval(interval);
+        var topic=(t.title||'').replace('Research: ','');
+        var msg=t.status==='done'
+          ?`Sam, Maya's filed her report on "${topic}". Ready to brief you whenever.`
+          :`Sam, Maya hit an issue on "${topic}". Check the server logs.`;
+        // Browser notification
+        if(Notification.permission==='granted'){
+          new Notification('Vex — Maya Report Ready',{
+            body:t.status==='done'?`Report filed: ${topic}`:`Maya failed: ${topic}`,
+            icon:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="6" fill="%23d4a017"/><text x="16" y="22" text-anchor="middle" font-size="18" fill="%23111">⚡</text></svg>'
+          });
+        }
+        // Vex speaks the ping
+        addMsg('vex',msg);
+        vexSpeak(msg);
+      }
+    }catch(e){clearInterval(interval);}
+  },15000); // poll every 15 seconds
 }
 
 // ── TASK MODAL ──
