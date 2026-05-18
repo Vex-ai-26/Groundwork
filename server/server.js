@@ -125,6 +125,7 @@ app.post('/chat', async function(req, res) {
       console.log('[Vex->Maya] Queued task #' + taskInfo.id + ': ' + query);
     }
 
+    console.log('[Chat] Building Vex response...');
     var system = buildVexSystem();
     var finalMessages = taskInfo
       ? memory.concat([{
@@ -133,12 +134,14 @@ app.post('/chat', async function(req, res) {
         }])
       : memory;
 
+    console.log('[Chat] Calling Claude...');
     var response = await client.messages.create({
       model: 'claude-sonnet-4-5',
       max_tokens: 1500,
       system: system,
       messages: finalMessages
     });
+    console.log('[Chat] Claude responded');
 
     var reply = response.content[0].text;
     db.prepare('INSERT INTO conversations (role, content) VALUES (?, ?)').run('assistant', reply);
