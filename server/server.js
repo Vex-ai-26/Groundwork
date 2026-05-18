@@ -19,6 +19,12 @@ app.use(function(req, res, next) {
   next();
 });
 
+// Serve HTML files from the repo root (one level up from /server)
+app.use(express.static(path.join(__dirname, '..')));
+app.get('/', function(req, res) {
+  res.sendFile(path.join(__dirname, '..', 'groundwork-hq.html'));
+});
+
 if (!process.env.ANTHROPIC_API_KEY) {
   console.error('[FATAL] ANTHROPIC_API_KEY not set. Create a .env file — see .env.example');
   process.exit(1);
