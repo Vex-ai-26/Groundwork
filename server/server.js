@@ -1,5 +1,5 @@
-// GROUNDWORK VEX SERVER v4.0
-// API key is loaded from .env — never hardcode it here
+// GROUNDWORK VEX SERVER v4.1
+// API key loaded from machine environment variable
 
 const express = require('express');
 const cors = require('cors');
@@ -24,7 +24,7 @@ app.get('/', function(req, res) {
 });
 
 if (!process.env.ANTHROPIC_API_KEY) {
-  console.error('[FATAL] ANTHROPIC_API_KEY not set. Create a .env file — see .env.example');
+  console.error('[FATAL] ANTHROPIC_API_KEY not set.');
   process.exit(1);
 }
 
@@ -42,7 +42,7 @@ const DOCS = path.join(__dirname, 'documents');
 
 function gitPush(label) {
   try {
-    execSync('cd "' + __dirname + '" && git add . && git commit -m "' + label + '" && git push', { stdio: 'pipe' });
+    execSync('cd "' + path.join(__dirname, '..') + '" && git add . && git commit -m "' + label + '" && git push', { stdio: 'pipe' });
     console.log('[GitHub] Pushed: ' + label);
   } catch(e) {
     console.log('[GitHub] Push failed (may be nothing new to commit)');
@@ -52,6 +52,65 @@ function gitPush(label) {
 var MAYA_SYSTEM = 'You are Maya, Market Intelligence Agent for Groundwork, a construction education subscription platform. Research ideas using web search. Produce clean markdown with sections: Market Size, Search Demand, Competitor Landscape, Audience Fit, Revenue Potential, Recommendation (GO or NO-GO), Suggested Angle.';
 
 var IRIS_SYSTEM = 'You are Iris, Design Agent for Groundwork. Produce creative briefs and AI image prompts. Brand: industrial edge, clean modern, charcoal and amber palette. Sections: Objective, Format, Visual Direction, Color Palette, Typography, AI Image Prompt, Do and Do Not.';
+
+// ── Document access tools for Vex ──
+var VEX_TOOLS = [
+  {
+    name: 'list_documents',
+    description: 'List all documents in the Groundwork document library. Optionally filter by folder: reports, content, checklists, marketing.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        folder: {
+          type: 'string',
+          description: 'Subfolder to list. One of: reports, content, checklists, marketing. Omit for all.',
+          enum: ['reports', 'content', 'checklists', 'marketing']
+        }
+      }
+    }
+  },
+  {
+    name: 'read_document',
+    description: 'Read the full contents of a document from the Groundwork library.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        filepath: {
+          type: 'string',
+          description: 'Relative path within the documents folder, e.g. "reports/2025-05-17-maya-etsy.md"'
+        }
+      },
+      required: ['filepath']
+    }
+  }
+];
+
+function listDocuments(folder) {
+  var results = [];
+  var folders = folder ? [folder] : ['reports', 'content', 'checklists', 'marketing'];
+  folders.forEach(function(f) {
+    var dir = path.join(DOCS, f);
+    if (fs.existsSync(dir)) {
+      fs.readdirSync(dir).forEach(function(file) {
+        if (file !== '.gitkeep') results.push(f + '/' + file);
+      });
+    }
+  });
+  return results.length > 0 ? results : ['No documents found.'];
+}
+
+function readDocument(filepath) {
+  var fullPath = path.resolve(path.join(DOCS, filepath));
+  if (!fullPath.startsWith(path.resolve(DOCS))) return 'Access denied.';
+  if (!fs.existsSync(fullPath)) return 'Document not found: ' + filepath;
+  return fs.readFileSync(fullPath, 'utf8');
+}
+
+function handleToolCall(name, input) {
+  if (name === 'list_documents') return JSON.stringify(listDocuments(input.folder));
+  if (name === 'read_document') return readDocument(input.filepath);
+  return 'Unknown tool.';
+}
 
 function getRecentReports() {
   return db.prepare('SELECT title, content, created FROM reports ORDER BY created DESC LIMIT 2').all();
@@ -66,10 +125,9 @@ function buildVexSystem() {
       reportContext += '\n--- ' + r.title + ' ---\n' + r.content.substring(0, 600) + '\n';
     });
   }
-  return 'You are Vex, CEO of Groundwork, a construction education subscription platform. Sam is the owner. Sharp, confident, direct, loyal. 2-3 sentences max. You can task Maya when Sam asks you to research something. Team: Maya (Market Intelligence), Iris (Design), Kai, Ren, Leo, Sage (slots open), Curt (HR wanders). Site: groundwork-lovat.vercel.app. Tiers: Free to $30/mo.' + reportContext;
+  return 'You are Vex, CEO of Groundwork, a construction education subscription platform. Sam is the owner. Sharp, confident, direct, loyal. You have full access to all Groundwork documents via your tools — use list_documents to see what\'s filed and read_document to pull up any file. Team: Maya (Market Intelligence), Iris (Design), Kai, Ren, Leo, Sage (slots open), Curt (HR wanders). Site: groundwork-lovat.vercel.app. Tiers: Free to $30/mo.' + reportContext;
 }
 
-// Core Maya research — called from background task runner only
 async function runMayaResearch(query) {
   console.log('[Maya] Researching: ' + query);
   var response = await client.messages.create({
@@ -90,7 +148,6 @@ async function runMayaResearch(query) {
   return result;
 }
 
-// Runs a queued task in the background — fire and forget, never blocks a request
 async function runTaskBackground(taskId, query) {
   try {
     db.prepare('UPDATE tasks SET status = ?, updated = CURRENT_TIMESTAMP WHERE id = ?').run('running', taskId);
@@ -103,7 +160,7 @@ async function runTaskBackground(taskId, query) {
   }
 }
 
-// POST /chat — Vex responds immediately; Maya tasks are queued, not awaited
+// POST /chat — Vex with full document access via tool use
 app.post('/chat', async function(req, res) {
   try {
     var messages = req.body.messages;
@@ -121,31 +178,51 @@ app.post('/chat', async function(req, res) {
       var query = last.content.replace(/ask maya|have maya|get maya|task maya|tell maya|maya to research|maya to look into|maya to look at/gi, '').trim();
       var insert = db.prepare('INSERT INTO tasks (title, status) VALUES (?, ?)').run('Research: ' + query, 'queued');
       taskInfo = { id: insert.lastInsertRowid, query: query };
-      runTaskBackground(taskInfo.id, query); // fire and forget
+      runTaskBackground(taskInfo.id, query);
       console.log('[Vex->Maya] Queued task #' + taskInfo.id + ': ' + query);
-      // Brief delay so Maya's API call doesn't collide with Vex's response call
       await new Promise(function(r) { setTimeout(r, 5000); });
     }
 
-    console.log('[Chat] Building Vex response...');
     var system = buildVexSystem();
     var finalMessages = taskInfo
       ? memory.concat([{
           role: 'user',
-          content: 'Sam just asked you to have Maya research: "' + taskInfo.query + '". You queued it (task ID: ' + taskInfo.id + '). Tell Sam Maya is on it and will file the report when done. They can check status at GET /task/' + taskInfo.id + '. Stay sharp and brief.'
+          content: 'Sam just asked you to have Maya research: "' + taskInfo.query + '". You queued it (task ID: ' + taskInfo.id + '). Tell Sam Maya is on it and will file the report when done. Stay sharp and brief.'
         }])
       : memory;
 
-    console.log('[Chat] Calling Claude...');
+    // Tool use loop — Vex can call list_documents / read_document as needed
     var response = await client.messages.create({
       model: 'claude-sonnet-4-5',
-      max_tokens: 1500,
+      max_tokens: 4000,
       system: system,
-      messages: finalMessages
+      messages: finalMessages,
+      tools: VEX_TOOLS
     });
-    console.log('[Chat] Claude responded');
 
-    var reply = response.content[0].text;
+    while (response.stop_reason === 'tool_use') {
+      var toolResults = [];
+      response.content.forEach(function(block) {
+        if (block.type === 'tool_use') {
+          var result = handleToolCall(block.name, block.input);
+          console.log('[Vex Tool] ' + block.name + '(' + JSON.stringify(block.input) + ')');
+          toolResults.push({ type: 'tool_result', tool_use_id: block.id, content: result });
+        }
+      });
+      finalMessages = finalMessages.concat([
+        { role: 'assistant', content: response.content },
+        { role: 'user', content: toolResults }
+      ]);
+      response = await client.messages.create({
+        model: 'claude-sonnet-4-5',
+        max_tokens: 4000,
+        system: system,
+        messages: finalMessages,
+        tools: VEX_TOOLS
+      });
+    }
+
+    var reply = response.content.filter(function(b) { return b.type === 'text'; }).map(function(b) { return b.text; }).join('\n');
     db.prepare('INSERT INTO conversations (role, content) VALUES (?, ?)').run('assistant', reply);
     res.json({ reply: reply, mayaQueued: !!taskInfo, task_id: taskInfo ? taskInfo.id : null });
 
@@ -155,40 +232,25 @@ app.post('/chat', async function(req, res) {
   }
 });
 
-// POST /research — queues Maya, returns task ID instantly (no timeout risk)
+// POST /research — queues Maya, returns task ID instantly
 app.post('/research', function(req, res) {
   var query = req.body.query;
   if (!query) return res.status(400).json({ error: 'Query required' });
-
   var insert = db.prepare('INSERT INTO tasks (title, status) VALUES (?, ?)').run('Research: ' + query, 'queued');
   var taskId = insert.lastInsertRowid;
-
-  runTaskBackground(taskId, query); // fire and forget
-
+  runTaskBackground(taskId, query);
   console.log('[Maya] Task #' + taskId + ' queued: ' + query);
-  res.json({
-    task_id: taskId,
-    status: 'queued',
-    poll: '/task/' + taskId,
-    message: 'Maya is on it. Poll /task/' + taskId + ' for results.'
-  });
+  res.json({ task_id: taskId, status: 'queued', poll: '/task/' + taskId, message: 'Maya is on it. Poll /task/' + taskId + ' for results.' });
 });
 
-// GET /task/:id — poll for async task result
+// GET /task/:id — poll task status
 app.get('/task/:id', function(req, res) {
   var task = db.prepare('SELECT * FROM tasks WHERE id = ?').get(req.params.id);
   if (!task) return res.status(404).json({ error: 'Task not found' });
-  res.json({
-    id: task.id,
-    title: task.title,
-    status: task.status,    // queued | running | done | error
-    output: task.output,
-    created: task.created,
-    updated: task.updated
-  });
+  res.json({ id: task.id, title: task.title, status: task.status, output: task.output, created: task.created, updated: task.updated });
 });
 
-// GET /tasks — list recent tasks (useful for a dashboard)
+// GET /tasks — list recent tasks
 app.get('/tasks', function(req, res) {
   var tasks = db.prepare('SELECT id, title, status, created, updated FROM tasks ORDER BY id DESC LIMIT 20').all();
   res.json(tasks);
@@ -216,18 +278,18 @@ app.get('/health', function(req, res) {
   var mem = db.prepare('SELECT COUNT(*) as c FROM conversations').get().c;
   var rpts = db.prepare('SELECT COUNT(*) as c FROM reports').get().c;
   var pending = db.prepare("SELECT COUNT(*) as c FROM tasks WHERE status IN ('queued', 'running')").get().c;
-  res.json({ status: 'Vex is online', version: '4.0', memory: mem + ' exchanges', reports: rpts + ' filed', tasks_active: pending });
+  res.json({ status: 'Vex is online', version: '4.1', memory: mem + ' exchanges', reports: rpts + ' filed', tasks_active: pending });
 });
 
 app.get('/status', function(req, res) {
-  res.json({ online: true, version: '4.0' });
+  res.json({ online: true, version: '4.1' });
 });
 
 setInterval(function() {
-  try { execSync('cd "' + __dirname + '" && git pull', { stdio: 'pipe' }); } catch(e) {}
+  try { execSync('cd "' + path.join(__dirname, '..') + '" && git pull', { stdio: 'pipe' }); } catch(e) {}
 }, 5 * 60 * 1000);
 
 app.listen(3001, function() {
-  console.log('Vex Server v4.0 online - port 3001');
-  console.log('Maya and Iris active | Async task queue enabled');
+  console.log('Vex Server v4.1 online - port 3001');
+  console.log('Maya, Iris active | Async tasks | Vex document access enabled');
 });
