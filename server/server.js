@@ -101,6 +101,20 @@ var VEX_TOOLS = [
       },
       required: ['action']
     }
+  },
+  {
+    name: 'queue_maya_task',
+    description: 'Assign a research task to Maya. She will research the topic and file a report. Use this whenever Sam asks you to have Maya research something.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        query: {
+          type: 'string',
+          description: 'The research topic or question for Maya to investigate.'
+        }
+      },
+      required: ['query']
+    }
   }
 ];
 
@@ -145,10 +159,19 @@ function manageMaya(action, taskId) {
   return 'Unknown action.';
 }
 
+function queueMayaTask(query) {
+  var insert = db.prepare('INSERT INTO tasks (title, status) VALUES (?, ?)').run('Research: ' + query, 'queued');
+  var taskId = insert.lastInsertRowid;
+  runTaskBackground(taskId, query);
+  console.log('[Vex->Maya] Tool queued task #' + taskId + ': ' + query);
+  return JSON.stringify({ task_id: taskId, status: 'queued', message: 'Maya is on it.' });
+}
+
 function handleToolCall(name, input) {
   if (name === 'list_documents') return JSON.stringify(listDocuments(input.folder));
   if (name === 'read_document') return readDocument(input.filepath);
   if (name === 'manage_maya') return manageMaya(input.action, input.task_id);
+  if (name === 'queue_maya_task') return queueMayaTask(input.query);
   return 'Unknown tool.';
 }
 
@@ -210,26 +233,8 @@ app.post('/chat', async function(req, res) {
     db.prepare('INSERT INTO conversations (role, content) VALUES (?, ?)').run(last.role, last.content);
     var memory = db.prepare('SELECT role, content FROM conversations ORDER BY id DESC LIMIT 40').all().reverse();
 
-    var mayaTriggers = ['ask maya', 'have maya', 'get maya', 'task maya', 'tell maya', 'maya to research', 'maya to look'];
-    var shouldTaskMaya = mayaTriggers.some(function(t) { return userText.includes(t); });
-
-    var taskInfo = null;
-    if (shouldTaskMaya) {
-      var query = last.content.replace(/ask maya|have maya|get maya|task maya|tell maya|maya to research|maya to look into|maya to look at/gi, '').trim();
-      var insert = db.prepare('INSERT INTO tasks (title, status) VALUES (?, ?)').run('Research: ' + query, 'queued');
-      taskInfo = { id: insert.lastInsertRowid, query: query };
-      runTaskBackground(taskInfo.id, query);
-      console.log('[Vex->Maya] Queued task #' + taskInfo.id + ': ' + query);
-      await new Promise(function(r) { setTimeout(r, 5000); });
-    }
-
     var system = buildVexSystem();
-    var finalMessages = taskInfo
-      ? memory.concat([{
-          role: 'user',
-          content: 'Sam just asked you to have Maya research: "' + taskInfo.query + '". You queued it (task ID: ' + taskInfo.id + '). Tell Sam Maya is on it and will file the report when done. Stay sharp and brief.'
-        }])
-      : memory;
+    var finalMessages = memory.slice();
 
     // Tool use loop — Vex can call list_documents / read_document as needed
     var response = await client.messages.create({
@@ -263,8 +268,17 @@ app.post('/chat', async function(req, res) {
     }
 
     var reply = response.content.filter(function(b) { return b.type === 'text'; }).map(function(b) { return b.text; }).join('\n');
+    // Check if Vex queued a Maya task during tool use
+    var mayaTaskId = null;
+    finalMessages.forEach(function(m) {
+      if (Array.isArray(m.content)) m.content.forEach(function(b) {
+        if (b.type === 'tool_result' && b.content) {
+          try { var r = JSON.parse(b.content); if (r.task_id) mayaTaskId = r.task_id; } catch(e) {}
+        }
+      });
+    });
     db.prepare('INSERT INTO conversations (role, content) VALUES (?, ?)').run('assistant', reply);
-    res.json({ reply: reply, mayaQueued: !!taskInfo, task_id: taskInfo ? taskInfo.id : null });
+    res.json({ reply: reply, mayaQueued: !!mayaTaskId, task_id: mayaTaskId });
 
   } catch(err) {
     console.error('[Chat]', err.message);
