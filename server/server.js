@@ -82,6 +82,25 @@ var VEX_TOOLS = [
       },
       required: ['filepath']
     }
+  },
+  {
+    name: 'manage_maya',
+    description: 'Control Maya\'s research queue. List active tasks, cancel a specific task, or clear the entire queue.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        action: {
+          type: 'string',
+          description: 'What to do: "list" shows all active tasks, "cancel" cancels a specific task by ID, "clear" cancels all queued tasks.',
+          enum: ['list', 'cancel', 'clear']
+        },
+        task_id: {
+          type: 'number',
+          description: 'Task ID to cancel. Required when action is "cancel".'
+        }
+      },
+      required: ['action']
+    }
   }
 ];
 
@@ -106,9 +125,29 @@ function readDocument(filepath) {
   return fs.readFileSync(fullPath, 'utf8');
 }
 
+function manageMaya(action, taskId) {
+  if (action === 'list') {
+    var tasks = db.prepare("SELECT id, title, status, created FROM tasks WHERE status IN ('queued','running') ORDER BY id DESC").all();
+    return tasks.length > 0 ? JSON.stringify(tasks) : 'Maya\'s queue is empty.';
+  }
+  if (action === 'cancel' && taskId) {
+    var task = db.prepare('SELECT * FROM tasks WHERE id = ?').get(taskId);
+    if (!task) return 'Task ' + taskId + ' not found.';
+    if (task.status === 'done' || task.status === 'cancelled') return 'Task ' + taskId + ' is already ' + task.status + '.';
+    db.prepare('UPDATE tasks SET status = ?, updated = CURRENT_TIMESTAMP WHERE id = ?').run('cancelled', taskId);
+    return 'Task ' + taskId + ' (' + task.title + ') cancelled.';
+  }
+  if (action === 'clear') {
+    var result = db.prepare("UPDATE tasks SET status = 'cancelled', updated = CURRENT_TIMESTAMP WHERE status IN ('queued','running')").run();
+    return 'Cleared ' + result.changes + ' task(s) from Maya\'s queue.';
+  }
+  return 'Unknown action.';
+}
+
 function handleToolCall(name, input) {
   if (name === 'list_documents') return JSON.stringify(listDocuments(input.folder));
   if (name === 'read_document') return readDocument(input.filepath);
+  if (name === 'manage_maya') return manageMaya(input.action, input.task_id);
   return 'Unknown tool.';
 }
 
@@ -254,6 +293,20 @@ app.get('/task/:id', function(req, res) {
 app.get('/tasks', function(req, res) {
   var tasks = db.prepare('SELECT id, title, status, created, updated FROM tasks ORDER BY id DESC LIMIT 20').all();
   res.json(tasks);
+});
+
+// DELETE /task/:id — cancel a specific task
+app.delete('/task/:id', function(req, res) {
+  var task = db.prepare('SELECT * FROM tasks WHERE id = ?').get(req.params.id);
+  if (!task) return res.status(404).json({ error: 'Task not found' });
+  db.prepare("UPDATE tasks SET status = 'cancelled', updated = CURRENT_TIMESTAMP WHERE id = ?").run(req.params.id);
+  res.json({ success: true, message: 'Task ' + req.params.id + ' cancelled.' });
+});
+
+// DELETE /tasks — clear all queued/running tasks
+app.delete('/tasks', function(req, res) {
+  var result = db.prepare("UPDATE tasks SET status = 'cancelled', updated = CURRENT_TIMESTAMP WHERE status IN ('queued','running')").run();
+  res.json({ success: true, cleared: result.changes });
 });
 
 app.post('/design', async function(req, res) {
