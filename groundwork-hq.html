@@ -283,6 +283,7 @@ body{font-family:'Syne',sans-serif;color:#e2e8f0;display:flex;flex-direction:col
     <div class="msgs" id="msgs"></div>
     <div class="rp-bot">
       <input class="ci" id="ci" placeholder="Talk to Vex..." onkeydown="hk(event)">
+      <button class="sb" id="micBtn" onclick="toggleMic()" title="Hold to speak">🎙</button>
       <button class="sb" onclick="send()">→</button>
     </div>
   </div>
@@ -670,7 +671,7 @@ async function askVex(text) {
     const data = await r.json();
     const rep = data.reply||"Lost you. Try again.";
     hist.push({role:'assistant',content:rep});
-    hideT();addMsg('vex',rep);
+    hideT();addMsg('vex',rep);vexSpeak(rep);
     setTimeout(()=>{
       setSt('vex','at his desk','walk');
       moveTo('vex',HOME.vex.x,HOME.vex.y,()=>{setSt('vex','at his desk','on');vexSt='working';});
@@ -686,6 +687,54 @@ function hk(e){if(e.key==='Enter')send();}
 function send(){
   const i=document.getElementById('ci'),t=i.value.trim();
   if(!t)return;i.value='';addMsg('you',t);askVex(t);
+}
+
+// ── VOICE ──
+let recognition=null, micActive=false, vexVoice=null;
+
+function loadVexVoice(){
+  var voices=speechSynthesis.getVoices();
+  // Prefer a deep male voice
+  var preferred=['Microsoft David','Google UK English Male','Daniel','Alex','en-GB'];
+  vexVoice=voices.find(v=>preferred.some(p=>v.name.includes(p)))
+    ||voices.find(v=>v.lang.startsWith('en')&&v.name.toLowerCase().includes('male'))
+    ||voices.find(v=>v.lang.startsWith('en'))
+    ||voices[0]||null;
+}
+speechSynthesis.onvoiceschanged=loadVexVoice;
+loadVexVoice();
+
+function vexSpeak(text){
+  speechSynthesis.cancel();
+  var clean=text.replace(/[#*`>]/g,'').trim();
+  var utt=new SpeechSynthesisUtterance(clean);
+  if(vexVoice)utt.voice=vexVoice;
+  utt.rate=0.92;utt.pitch=0.85;utt.volume=1;
+  speechSynthesis.speak(utt);
+}
+
+function toggleMic(){
+  if(micActive){stopMic();return;}
+  if(!('webkitSpeechRecognition' in window||'SpeechRecognition' in window)){
+    alert('Voice input not supported in this browser. Use Chrome or Edge.');return;
+  }
+  const Rec=window.SpeechRecognition||window.webkitSpeechRecognition;
+  recognition=new Rec();
+  recognition.lang='en-US';recognition.interimResults=false;recognition.maxAlternatives=1;
+  recognition.onstart=()=>{micActive=true;document.getElementById('micBtn').textContent='🔴';};
+  recognition.onresult=(e)=>{
+    var t=e.results[0][0].transcript;
+    document.getElementById('ci').value=t;
+    stopMic();send();
+  };
+  recognition.onerror=()=>stopMic();
+  recognition.onend=()=>stopMic();
+  recognition.start();
+}
+function stopMic(){
+  micActive=false;
+  document.getElementById('micBtn').textContent='🎙';
+  if(recognition){try{recognition.stop();}catch(e){}}
 }
 
 // ── TASK MODAL ──
