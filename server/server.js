@@ -123,6 +123,8 @@ app.post('/chat', async function(req, res) {
       taskInfo = { id: insert.lastInsertRowid, query: query };
       runTaskBackground(taskInfo.id, query); // fire and forget
       console.log('[Vex->Maya] Queued task #' + taskInfo.id + ': ' + query);
+      // Brief delay so Maya's API call doesn't collide with Vex's response call
+      await new Promise(function(r) { setTimeout(r, 5000); });
     }
 
     console.log('[Chat] Building Vex response...');
