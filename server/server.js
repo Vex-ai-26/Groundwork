@@ -40,6 +40,9 @@ const DOCS = path.join(__dirname, 'documents');
   fs.mkdirSync(path.join(DOCS, f), { recursive: true });
 });
 
+const VAULT = path.join(__dirname, '..', 'vault', 'Groundwork');
+fs.mkdirSync(path.join(VAULT, 'reports'), { recursive: true });
+
 function gitPush(label) {
   try {
     execSync('cd "' + path.join(__dirname, '..') + '" && git add . && git commit -m "' + label + '" && git push', { stdio: 'pipe' });
@@ -205,6 +208,7 @@ async function runMayaResearch(query) {
   var filename = date + '-maya-' + query.toLowerCase().replace(/[^a-z0-9]+/g, '-').substring(0, 40) + '.md';
   var fullContent = '# Maya Research: ' + query + '\n\n' + result;
   fs.writeFileSync(path.join(DOCS, 'reports', filename), fullContent);
+  fs.writeFileSync(path.join(VAULT, 'reports', filename), fullContent);
   db.prepare('INSERT INTO reports (title, agent, content, filepath) VALUES (?, ?, ?, ?)').run('Research: ' + query, 'maya', result, 'documents/reports/' + filename);
   gitPush('Maya: ' + query);
   console.log('[Maya] Done: ' + filename);
@@ -333,6 +337,7 @@ app.post('/design', async function(req, res) {
     var date = new Date().toISOString().split('T')[0];
     var filename = date + '-iris-brief.md';
     fs.writeFileSync(path.join(DOCS, 'marketing', filename), '# Design Brief\n\n' + result);
+    fs.writeFileSync(path.join(VAULT, 'reports', filename), '# Design Brief\n\n' + result);
     db.prepare('INSERT INTO reports (title, agent, content, filepath) VALUES (?, ?, ?, ?)').run('Design Brief', 'iris', result, 'documents/marketing/' + filename);
     gitPush('Iris brief');
     res.json({ success: true, result: result, filename: filename });
@@ -352,8 +357,6 @@ app.get('/health', function(req, res) {
 app.get('/status', function(req, res) {
   res.json({ online: true, version: '4.1' });
 });
-
-const VAULT = path.join(__dirname, '..', 'vault', 'Groundwork');
 
 app.get('/vault-check', function(req, res) {
   try {
