@@ -97,11 +97,21 @@ function readCostLog() {
 // SECTION 5: MESSAGE CLASSIFICATION & ROUTING
 // ─────────────────────────────────────────────
 // Returns: 'simple' | 'status' | 'vault_read' | 'vault_write' | 'research' | 'complex'
-function classifyMessage(text) {
+// lastAssistantText: the most recent assistant reply, used to detect continuation
+function classifyMessage(text, lastAssistantText) {
   var t = text.toLowerCase().trim();
 
+  // Continuation detection — if Vex just offered to do something and Sam says go/yes/do it,
+  // treat as complex so Vex has tools and context to follow through
+  var ACTION_OFFER = /let me|i'll write|i'll put|i'll save|i'll add|i'll create|i'll build|want me to|shall i|i can write|i can put|ready to|writing it now|putting it in/i;
+  var AFFIRMATIVE = /^(yes|yep|yeah|go ahead|do it|get to it|get on it|make it happen|perfect|sounds good|sure|ok|okay|please|go|do that|make it so|do it now|yes please|go for it|absolutely|definitely)[\s!.?,]*$/;
+  if (AFFIRMATIVE.test(t) && lastAssistantText && ACTION_OFFER.test(lastAssistantText)) return 'complex';
+
+  // Also treat "try again" as complex so Vex retries the last action with tools
+  if (/^(try again|again|retry|one more time|try that again|try once more)[\s!.?,]*$/.test(t)) return 'complex';
+
   // Pure greetings / acknowledgements — no tools, haiku
-  if (/^(hi|hey|hello|sup|good morning|good night|thanks|thank you|ok|okay|got it|sounds good|perfect|great|nice|cool|yep|nope|sure|awesome|good|noted|understood|makes sense|got it|will do)[\s!.?,]*$/.test(t)) return 'simple';
+  if (/^(hi|hey|hello|sup|good morning|good night|thanks|thank you|ok|okay|got it|sounds good|perfect|great|nice|cool|yep|nope|sure|awesome|good|noted|understood|makes sense|will do)[\s!.?,]*$/.test(t)) return 'simple';
   if (t.length < 40 && /^(what'?s up|how are you|morning|evening|you there|you around|quick question)/.test(t)) return 'simple';
 
   // Status / progress checks — haiku, minimal tools
@@ -203,6 +213,7 @@ function buildTier2(classification) {
   // Orchestration rules for complex only
   if (classification === 'complex' || classification === 'research') {
     system += '\n\n## RULES\n- Product idea → read_vault first, queue_maya_task if nothing recent\n- Sam confirms product → queue_maya_task "MODE2: [name]"\n- Decision → write_vault decisions/\n- Status → get_product_status\n- No tools for simple chat';
+    system += '\n\n## CRITICAL\nNEVER say you have written, saved, or stored something unless the write_vault tool has returned a success message in this conversation. If you offered to write something and have not called write_vault yet, call it now — do not describe it, do it.';
   }
 
   return system;
@@ -646,7 +657,8 @@ app.post('/chat', async function(req, res) {
 
     db.prepare('INSERT INTO conversations (role, content) VALUES (?, ?)').run(last.role, userText);
 
-    var classification = classifyMessage(userText);
+    var lastAsst = db.prepare("SELECT content FROM conversations WHERE role='assistant' ORDER BY id DESC LIMIT 1").get();
+    var classification = classifyMessage(userText, lastAsst ? lastAsst.content : '');
     var model = getModel(classification);
     var tools = getTools(classification);
     var memLimit = getMemoryLimit(classification);
@@ -713,7 +725,8 @@ app.post('/chat/stream', async function(req, res) {
 
     db.prepare('INSERT INTO conversations (role, content) VALUES (?, ?)').run(last.role, userText);
 
-    var classification = classifyMessage(userText);
+    var lastAsst2 = db.prepare("SELECT content FROM conversations WHERE role='assistant' ORDER BY id DESC LIMIT 1").get();
+    var classification = classifyMessage(userText, lastAsst2 ? lastAsst2.content : '');
     var model = getModel(classification);
     var tools = getTools(classification);
     var memLimit = getMemoryLimit(classification);
