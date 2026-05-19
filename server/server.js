@@ -353,6 +353,29 @@ app.get('/status', function(req, res) {
   res.json({ online: true, version: '4.1' });
 });
 
+const VAULT = path.join(__dirname, '..', 'vault', 'Groundwork');
+
+app.get('/vault-check', function(req, res) {
+  try {
+    var files = [];
+    function walk(dir, base) {
+      fs.readdirSync(dir).forEach(function(name) {
+        if (name.startsWith('.')) return;
+        var full = path.join(dir, name);
+        var rel = path.join(base, name);
+        if (fs.statSync(full).isDirectory()) { walk(full, rel); }
+        else if (name.endsWith('.md')) { files.push(rel); }
+      });
+    }
+    walk(VAULT, '');
+    var index = path.join(VAULT, 'index.md');
+    var preview = fs.existsSync(index) ? fs.readFileSync(index, 'utf8').substring(0, 300) : '(no index.md found)';
+    res.json({ connected: true, vault: VAULT, notes: files, indexPreview: preview });
+  } catch(e) {
+    res.status(500).json({ connected: false, error: e.message });
+  }
+});
+
 setInterval(function() {
   try { execSync('cd "' + path.join(__dirname, '..') + '" && git pull', { stdio: 'pipe' }); } catch(e) {}
 }, 5 * 60 * 1000);
