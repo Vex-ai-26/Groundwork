@@ -310,8 +310,8 @@ function readDocument(filepath) {
 function manageMaya(action, taskId) {
   if (action === 'list') {
     return JSON.stringify({
-      active: db.prepare("SELECT id, title, status, updated FROM tasks WHERE status IN ('queued','running') ORDER BY id DESC").all(),
-      recent: db.prepare("SELECT id, title, status, updated FROM tasks WHERE status NOT IN ('queued','running') ORDER BY updated DESC LIMIT 5").all()
+      active: db.prepare("SELECT id, title, status, substr(output,1,200) as error_preview, updated FROM tasks WHERE status IN ('queued','running') ORDER BY id DESC").all(),
+      recent: db.prepare("SELECT id, title, status, substr(output,1,200) as output_preview, updated FROM tasks WHERE status NOT IN ('queued','running') ORDER BY updated DESC LIMIT 5").all()
     });
   }
   if (action === 'cancel' && taskId) {
@@ -328,7 +328,7 @@ function manageMaya(action, taskId) {
 function queueMayaTask(query) {
   var insert = db.prepare('INSERT INTO tasks (title, status) VALUES (?, ?)').run('Research: ' + query, 'queued');
   var taskId = insert.lastInsertRowid;
-  runTaskBackground(taskId, query);
+  runTaskBackground(taskId, query).catch(function(e) { console.error('[Task ' + taskId + '] Unhandled:', e.message); });
   console.log('[Vex->Maya] Queued #' + taskId + ': ' + query);
   return JSON.stringify({ task_id: taskId, status: 'queued', message: 'Maya is on it.' });
 }
@@ -420,13 +420,25 @@ async function runMayaMode1(query) {
   }
 
   console.log('[Maya Mode 1] Researching: ' + query);
-  var response = await client.messages.create({
-    model: MODEL_COMPLEX,
-    max_tokens: 2500,
-    system: MAYA_MODE1_SYSTEM,
-    messages: [{ role: 'user', content: 'Research for Groundwork: ' + query }],
-    tools: [{ type: 'web_search_20250305', name: 'web_search' }]
-  });
+  var response;
+  try {
+    response = await client.beta.messages.create({
+      betas: ['web-search-2025-03-05'],
+      model: MODEL_COMPLEX,
+      max_tokens: 2500,
+      system: MAYA_MODE1_SYSTEM,
+      messages: [{ role: 'user', content: 'Research for Groundwork: ' + query }],
+      tools: [{ type: 'web_search_20250305', name: 'web_search' }]
+    });
+  } catch(webErr) {
+    console.warn('[Maya Mode 1] Web search failed (' + webErr.message + '), falling back to training knowledge');
+    response = await client.messages.create({
+      model: MODEL_COMPLEX,
+      max_tokens: 2500,
+      system: MAYA_MODE1_SYSTEM + '\n\nNote: Live web search unavailable. Use your training knowledge and flag that data may be dated.',
+      messages: [{ role: 'user', content: 'Research for Groundwork (no live web search): ' + query }]
+    });
+  }
   logTokens('maya_mode1', MODEL_COMPLEX, response.usage.input_tokens, response.usage.output_tokens);
 
   var result = response.content.filter(function(b) { return b.type === 'text'; }).map(function(b) { return b.text; }).join('\n');
@@ -444,7 +456,13 @@ async function runMayaMode1(query) {
 
 // Maya Mode 2 helpers
 async function mayaSearch(prompt) {
-  var r = await client.messages.create({ model: MODEL_COMPLEX, max_tokens: 2500, system: MAYA_MODE2_SYSTEM, messages: [{ role: 'user', content: prompt }], tools: [{ type: 'web_search_20250305', name: 'web_search' }] });
+  var r;
+  try {
+    r = await client.beta.messages.create({ betas: ['web-search-2025-03-05'], model: MODEL_COMPLEX, max_tokens: 2500, system: MAYA_MODE2_SYSTEM, messages: [{ role: 'user', content: prompt }], tools: [{ type: 'web_search_20250305', name: 'web_search' }] });
+  } catch(webErr) {
+    console.warn('[Maya Mode 2] Web search failed, using training knowledge');
+    r = await client.messages.create({ model: MODEL_COMPLEX, max_tokens: 2500, system: MAYA_MODE2_SYSTEM, messages: [{ role: 'user', content: prompt + '\n(Note: live web search unavailable, use training knowledge)' }] });
+  }
   logTokens('maya_mode2_search', MODEL_COMPLEX, r.usage.input_tokens, r.usage.output_tokens);
   return r.content.filter(function(b) { return b.type === 'text'; }).map(function(b) { return b.text; }).join('\n');
 }
