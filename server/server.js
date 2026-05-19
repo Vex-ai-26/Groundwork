@@ -140,8 +140,10 @@ function getModel(classification) {
 function getMaxTokens(classification) {
   if (classification === 'simple') return 300;
   if (classification === 'status') return 400;
-  if (classification === 'vault_read' || classification === 'vault_write') return 600;
-  return 1200; // complex
+  if (classification === 'vault_read') return 800;
+  if (classification === 'vault_write') return 4000; // needs room to write full content via tool call
+  if (classification === 'research') return 800;
+  return 4000; // complex — Vex may write large docs to vault
 }
 
 function getMemoryLimit(classification) {
@@ -705,7 +707,12 @@ app.post('/chat', async function(req, res) {
 
   } catch(err) {
     console.error('[Chat]', err.message);
-    res.status(500).json({ error: err.message });
+    // Return a graceful reply so the frontend shows something useful instead of a crash screen
+    var fallback = 'Hit a snag on my end. ';
+    if (err.message && err.message.toLowerCase().includes('max_token')) fallback += 'Response was too long — try asking me to summarize or split it into parts.';
+    else if (err.message && err.message.toLowerCase().includes('overload')) fallback += 'API is overloaded right now. Try again in 30 seconds.';
+    else fallback += 'Try again — if it keeps happening, restart the server.';
+    res.json({ reply: fallback, _error: err.message });
   }
 });
 
@@ -769,7 +776,13 @@ app.post('/chat/stream', async function(req, res) {
     res.end();
 
   } catch(err) {
-    send({ type: 'error', error: err.message });
+    console.error('[Stream]', err.message);
+    var fallback = 'Hit a snag on my end. ';
+    if (err.message && err.message.toLowerCase().includes('max_token')) fallback += 'That was too long to write in one shot — break it into parts.';
+    else if (err.message && err.message.toLowerCase().includes('overload')) fallback += 'API overloaded — try again in 30 seconds.';
+    else fallback += 'Try again.';
+    send({ type: 'text', text: fallback });
+    send({ type: 'done' });
     res.end();
   }
 });
