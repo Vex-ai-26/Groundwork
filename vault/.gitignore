@@ -1,0 +1,11 @@
+# Obsidian local-only files — do not sync
+.obsidian/workspace
+.obsidian/workspace.json
+.obsidian/workspaces.json
+.obsidian/cache
+.obsidian/plugins/obsidian-git/data.json
+
+# OS noise
+.DS_Store
+Thumbs.db
+desktop.ini

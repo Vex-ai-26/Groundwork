@@ -1,0 +1,10 @@
+# Obsidian local-only settings — do not sync to GitHub
+.obsidian/workspace
+.obsidian/workspace.json
+.obsidian/workspaces.json
+.obsidian/cache
+
+# OS noise
+.DS_Store
+Thumbs.db
+desktop.ini
