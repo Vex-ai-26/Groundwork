@@ -1,70 +1,77 @@
 # Reddit Posts: Framing Estimate Template
 
 ## r/Construction
-
 **[title]**
-The one estimate mistake that cost me $4,800 (and how I fixed it)
+The framing estimate mistake that cost me a $40K job (and how I fixed it)
 
 **[body]**
-Been teaching construction at the high school level for a few years now, but spent 15+ years framing before that. Had a kid ask me yesterday why I stopped contracting, and honestly? One bad estimate nearly buried me.
+Been framing for 15 years, teaching construction now. Had to share this because I see younger guys making the same mistake I did.
 
-2016, took on a two-story addition. Rushed the takeoff because I was swamped. Missed an entire interior wall in my lumber count, underestimated my labor on the rake walls by almost 30%, and didn't account for the delivery fees stacking up on three separate orders.
+Back in 2018, I bid a 3,200 sq ft custom home. Spent hours on the estimate, felt good about the numbers. Lost the job to a competitor who came in $8K lower. Found out later they got it AND made money.
 
-By the time I realized it, I was $4,800 in the hole on a $23k job.
+My problem? I was estimating line-by-line in a Word doc, double-checking math on my phone calculator. Missed an entire section of interior walls. Just... forgot them. 
 
-That job taught me to systematize everything. I started using the same spreadsheet format for every estimate - material takeoff on one sheet, labor breakdown by task, then the client proposal. Took about two weeks to dial it in, but I never had another estimate go sideways like that.
+After that mess, I built myself a proper template. Every. Single. Line item. Foundation to ridge beam. Material calculations that actually account for waste. Labor breakdown by phase. Auto-totaling so I can't fat-finger the math.
 
-Now I teach my students the same approach: slow down on the takeoff, price labor by task not by gut feel, and always show your work so you can find the mistake before you submit.
+Took me a weekend to build, but I've used it on 60+ jobs since. Haven't missed a wall section once.
 
-Anyone else have an estimate horror story that changed how they bid? What systems do you use to stay consistent?
+Not saying everyone needs a template, but if you're still estimating in Word or on paper, might be worth the time investment. The 20 minutes you save per estimate adds up, and the accuracy pays for itself the first time you DON'T forget an entire section.
+
+Anyone else got estimation horror stories? Let's hear 'em.
 
 ---
 
 ## r/DIY
-
 **[title]**
-If you're framing anything bigger than a shed, do a real takeoff first
+Teacher here: What I tell students about estimating their first big framing project
 
 **[body]**
-I teach high school construction and used to frame full-time. Every few months I get a message from someone who's halfway through a garage build or room addition and just realized they're 40 studs short or bought way too many sheets of OSB.
+I teach high school construction and get asked this constantly: "How do I know how much material to buy for framing?"
 
-Here's the thing - you don't need software or a magic formula. You just need to write it down.
+Here's what I tell them (and what I wish someone told me 20 years ago):
 
-Before you buy a single 2x4:
-- Sketch every wall with dimensions
-- Count studs at 16" OC (length in inches ÷ 16, plus corners, plus one)
-- Write down your plates (2 bottom, 1 top, plus lap for bearing walls)
-- List your headers with actual dimensions
-- Add 10% waste for studs, 15% for sheathing
+**Don't guess. You'll buy too much or too little. Both suck.**
 
-Then add it all up, THEN go to the lumber yard.
+For a room addition or garage, you need:
+- Plates (top, bottom, doubled top = 3x the linear footage)
+- Studs (every 16" OC, plus corners, plus king/jack studs for every opening)
+- Headers sized to span (this is where people screw up most)
+- Blocking, let-in bracing, or structural sheathing
+- Plus 10-15% waste factor
 
-I've seen people waste $600+ because they bought "about what it should take" instead of spending 90 minutes with a pencil and paper.
+I've seen DIYers show up at the lumber yard three times because they "eyeballed it." Costs you time and gas money.
 
-The other thing - know your labor estimate even if you're doing it yourself. If your takeoff says 280 studs and you think you'll frame it in a weekend, something's wrong with your math or your expectations.
+**My advice:** Spend 30 minutes writing it out. Every wall. Every opening. Do the math once. A simple checklist-style breakdown will save you hours and probably a couple hundred bucks.
 
-Free advice worth what you paid for it, but it'll save you a trip back to Home Depot at 7am on Saturday.
+I use the same approach when I estimate side jobs. Material list + labor estimate = no surprises.
+
+The pros use estimating systems. You don't need anything fancy, just organized. Graph paper and a calculator works. Spreadsheet is better.
+
+Happy to answer questions if anyone's planning a project. This is literally what I do all day.
 
 ---
 
 ## r/ContractorTalk
-
 **[title]**
-What's in your framing estimate template? Let's compare notes
+What's in your framing estimate template? Comparing notes
 
 **[body]**
-Switched from framing full-time to teaching a few years back, and I've been updating the estimate template I give my students. Got me curious what you all are using in the field now.
+Curious what everyone's using for framing estimates these days. I'm not talking about full takeoff software (we all know the big names), but actual templates for small to mid-size residential jobs.
 
-Mine's Excel-based, three main sections:
+I run a small crew, mostly custom homes and additions in the 1,500-4,000 sq ft range. Built my own Excel template about 5 years ago after getting tired of reinventing the wheel on every bid.
 
-**Takeoff sheet** - wall-by-wall breakdown, stud count at 16" or 24" OC, plates, headers, sheathing by wall section, fasteners by type
+Mine breaks down:
+- Sill plates, wall plates, studs by wall section
+- Headers/beams with species and grade options
+- Sheathing by area
+- Hardware/connectors
+- Labor by phase (deck, walls, roof structure)
+- Waste factors built into formulas
 
-**Labor estimate** - hours per task (layout, walls, stand & brace, sheathing, etc), rate, total labor cost
+Takes me about 20-30 min per job now vs 2+ hours when I was doing it ad-hoc.
 
-**Client proposal** - clean version with just the line items and total, no internal math showing
+What are you guys using? Still doing it old school? Built something custom? I know some of y'all are wizards with this stuff and I'm always looking to improve my system.
 
-Takes me about 2-3 hours for a typical 2,000 sf house with my template. Used to take half a day when I was winging it every time.
+Main thing for me is speed + accuracy. I'd rather spend time on the job than behind a desk, but I also can't afford to leave money on the table or miss something stupid.
 
-What does your process look like? Are you using software, or still doing spreadsheets? Do you show labor breakdown to clients or just lump sum it?
-
-Always looking to tighten up what I'm teaching these kids before they get out there. What am I missing?
+What's working for you?

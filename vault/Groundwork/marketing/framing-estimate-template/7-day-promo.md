@@ -2,195 +2,194 @@
 
 # 7-Day Post-Launch Sequence: Framing Estimate Template
 
-## DAY 1 - Reddit r/Carpentry
-**Action:** Comment on existing estimation thread (find recent "how do you quote jobs" type post)
+## DAY 1 - Reddit (r/Construction)
+**Action:** Value post with soft mention
+**Title:** "How I cut my framing estimate time from 4 hours to 45 minutes"
 
 **Copy:**
-"After bidding probably 200+ framing jobs, I finally sat down and built a proper template instead of reinventing the wheel every time. Game changer.
+Used to spend half a day on every framing bid. Measuring twice, calculating materials, figuring labor, formatting everything so it looked professional. Then scrambling when the customer wanted changes.
 
-The big thing that helped me was breaking material takeoff into its own sheet - studs, plates, headers all separate. Makes it way easier to catch mistakes before you're standing at the lumber yard wondering why your truck's overloaded.
+What finally clicked: treat estimates like you treat cut lists. Build it once, use it forever.
 
-Also started tracking my actual labor hours vs estimated on every job. Sounds tedious but after 10-12 jobs the patterns jump out. Turns out I was consistently underestimating blocking and backing by about 15%.
+Here's what actually saves time:
+- Pre-built line item library (wall framing, roof systems, stairs, headers—stuff you price on every job)
+- Material calculations that auto-update when you change quantities
+- Separate labor tracking so you're not guessing your manhours
 
-What's your current process look like?"
+I built a template that handles residential and light commercial. Takes me under an hour now for most jobs, and customers actually understand the breakdown.
+
+For anyone still doing estimates from scratch each time—you're leaving money on the table. Either in time wasted or in things you forget to include.
+
+Anyone else systematized their estimating process? What worked?
 
 ---
 
-## DAY 2 - Reddit r/Contractors
-**Action:** Start new discussion thread
-
-**Title:** "What's in your framing estimate? Trying to standardize my bidding process"
+## DAY 2 - Reddit (r/Smallbusiness)
+**Action:** Problem-solution story
+**Title:** "Lost a $47K framing job because my estimate looked like homework"
 
 **Copy:**
-"Teaching construction now after 15 years in the field. Helping students understand estimating made me realize how inconsistent my own process was.
+Real talk: I lost a residential framing project last year because the other guy's estimate "looked more professional." Same price, same timeline. His paperwork just looked cleaner.
 
-Curious what you all include in a framing bid beyond the obvious. Here's what I'm working with:
+That hurt. Because I knew my framing was better.
 
-**Material side:**
-- Lumber (obviously) - but do you separate by dimension or just lump it?
-- Fasteners as % of lumber or line item?
-- Sheathing/housewrap separate or bundled with rough-in?
+Learned the hard way that how you present the bid matters as much as the numbers. Customers compare estimates side-by-side. If yours looks thrown together, they assume your work will be too.
 
-**Labor side:**
-- Hourly rate × estimated hours, or per-square-foot benchmarks?
-- How do you account for unknowns on remodels?
+What changed for me:
+- Consistent formatting (every estimate looks like it came from an actual business)
+- Clear section breaks (framing, materials, labor, total—no hunting for numbers)
+- Line-item details (they see exactly what they're paying for)
 
-**Overhead:**
-- Separate line for waste factor or build it into material costs?
+I use a template now. Same structure every time. Customer gets it, understands it, signs it.
 
-The students ask good questions I never thought about. 'Why do you estimate studs at 16" OC but order extras?' made me realize I didn't have a system, just habits.
+The technical work hasn't changed. The hit rate has.
 
-What am I missing?"
+For the contractors here—are you losing bids on presentation? Or am I the only one who learned this the expensive way?
 
 ---
 
-## DAY 3 - Pinterest Board Creation
-**Action:** Create board "Construction Estimating & Job Costing" - Pin 1
+## DAY 3 - Pinterest
+**Action:** Create 3 pins linking to listing
 
-**Pin Title:** Framing Takeoff Checklist for Accurate Material Orders
+**Pin 1:**
+**Image text overlay:** "From 4 Hours to 45 Minutes | Professional Framing Estimates"
+**Description:** 
+Framing estimate template for contractors. Pre-built line items, automatic material calculations, and professional formatting. Streamline residential and commercial framing bids. Save time, win more projects, look professional. Digital template for framers and general contractors.
+#framingcontractor #constructionbusiness #estimatingtips #contractorlife #framingcrew
 
-**Pin Description:**
-Stop overbuying lumber. Material takeoff checklist for residential framing - breaks down studs, plates, headers, and blocking separately so nothing gets double-counted or forgotten. Based on 15 years of field estimates. #constructionestimating #framingcontractor #contractorbusiness
+**Pin 2:**
+**Image text overlay:** "Stop Losing Bids | Professional Framing Estimate Template"
+**Description:**
+Professional estimate template built for framing contractors. Includes material calculations, labor breakdowns, and customizable sections. Win more bids with clear, professional estimates. Perfect for residential and commercial framing projects. Instant download.
+#constructionestimates #framingbusiness #contractortips #constructionlife #biddingwork
 
-**Image text overlay:** 
-"Material Takeoff Checklist
-✓ Studs by wall section
-✓ Plates (top/bottom/cap)
-✓ Headers (sized by span)
-✓ Blocking/backing
-✓ Waste factor per material type"
-
----
-
-## DAY 4 - Pinterest Pin 2
-**Action:** Add second pin to same board
-
-**Pin Title:** Labor Estimation Formula for Framing Jobs - Track Actual vs Estimated
-
-**Pin Description:**
-The labor estimation worksheet I wish I had 10 years ago. Track estimated hours vs actual completion time by job phase (layout, walls, headers, sheathing). After 5-10 jobs, your real production rates become clear. No more guessing. #constructionbusiness #contractorlife #estimatingtips
-
-**Image text overlay:**
-"Stop Guessing Labor Hours
-Track by phase:
-→ Layout & plates
-→ Wall framing
-→ Headers & openings  
-→ Sheathing
-→ Cleanup
-Compare estimate vs actual every job"
+**Pin 3:**
+**Image text overlay:** "What $47K Taught Me About Estimates | Framing Template"
+**Description:**
+Lost a project because my estimate didn't look professional enough. Built this framing estimate template to never let that happen again. Pre-built sections, automatic totals, clear formatting. For framers and GCs who want to close more bids.
+#framing #contractorbusiness #constructiontemplate #estimating #smallbusiness
 
 ---
 
-## DAY 5 - Reddit r/Carpentry Follow-up
-**Action:** Comment on your Day 2 thread (responding to feedback/questions)
+## DAY 4 - Pinterest
+**Action:** Create 2 more pins + join 1 group board
+
+**Pin 4:**
+**Image text overlay:** "Framing Contractors: Your Estimate Is Your First Impression"
+**Description:**
+Professional framing estimate template. Pre-built line items for walls, roof systems, stairs, and headers. Material and labor calculations included. Make every bid look like it came from an established business. Digital download for contractors.
+#contractormarketing #framingtools #constructionpro #estimatetips #tradesman
+
+**Pin 5:**
+**Image text overlay:** "The Estimate Template Every Framing Contractor Needs"
+**Description:**
+Streamline your framing bids with this professional template. Automatic calculations, customizable sections, consistent formatting. Built for residential and commercial framing contractors. Stop recreating estimates from scratch—save time and win more work.
+#framingcontractors #constructiontools #contractorresources #builderlife #estimating
+
+**Group Board Action:** Request to join "Contractor Tips & Resources" or similar construction business boards. Repin Pin 1.
+
+---
+
+## DAY 5 - Reddit (r/Framing)
+**Action:** Direct value + resource mention
+**Title:** "Estimating workflow that actually works (from someone who used to wing it)"
 
 **Copy:**
-"Update: Thanks for all the input. Ended up building out the template with separate tabs for material takeoff, labor by phase, and the client-facing proposal.
+Taught construction at the high school level for years before going back to contracting full-time. Students always asked: "How do you know what to charge?"
 
-The waste factor conversation was enlightening - I was using 10% across the board like an idiot. Now it's:
+Honest answer back then: experience and guessing.
 
-- Studs/plates: 5% (pretty predictable)
-- Headers: 15% (always cutting weird spans)
-- Blocking: 20% (every job has surprise backing needs)
-- Sheathing: 8% (depends on roof complexity)
+Better answer now: systems.
 
-Also added a section to track estimates vs actuals. Figure after 20 jobs I'll know my real production rate instead of using the same number I guessed in 2018.
+Here's the estimating workflow that keeps me profitable:
 
-For the students asking - yeah, I turned this into a teaching tool. They actually fill it out for practice jobs now. Way better than explaining on the whiteboard."
+1. **Site measure with checklist** (wall count, ceiling height, window/door openings, roof pitch—miss one, you're eating costs)
+
+2. **Template with pre-built sections** (I'm not reinventing the wheel on every bid—studs, plates, headers, sheathing, labor... it's the same categories every time)
+
+3. **Material calc with waste factor** (I build in 10-15% waste depending on job complexity)
+
+4. **Labor by section, not by total job** (framing walls vs. setting roof trusses = different rates)
+
+5. **Professional formatting** (customer gets a document that looks like a real business sent it)
+
+Biggest change: I built a reusable template that handles steps 2-5. I just plug in measurements and it generates the estimate.
+
+I'm dropping it here for anyone who wants it: [Groundwork Etsy shop link]
+
+Not trying to sell anyone—just sharing what worked after years of the old "yellow pad and calculator" method.
+
+What's your estimating process look like?
 
 ---
 
-## DAY 6 - Etsy Listing Update
-**Action:** Add customer-focused FAQ section + enhanced description
+## DAY 6 - Listing Update
+**Action:** Optimize based on first 5 days of data
 
-**New Description Addition:**
+**Updated Title:**
+Professional Framing Estimate Template | Contractor Bid Template for Residential & Commercial Projects | Instant Download
 
-"**What makes this different from generic estimate templates?**
+**Updated First Paragraph:**
+Stop recreating framing estimates from scratch. This professional template includes pre-built line items, automatic material calculations, and labor breakdowns—everything you need to create accurate, professional bids in under an hour. Built by contractors, for contractors.
 
-Built by someone who's actually stood in front of clients with a bid sheet. This isn't theory - it's the system that helped me stop leaving money on the table and stop overbuying materials.
+**Added Bullet Points:**
+✓ Pre-built line items for walls, roof systems, stairs, and headers  
+✓ Automatic material calculations with built-in waste factors  
+✓ Separate labor tracking by project section  
+✓ Professional formatting that wins customer confidence  
+✓ Fully customizable for your business and pricing  
+✓ Works for residential and commercial framing projects  
+✓ Instant digital download—start using today  
 
-**Three parts that work together:**
-1. **Material Takeoff Sheets** - Separate tabs for studs, plates, headers, blocking. Break it down so you catch errors before ordering.
-2. **Labor Calculation Tracker** - Estimate by phase (layout, framing, sheathing), then track actual hours. Your real production rate emerges after 5-10 jobs.
-3. **Client Proposal Format** - Clean, professional summary. No exposed formulas or messy math.
-
-**Who this works for:**
-- Framing contractors tired of inconsistent bidding
-- Carpenters starting their own businesses
-- Construction teachers (yes, my students use this for practice estimates)
-
-**What you need:** Excel or Google Sheets. Basic formulas included, but nothing complicated. If you can use SUM, you're good.
-
-**The honest part:** This won't teach you how to frame or magically know local material costs. It organizes the knowledge you already have so you can bid faster and more consistently."
-
-**New FAQ:**
-- How do I customize for my local prices? (All cost fields are editable - plug in your lumber yard's rates)
-- Can I use this for commercial work? (Designed for residential, works for light commercial framing)
-- Do you offer support? (Email questions to [contact], usually respond same day)
+**New Tags:** 
+framing estimate, contractor template, construction bid, framing contractor, estimate template, construction business, bid template, framing business, contractor tools, professional estimate
 
 ---
 
 ## DAY 7 - Review Request Strategy
-**Action:** Create follow-up email sequence (send via Etsy Messages)
+**Action:** Set up post-purchase follow-up system
 
-**Message 1 - Sent immediately after purchase:**
+**Email/Message Template (send 3 days after purchase):**
 
-Subject: Your Framing Estimate Template - Quick Start
+**Subject:** How's the framing template working for you?
 
-"Hey [Name],
+**Body:**
+Hey [Name],
 
-Rex from Groundwork. Template should be in your downloads now.
+Rex from Groundwork here. You grabbed the framing estimate template a few days ago—just checking in to see how it's working for you.
 
-**Quick start:** Open the 'Instructions' tab first. Covers the three main sections and how they connect.
+Any questions on customizing it for your jobs? Anything that's not clear?
 
-**One tip that helps:** Fill out the Material Takeoff tabs completely before touching the labor section. Easier to estimate hours when you can see the full scope.
+If it's saving you time on estimates, I'd appreciate you leaving a quick review on the listing. Helps other contractors find tools that actually work.
 
-If anything's confusing or doesn't fit your process, let me know. I adjust these based on what's actually working in the field.
+And if something's not working right, let me know. I want this to be worth way more than you paid.
 
 — Rex
-Former framer, current teacher, always learning"
 
-**Message 2 - Sent 5 days after purchase:**
+**Follow-up (14 days after purchase if no review):**
 
-Subject: How's the template working?
+**Subject:** Quick favor?
 
-"[Name],
+**Body:**
+[Name],
 
-Checking in - have you had a chance to use the framing template on a real estimate yet?
+Hope the framing template's been useful on a few jobs by now.
 
-**If it's working:** Would you mind leaving a quick review? Helps other contractors find it. (Here's the link: [review link])
+If you've got 60 seconds, would you mind leaving a review? Even a line or two helps other framers and contractors figure out if it's right for them.
 
-**If something's not clicking:** Seriously, tell me. I'd rather fix it than have it sit unused in your downloads folder.
+[Direct review link]
 
-Either way, hope it's saving you some time.
+Thanks for supporting a small construction business trying to build useful stuff.
 
-— Rex"
-
-**Message 3 - Sent 14 days after purchase (only if no review left):**
-
-Subject: Template feedback = better tools for everyone
-
-"[Name],
-
-Last follow-up, promise.
-
-If the framing template helped you bid even one job faster or more accurately, a review actually matters. Not for ego - other contractors decide whether to try it based on feedback from people like you who've used it.
-
-30 seconds, honest take, whatever you think: [review link]
-
-And if it *didn't* help? That's useful feedback too.
-
-Thanks for giving it a shot.
-
-— Rex"
+— Rex
+Groundwork
 
 ---
 
-**SEQUENCE COMPLETE**
-
-**Key metrics to track:**
-- Reddit: Comment engagement, DMs asking for template
-- Pinterest: Pin saves, link clicks  
-- Etsy: Conversion rate change after listing update
-- Reviews: Response rate to 3-message sequence
+**TRACKING METRICS:**
+- Reddit post upvotes/comments (engagement)
+- Etsy listing views (traffic)
+- Click-through from Reddit/Pinterest (source tracking)
+- Conversion rate
+- Time to first sale
+- Review rate

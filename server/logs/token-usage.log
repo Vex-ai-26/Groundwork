@@ -64,3 +64,8 @@
 {"ts":"2026-05-20T18:55:18.115Z","agent":"rex","model":"claude-sonnet-4-5","in":151,"out":900,"cost":0.013953}
 {"ts":"2026-05-20T18:55:36.682Z","agent":"rex","model":"claude-sonnet-4-5","in":153,"out":634,"cost":0.009969}
 {"ts":"2026-05-20T18:56:34.147Z","agent":"rex","model":"claude-sonnet-4-5","in":172,"out":1980,"cost":0.030216}
+{"ts":"2026-05-20T22:15:57.968Z","agent":"vex","model":"claude-sonnet-4-5","in":2754,"out":47,"cost":0.008967}
+{"ts":"2026-05-20T22:16:27.984Z","agent":"rex","model":"claude-sonnet-4-5","in":225,"out":986,"cost":0.015465}
+{"ts":"2026-05-20T22:16:48.552Z","agent":"rex","model":"claude-sonnet-4-5","in":181,"out":933,"cost":0.014538}
+{"ts":"2026-05-20T22:17:04.334Z","agent":"rex","model":"claude-sonnet-4-5","in":183,"out":509,"cost":0.008184}
+{"ts":"2026-05-20T22:17:57.994Z","agent":"rex","model":"claude-sonnet-4-5","in":202,"out":2101,"cost":0.032121}
