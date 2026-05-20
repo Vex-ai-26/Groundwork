@@ -14,3 +14,4 @@ _Managed by Vex. Updated automatically when any file is written to the vault._
 | 2026-05-19 19:03 | [[2026-05-19-maya-mode-2-print-on-demand-apparel-for-const]] | MODE 2: Print-on-demand apparel for construction workers and trades market research | Mode 1 GO/NO-GO report: MODE 2: Print-on-demand apparel for construction workers and trades |
 | 2026-05-20 10:00 | [[2026-05-20]] | daily briefing 2026-05-20 | Morning briefing for 2026-05-20 |
 | 2026-05-20 15:43 | marketing/construction-estimating-template/ | Construction Estimating Template marketing reddit pinterest seo | Rex: Reddit, Pinterest, SEO, 7-day promo |
+| 2026-05-20 15:44 | marketing/construction-estimating-templates/ | Construction Estimating Templates marketing reddit pinterest seo | Rex: Reddit, Pinterest, SEO, 7-day promo |
