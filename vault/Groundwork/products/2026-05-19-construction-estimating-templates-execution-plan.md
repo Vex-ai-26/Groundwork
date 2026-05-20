@@ -226,3 +226,8 @@ This turns templates into both product revenue AND subscriber growth engine.
 - Month 12: 60+ listings, 250+ sales, $4,000+ revenue
 
 **This is a proven model with minimal risk and high profit margins. Ready to execute.**
+
+---
+## Related
+[[groundwork-identity]] | [[_index]] | [[team-roster]]
+[[2026-05-19-maya-mode-2-landscaping-business-templates]] | [[2026-05-19-maya-mode-2-print-on-demand-apparel-for-const]]

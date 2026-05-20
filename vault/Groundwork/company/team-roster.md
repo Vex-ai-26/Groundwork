@@ -48,3 +48,8 @@
 ### Sage — Analytics
 - Status: Slot open
 - Activates when: Enough data exists to analyze
+
+---
+## Related
+[[_index]]
+[[groundwork-identity]] | [[roadmap]]

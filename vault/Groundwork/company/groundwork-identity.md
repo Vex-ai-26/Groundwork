@@ -42,3 +42,8 @@ $0 MRR. Pre-launch.
 - Agents activate as business grows into them
 - Obsidian is master brain, GitHub for code only
 - One product at a time until revenue justifies parallel launches
+
+---
+## Related
+[[_index]]
+[[team-roster]] | [[roadmap]]

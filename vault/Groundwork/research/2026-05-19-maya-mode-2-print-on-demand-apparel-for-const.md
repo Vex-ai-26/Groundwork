@@ -136,3 +136,7 @@ Position it as apparel for contractors who take their business seriously. Not co
 - Add hats, stickers later if traction
 
 **Bottom line:** This works if positioned as a brand extension, not a revenue replacement. It's merch for people who already respect the Groundwork brand. The trades pride market is real, growing, and underserved by education-focused players. You've got the audience - just need the designs.
+
+---
+## Related
+[[groundwork-identity]] | [[_index]] | [[team-roster]]

@@ -214,7 +214,7 @@ function buildTier2(classification) {
 
   // Orchestration rules for complex only
   if (classification === 'complex' || classification === 'research') {
-    system += '\n\n## RULES\n- Product idea → read_vault first, queue_maya_task if nothing recent\n- Sam confirms product → queue_maya_task "MODE2: [name]"\n- Decision → write_vault decisions/\n- Status → get_product_status\n- No tools for simple chat';
+    system += '\n\n## RULES\n- Product idea → read_vault first, queue_maya_task if nothing recent\n- Sam confirms product → queue_maya_task "MODE2: [name]"\n- Decision → write_vault decisions/\n- Status → get_product_status\n- No tools for simple chat\n- Use [[wikilink]] syntax when referencing vault files in written content (e.g. [[groundwork-identity]], [[team-roster]], [[2026-05-19-maya-research-templates]])';
     system += '\n\n## CRITICAL\nNEVER say you have written, saved, or stored something unless the write_vault tool has returned a success message in this conversation. If you offered to write something and have not called write_vault yet, call it now — do not describe it, do it.';
   }
 
@@ -232,12 +232,33 @@ function buildVexSystem(classification) {
 function writeVaultIndex(filepath, topic, summary) {
   var indexPath = path.join(VAULT, '_index.md');
   var timestamp = new Date().toISOString().replace('T', ' ').substring(0, 16);
-  var row = '| ' + timestamp + ' | ' + filepath + ' | ' + topic + ' | ' + summary + ' |';
+  // .md files → [[slug]] wikilink so Obsidian builds the graph; directories stay as plain path
+  var linkRef = filepath.endsWith('.md') ? '[[' + path.basename(filepath, '.md') + ']]' : filepath;
+  var row = '| ' + timestamp + ' | ' + linkRef + ' | ' + topic + ' | ' + summary + ' |';
   if (!fs.existsSync(indexPath)) {
-    fs.writeFileSync(indexPath, '# Groundwork Vault — Auto Index\n\n| Date | File | Topic | Summary |\n|------|------|-------|---------|');
+    fs.writeFileSync(indexPath, '# Groundwork Vault — Auto Index\n_Managed by Vex. Updated automatically when any file is written to the vault._\n\n| Date | Link | Topic | Summary |\n|------|------|-------|---------|');
   }
   var content = fs.readFileSync(indexPath, 'utf8');
   fs.writeFileSync(indexPath, content + '\n' + row);
+}
+
+function findFileBySlug(slug) {
+  var found = null;
+  function walk(dir, base) {
+    if (found) return;
+    try {
+      fs.readdirSync(dir).forEach(function(name) {
+        if (found || name.startsWith('.')) return;
+        var full = path.join(dir, name);
+        try {
+          if (fs.statSync(full).isDirectory()) { walk(full, path.join(base, name)); }
+          else if (name === slug + '.md') { found = path.join(base, name).replace(/\\/g, '/'); }
+        } catch(e) {}
+      });
+    } catch(e) {}
+  }
+  walk(VAULT, '');
+  return found; // relative path from VAULT root, or null
 }
 
 function readVaultByTopic(keywords) {
@@ -247,26 +268,68 @@ function readVaultByTopic(keywords) {
   var terms = keywords.toLowerCase().split(/[\s,]+/).filter(function(t) { return t.length > 2; });
   var results = [];
   index.split('\n').forEach(function(line) {
-    if (!line.startsWith('|') || line.includes('Date |') || line.includes('---')) return;
+    if (!line.startsWith('|') || line.includes('Date |') || line.includes('Link |') || line.includes('---')) return;
     var cols = line.split('|').map(function(c) { return c.trim(); });
     var topic = (cols[3] || '').toLowerCase();
     var summary = (cols[4] || '').toLowerCase();
     if (terms.some(function(t) { return topic.includes(t) || summary.includes(t); })) {
-      var filepath = (cols[2] || '').trim();
-      var fullPath = path.join(VAULT, filepath);
-      if (fs.existsSync(fullPath) && !fs.statSync(fullPath).isDirectory()) {
-        results.push({ filepath: filepath, topic: cols[3], summary: cols[4], content: fs.readFileSync(fullPath, 'utf8').substring(0, 1200) });
+      var fileRef = (cols[2] || '').trim();
+      var fullPath;
+      if (fileRef.startsWith('[[') && fileRef.endsWith(']]')) {
+        var slug = fileRef.slice(2, -2);
+        var rel = findFileBySlug(slug);
+        fullPath = rel ? path.join(VAULT, rel) : null;
+      } else {
+        fullPath = path.join(VAULT, fileRef);
+      }
+      if (fullPath && fs.existsSync(fullPath) && !fs.statSync(fullPath).isDirectory()) {
+        results.push({ filepath: fileRef, topic: cols[3], summary: cols[4], content: fs.readFileSync(fullPath, 'utf8').substring(0, 1200) });
       }
     }
   });
   return results.slice(0, 3);
 }
 
+function buildRelatedSection(folder) {
+  var base = '[[groundwork-identity]] | [[_index]]';
+  if (folder !== 'company') base += ' | [[team-roster]]';
+  // Pull slugs from recent Maya/Rex reports
+  var reports = db.prepare("SELECT filepath FROM reports WHERE agent IN ('maya','rex') AND filepath IS NOT NULL ORDER BY created DESC LIMIT 5").all();
+  var links = [];
+  reports.forEach(function(r) {
+    var slug = path.basename(r.filepath, '.md');
+    if (slug && slug !== '_index' && !slug.startsWith('.')) links.push('[[' + slug + ']]');
+  });
+  var unique = [...new Set(links)].slice(0, 4);
+  var section = '\n\n---\n## Related\n' + base;
+  if (unique.length > 0) section += '\n' + unique.join(' | ');
+  return section;
+}
+
+function buildDailyRelatedSection() {
+  var base = '[[groundwork-identity]] | [[_index]] | [[team-roster]]';
+  // Reports and decisions filed in the last 7 days
+  var recent = db.prepare("SELECT filepath FROM reports WHERE filepath IS NOT NULL AND created > datetime('now', '-7 days') ORDER BY created DESC LIMIT 10").all();
+  var links = [];
+  recent.forEach(function(r) {
+    var slug = path.basename(r.filepath, '.md');
+    if (slug && slug !== '_index' && !slug.startsWith('.')) links.push('[[' + slug + ']]');
+  });
+  // Link to yesterday's briefing if it exists
+  var yesterday = new Date(Date.now() - 24*60*60*1000).toISOString().split('T')[0];
+  if (fs.existsSync(path.join(VAULT, 'daily', yesterday + '.md'))) links.push('[[' + yesterday + ']]');
+  var unique = [...new Set(links)].slice(0, 8);
+  var section = '\n\n---\n## Related\n' + base;
+  if (unique.length > 0) section += '\n' + unique.join(' | ');
+  return section;
+}
+
 function writeVaultNote(folder, title, content, topic, summary) {
   var date = new Date().toISOString().split('T')[0];
   var slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').substring(0, 50);
   var filename = date + '-' + slug + '.md';
-  var fullContent = '# ' + title + '\n_' + date + '_\n\n' + content;
+  var related = buildRelatedSection(folder);
+  var fullContent = '# ' + title + '\n_' + date + '_\n\n' + content + related;
   fs.mkdirSync(path.join(VAULT, folder), { recursive: true });
   fs.writeFileSync(path.join(VAULT, folder, filename), fullContent);
   writeVaultIndex(folder + '/' + filename, topic, summary);
@@ -377,7 +440,7 @@ function curtCheck(userText, messageCount) {
 // ─────────────────────────────────────────────
 // SECTION 11: AGENT SYSTEM PROMPTS
 // ─────────────────────────────────────────────
-var MAYA_MODE1_SYSTEM = 'You are Maya, Market Intelligence Agent for Groundwork — a construction education subscription platform.\n\nProduce a GO/NO-GO market report. Format:\n# Maya Research: [TOPIC]\n## Market Size\n## Search Demand\n## Competitor Landscape\n## Audience Fit\n## Revenue Potential\n## Recommendation: GO or NO-GO\n## Suggested Angle\n\nUse real numbers from search. Sam is a former contractor — be direct.';
+var MAYA_MODE1_SYSTEM = 'You are Maya, Market Intelligence Agent for Groundwork — a construction education subscription platform.\n\nProduce a GO/NO-GO market report. Format:\n# Maya Research: [TOPIC]\n## Market Size\n## Search Demand\n## Competitor Landscape\n## Audience Fit\n## Revenue Potential\n## Recommendation: GO or NO-GO\n## Suggested Angle\n\nUse real numbers from search. Sam is a former contractor — be direct.\n\nWhen referencing other vault documents, use Obsidian [[wikilink]] syntax (e.g. [[groundwork-identity]], [[team-roster]]).';
 
 var MAYA_MODE2_SYSTEM = 'You are Maya, Market Intelligence & Product Launch Agent for Groundwork. MODE 2: Full product launch prep. Digital templates for construction professionals. Sam is a former contractor. Brand: real trade knowledge, no fluff. Be thorough and actionable.';
 
@@ -444,7 +507,8 @@ async function runMayaMode1(query) {
   var result = response.content.filter(function(b) { return b.type === 'text'; }).map(function(b) { return b.text; }).join('\n');
   var date = new Date().toISOString().split('T')[0];
   var filename = date + '-maya-' + query.toLowerCase().replace(/[^a-z0-9]+/g, '-').substring(0, 40) + '.md';
-  var fullContent = '# Maya Research: ' + query + '\n\n' + result;
+  var related = buildRelatedSection('research');
+  var fullContent = '# Maya Research: ' + query + '\n\n' + result + related;
   fs.writeFileSync(path.join(DOCS, 'reports', filename), fullContent);
   fs.writeFileSync(path.join(VAULT, 'research', filename), fullContent);
   writeVaultIndex('research/' + filename, query + ' market research', 'Mode 1 GO/NO-GO report: ' + query);
@@ -486,7 +550,8 @@ async function runMayaMode2(productName, context, taskId) {
   }
   function saveStep(num, name, content) {
     var fn = '0' + num + '-' + name + '.md';
-    fs.writeFileSync(path.join(productDir, fn), content);
+    var related = buildRelatedSection('products');
+    fs.writeFileSync(path.join(productDir, fn), content + related);
     writeVaultIndex('products/templates/' + slug + '/' + fn, productName + ' ' + name.replace(/-/g, ' '), 'Step ' + num + '/7 for ' + productName);
     console.log('[Maya Mode 2] Step ' + num + ': ' + fn);
   }
@@ -614,7 +679,8 @@ async function runDailyBriefing() {
   logTokens('vex_briefing', MODEL_SIMPLE, r.usage.input_tokens, r.usage.output_tokens);
 
   var briefing = r.content[0].text;
-  fs.writeFileSync(path.join(VAULT, 'daily', date + '.md'), briefing);
+  var dailyRelated = buildDailyRelatedSection();
+  fs.writeFileSync(path.join(VAULT, 'daily', date + '.md'), briefing + dailyRelated);
   writeVaultIndex('daily/' + date + '.md', 'daily briefing ' + date, 'Morning briefing for ' + date);
   db.prepare('INSERT INTO reports (title, agent, content, filepath) VALUES (?, ?, ?, ?)').run('Daily Briefing: ' + date, 'vex', briefing, 'vault/daily/' + date + '.md');
   gitPush('Briefing: ' + date);

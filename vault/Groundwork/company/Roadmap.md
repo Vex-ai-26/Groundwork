@@ -19,3 +19,8 @@
 
 ## Next 12 Months
 - $12,000 MRR, 1,000 subscribers, Sam fully remote
+
+---
+## Related
+[[_index]]
+[[groundwork-identity]] | [[team-roster]] | [[roadmap]]

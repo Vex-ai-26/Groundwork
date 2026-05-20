@@ -43,3 +43,8 @@
 ### Ren — Operations
 - Home: Room 2, top-row second
 - Status: S
+
+---
+## Related
+[[_index]]
+[[groundwork-identity]] | [[team-roster]] | [[roadmap]]

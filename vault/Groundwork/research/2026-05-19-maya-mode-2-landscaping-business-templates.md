@@ -125,3 +125,7 @@ A client paying $200 per month for weekly mowing and quarterly fertilization is 
 **Content wedge:** Steal traffic from Jobber/Aspire/FreshBooks with SEO-optimized "Free Landscaping Estimate Template 2026" → convert to paid with the full vault + education.
 
 Go hard. Build it this quarter.
+
+---
+## Related
+[[groundwork-identity]] | [[_index]] | [[team-roster]]

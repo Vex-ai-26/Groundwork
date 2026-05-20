@@ -72,3 +72,8 @@ _2026-05-19_
 - Tools/props should enhance, not distract
 - Lighting should be bright and professional
 - Final output: 1024x1024px minimum for Etsy compliance
+
+---
+## Related
+[[groundwork-identity]] | [[_index]] | [[team-roster]]
+[[2026-05-19-maya-mode-2-landscaping-business-templates]] | [[2026-05-19-maya-mode-2-print-on-demand-apparel-for-const]]
