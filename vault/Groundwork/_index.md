@@ -12,3 +12,4 @@ _Managed by Vex. Updated automatically when any file is written to the vault._
 | 2026-05-19 12:55 | products/2026-05-19-construction-estimating-templates-image-prompts-fo.md | construction estimating templates images | DALL-E 3 prompts for creating mockup images and listing photos for all 6 construction estimating templates on Etsy |
 | 2026-05-19 18:58 | research/2026-05-19-maya-mode-2-landscaping-business-templates.md | MODE 2: Landscaping business templates market research | Mode 1 GO/NO-GO report: MODE 2: Landscaping business templates |
 | 2026-05-19 19:03 | research/2026-05-19-maya-mode-2-print-on-demand-apparel-for-const.md | MODE 2: Print-on-demand apparel for construction workers and trades market research | Mode 1 GO/NO-GO report: MODE 2: Print-on-demand apparel for construction workers and trades |
+| 2026-05-20 10:00 | daily/2026-05-20.md | daily briefing 2026-05-20 | Morning briefing for 2026-05-20 |
