@@ -17,3 +17,4 @@ _Managed by Vex. Updated automatically when any file is written to the vault._
 | 2026-05-20 15:44 | marketing/construction-estimating-templates/ | Construction Estimating Templates marketing reddit pinterest seo | Rex: Reddit, Pinterest, SEO, 7-day promo |
 | 2026-05-20 18:56 | marketing/framing-estimate-template/ | Framing Estimate Template marketing reddit pinterest seo | Rex: Reddit, Pinterest, SEO, 7-day promo |
 | 2026-05-20 22:17 | marketing/framing-estimate-template/ | Framing Estimate Template marketing reddit pinterest seo | Rex: Reddit, Pinterest, SEO, 7-day promo |
+| 2026-05-20 22:36 | products/2026-05-20-framing-residential-templates-launched.md | product launch | Framing Estimate Template and Residential templates successfully listed on Etsy - May 20, 2026 |
