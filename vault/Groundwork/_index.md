@@ -35,3 +35,4 @@ _Managed by Vex. Updated automatically when any file is written to the vault._
 | 2026-05-21 13:21 | marketing/net-worth-calculator/ | Net Worth Calculator marketing reddit pinterest seo | Rex: Reddit, Pinterest, SEO, 7-day promo |
 | 2026-05-21 13:21 | marketing/savings-goal-tracker/ | Savings Goal Tracker marketing reddit pinterest seo | Rex: Reddit, Pinterest, SEO, 7-day promo |
 | 2026-05-21 13:21 | marketing/debt-payoff-tracker/ | Debt Payoff Tracker marketing reddit pinterest seo | Rex: Reddit, Pinterest, SEO, 7-day promo |
+| 2026-05-21 18:48 | marketing/budget-templates-reddit-posts/ | Budget Templates - Reddit Posts marketing reddit pinterest seo | Rex: Reddit, Pinterest, SEO, 7-day promo |
