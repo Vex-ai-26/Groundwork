@@ -26,6 +26,15 @@
 - Saves to: vault/marketing/PRODUCT-NAME/
 - Reports to: Vex
 
+### Quinn — Quality Control
+- Status: Active
+- Role: Last line of defense before any product goes live on Etsy
+- Capabilities: Full product package review — product files, Etsy listing, photos, brand standards. Returns APPROVED / REVISE / REJECT with specific actionable feedback.
+- Auto-triggers: After Rex completes marketing package
+- Saves to: vault/products/templates/PRODUCT-NAME/quinn-review.md
+- Pipeline position: Maya → Iris → Rex → **Quinn** → Sam notified
+- Reports to: Vex
+
 ### Curt — Human Resources
 - Status: Active (wanders)
 - Capabilities: None. Wanders the office looking busy.
