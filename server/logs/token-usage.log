@@ -115,3 +115,8 @@
 {"ts":"2026-05-21T12:09:36.833Z","agent":"maya_mode1","model":"claude-sonnet-4-5","in":148422,"out":1951,"cost":0.474531}
 {"ts":"2026-05-21T12:12:52.013Z","agent":"vex","model":"claude-sonnet-4-5","in":2929,"out":53,"cost":0.009582}
 {"ts":"2026-05-21T12:13:56.857Z","agent":"vex","model":"claude-sonnet-4-5","in":3589,"out":47,"cost":0.011472}
+{"ts":"2026-05-21T12:29:06.416Z","agent":"vex","model":"claude-sonnet-4-5","in":2955,"out":31,"cost":0.00933}
+{"ts":"2026-05-21T12:30:04.774Z","agent":"vex","model":"claude-sonnet-4-5","in":3559,"out":34,"cost":0.011187}
+{"ts":"2026-05-21T12:30:24.281Z","agent":"vex","model":"claude-sonnet-4-5","in":4026,"out":61,"cost":0.012993}
+{"ts":"2026-05-21T12:31:33.047Z","agent":"vex","model":"claude-sonnet-4-5","in":4779,"out":76,"cost":0.015477}
+{"ts":"2026-05-21T12:33:20.406Z","agent":"vex","model":"claude-sonnet-4-5","in":2782,"out":4000,"cost":0.068346}
