@@ -163,6 +163,7 @@ var VEX_TOOLS = [
   { name: 'manage_maya',       description: 'Control Maya\'s queue. action: "list" | "cancel" | "clear". Optionally task_id for cancel.', input_schema: { type: 'object', properties: { action: { type: 'string', enum: ['list', 'cancel', 'clear'] }, task_id: { type: 'number' } }, required: ['action'] } },
   { name: 'trigger_iris',      description: 'Send photo briefs to Iris for DALL-E 3 image generation.', input_schema: { type: 'object', properties: { product_name: { type: 'string' }, photo_briefs: { type: 'string' } }, required: ['product_name', 'photo_briefs'] } },
   { name: 'trigger_rex',       description: 'Send Etsy listing copy to Rex for a full marketing package.', input_schema: { type: 'object', properties: { product_name: { type: 'string' }, listing_copy: { type: 'string' } }, required: ['product_name', 'listing_copy'] } },
+  { name: 'trigger_quinn',     description: 'Send completed product package to Quinn for quality control review. Quinn reviews everything before Sam is notified. Returns APPROVED, REVISE, or REJECT.', input_schema: { type: 'object', properties: { product_name: { type: 'string' } }, required: ['product_name'] } },
   { name: 'list_documents',    description: 'List documents in the library. Folder: reports | content | checklists | marketing.', input_schema: { type: 'object', properties: { folder: { type: 'string', enum: ['reports', 'content', 'checklists', 'marketing'] } } } },
   { name: 'read_document',     description: 'Read a document from the library by relative path.', input_schema: { type: 'object', properties: { filepath: { type: 'string' } }, required: ['filepath'] } }
 ];
@@ -184,7 +185,7 @@ function getTools(classification) {
 // ─────────────────────────────────────────────
 // Tier 1 — always loaded (~200 tokens)
 function buildTier1() {
-  return 'You are Vex, CEO of Groundwork — a construction education platform. Sam is the owner. Sharp, direct, loyal. 2-3 sentences max.\n\nDate: ' + new Date().toISOString().split('T')[0] + ' | Site: groundwork-lovat.vercel.app | Tiers: Free–$30/mo\nTeam: Maya (research), Iris (design/DALL-E 3), Rex (marketing), Curt (HR, wanders)';
+  return 'You are Vex, CEO of Groundwork — a construction education platform. Sam is the owner. Sharp, direct, loyal. 2-3 sentences max.\n\nDate: ' + new Date().toISOString().split('T')[0] + ' | Site: groundwork-lovat.vercel.app | Tiers: Free–$30/mo\nTeam: Maya (research), Iris (design/DALL-E 3), Rex (marketing), Quinn (QC — reviews every product before Sam sees it), Curt (HR, wanders)';
 }
 
 // Tier 2 — loaded when relevant (~600-900 tokens)
@@ -216,7 +217,7 @@ function buildTier2(classification) {
 
   // Orchestration rules for complex only
   if (classification === 'complex' || classification === 'research') {
-    system += '\n\n## RULES\n- Product idea → read_vault first, queue_maya_task if nothing recent\n- Sam confirms product → queue_maya_task "MODE2: [name]"\n- Decision → write_vault decisions/\n- Status → get_product_status\n- No tools for simple chat\n- Use [[wikilink]] syntax when referencing vault files in written content (e.g. [[groundwork-identity]], [[team-roster]], [[2026-05-19-maya-research-templates]])';
+    system += '\n\n## RULES\n- Product idea → read_vault first, queue_maya_task if nothing recent\n- Sam confirms product → queue_maya_task "MODE2: [name]"\n- Decision → write_vault decisions/\n- Status → get_product_status\n- No tools for simple chat\n- Pipeline order: Maya (research+spec) → Iris (photos) → Rex (marketing) → Quinn (QC review) → Sam notified\n- NEVER tell Sam a product is ready until Quinn has returned APPROVED\n- Use [[wikilink]] syntax when referencing vault files in written content (e.g. [[groundwork-identity]], [[team-roster]], [[2026-05-19-maya-research-templates]])';
     system += '\n\n## CRITICAL\nNEVER say you have written, saved, or stored something unless the write_vault tool has returned a success message in this conversation. If you offered to write something and have not called write_vault yet, call it now — do not describe it, do it.';
   }
 
@@ -349,7 +350,16 @@ function getProductStatus(productName) {
   var imgs = fs.existsSync(imagesDir) ? fs.readdirSync(imagesDir).filter(function(f) { return f.endsWith('.png'); }).length : 0;
   var mktDir = path.join(VAULT, 'marketing', slug);
   var mktFiles = fs.existsSync(mktDir) ? fs.readdirSync(mktDir).length : 0;
-  return JSON.stringify({ product: productName, db_status: launch.status, maya: done + '/7 steps', iris: launch.iris_status + ' (' + imgs + ' images)', rex: launch.rex_status + ' (' + mktFiles + ' files)' });
+  var quinnFile = path.join(productDir, 'quinn-review.md');
+  var quinnStatus = 'pending';
+  if (fs.existsSync(quinnFile)) {
+    var quinnContent = fs.readFileSync(quinnFile, 'utf8').substring(0, 200);
+    if (quinnContent.includes('APPROVED')) quinnStatus = 'APPROVED';
+    else if (quinnContent.includes('REVISE')) quinnStatus = 'REVISE';
+    else if (quinnContent.includes('REJECT')) quinnStatus = 'REJECT';
+    else quinnStatus = 'reviewed';
+  }
+  return JSON.stringify({ product: productName, db_status: launch.status, maya: done + '/7 steps', iris: launch.iris_status + ' (' + imgs + ' images)', rex: launch.rex_status + ' (' + mktFiles + ' files)', quinn: quinnStatus });
 }
 
 // ─────────────────────────────────────────────
@@ -406,6 +416,7 @@ function handleToolCall(name, input) {
   if (name === 'manage_maya')        return manageMaya(input.action, input.task_id);
   if (name === 'trigger_iris')       { runIrisBackground(input.product_name, input.photo_briefs, input.product_name.toLowerCase().replace(/[^a-z0-9]+/g,'-')).catch(console.error); return 'Iris generating images for ' + input.product_name; }
   if (name === 'trigger_rex')        { runRexBackground(input.product_name, input.listing_copy).catch(console.error); return 'Rex building marketing for ' + input.product_name; }
+  if (name === 'trigger_quinn')      { runQuinnReviewBackground(null, input.product_name).catch(console.error); return 'Quinn reviewing package for ' + input.product_name; }
   if (name === 'list_documents')     return JSON.stringify(listDocuments(input.folder));
   if (name === 'read_document')      return readDocument(input.filepath);
   return 'Unknown tool: ' + name;
@@ -449,6 +460,8 @@ var MAYA_MODE2_SYSTEM = 'You are Maya, Market Intelligence & Product Launch Agen
 var IRIS_SYSTEM = 'You are Iris, Design Agent for Groundwork. Brand: industrial edge, clean modern, charcoal and amber palette. For DALL-E prompts: specific lighting, setting, subject, mood. No text in images. Construction professional context.';
 
 var REX_SYSTEM = 'You are Rex, Marketing Agent for Groundwork. Sam\'s voice: former contractor, high school construction teacher, straight-talking, not salesy. Value first, product last. Reddit reads like a peer sharing knowledge, not an ad.';
+
+var QUINN_SYSTEM = 'You are Quinn, Quality Control Agent for Groundwork — a construction education platform. You report to Vex, CEO.\n\nYou are the last line of defense before any product goes live on Etsy. Thorough, direct, no patience for mediocre work. Your job is to protect the Groundwork brand.\n\nWhen given a product package, evaluate every component:\n\nPRODUCT FILE REVIEW\n- Does the file match the product spec Maya wrote?\n- Are there blank sections that should have content?\n- Is formatting consistent throughout?\n- Would a contractor or homeowner find this genuinely useful?\n- Is Groundwork branding present and correct?\n\nETSY LISTING REVIEW\n- Title under 140 characters, keyword optimized?\n- Description leads with a problem, not a feature list?\n- All 13 tags filled with buyer intent keywords?\n- Price appropriate per Maya\'s research?\n- Does the description match what the product actually contains?\n- Section headers clear and scannable?\n\nPHOTO REVIEW\n- At least 3 photos present?\n- Hero image clearly shows the product?\n- Photos match Groundwork brand — charcoal, amber, sand palette, authentic contractor aesthetic?\n- Would a buyer understand what they\'re getting from photos alone?\n\nBRAND STANDARDS\n- Quality consistent with a $27–$47 price point?\n- Would Sam be proud to have his name on this?\n- Does it deliver more value than competing listings?\n\nDECISION — start your response with exactly one of these words on its own line:\n\nAPPROVED — product meets all standards, cleared for launch. Write a brief approval note.\n\nREVISE — product has specific fixable issues. List every issue clearly. Tell the responsible agent exactly what to fix. No vague feedback.\n\nREJECT — fundamentally flawed, needs rebuild from scratch. Explain why. Use rarely — only when revision cannot fix the core problem.\n\nNever approve something you would not buy yourself. Never reject without a specific reason. All feedback must be actionable.';
 
 // ─────────────────────────────────────────────
 // SECTION 12: MAYA CACHE CHECK
@@ -683,6 +696,78 @@ async function runRexBackground(productName, listingCopy) {
   logActivity('rex', 'Marketing package complete: ' + productName, 'task_complete');
   gitPush('Rex: ' + productName);
   console.log('[Rex] Complete: ' + productName);
+
+  // Automatically hand off to Quinn for QC review
+  runQuinnReviewBackground(null, productName).catch(console.error);
+}
+
+// Quinn — Quality Control
+async function runQuinnReview(productName) {
+  console.log('[Quinn] Starting review: ' + productName);
+  logActivity('quinn', 'Starting QC review: ' + productName, 'task_start');
+  var slug = productName.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+  var productDir = path.join(VAULT, 'products', 'templates', slug);
+  var marketingDir = path.join(VAULT, 'marketing', slug);
+
+  // Assemble the full product package for Quinn to review
+  var pkg = '# Product Package for QC Review: ' + productName + '\n\n';
+
+  var steps = ['01-competitor-analysis', '02-product-spec', '03-pricing-strategy', '04-etsy-listing', '05-photo-briefs', '06-launch-checklist', '07-post-launch-monitoring'];
+  steps.forEach(function(step) {
+    var fp = path.join(productDir, step + '.md');
+    if (fs.existsSync(fp)) pkg += '## ' + step + '\n' + fs.readFileSync(fp, 'utf8').substring(0, 2000) + '\n\n';
+  });
+
+  var mktFiles = ['reddit-posts', 'pinterest-pins', 'etsy-seo-audit', '7-day-promo'];
+  mktFiles.forEach(function(f) {
+    var fp = path.join(marketingDir, f + '.md');
+    if (fs.existsSync(fp)) pkg += '## Marketing: ' + f + '\n' + fs.readFileSync(fp, 'utf8').substring(0, 1200) + '\n\n';
+  });
+
+  var imagesDir = path.join(productDir, 'images');
+  var photoCount = fs.existsSync(imagesDir) ? fs.readdirSync(imagesDir).filter(function(f) { return f.endsWith('.png'); }).length : 0;
+  pkg += '## Photos\n' + photoCount + ' image(s) generated by Iris.\n';
+
+  var r = await client.messages.create({ model: MODEL_COMPLEX, max_tokens: 3000, system: QUINN_SYSTEM, messages: [{ role: 'user', content: pkg }] });
+  logTokens('quinn', MODEL_COMPLEX, r.usage.input_tokens, r.usage.output_tokens);
+  var review = r.content.filter(function(b) { return b.type === 'text'; }).map(function(b) { return b.text; }).join('\n');
+
+  // Parse decision from first line
+  var firstLine = review.split('\n')[0].trim().toUpperCase();
+  var decision = firstLine.startsWith('APPROVED') ? 'APPROVED' : firstLine.startsWith('REVISE') ? 'REVISE' : firstLine.startsWith('REJECT') ? 'REJECT' : 'UNKNOWN';
+
+  // Save review to vault
+  var date = new Date().toISOString().split('T')[0];
+  var related = buildRelatedSection('products');
+  var reviewContent = '# Quinn QC Review: ' + productName + '\n_' + date + ' | Decision: **' + decision + '**_\n\n' + review + related;
+  fs.mkdirSync(productDir, { recursive: true });
+  fs.writeFileSync(path.join(productDir, 'quinn-review.md'), reviewContent);
+  writeVaultIndex('products/templates/' + slug + '/quinn-review.md', productName + ' quinn quality control review ' + decision.toLowerCase(), 'Quinn QC: ' + decision + ' — ' + productName);
+
+  db.prepare('UPDATE product_launches SET status = ?, updated = CURRENT_TIMESTAMP WHERE product_name = ?').run('quinn_' + decision.toLowerCase(), productName);
+  db.prepare('INSERT INTO reports (title, agent, content, filepath) VALUES (?, ?, ?, ?)').run('Quinn Review: ' + productName, 'quinn', review, 'products/templates/' + slug + '/quinn-review.md');
+
+  var activityMsg = decision === 'APPROVED'
+    ? 'APPROVED — ' + productName + ' cleared for launch. Notify Sam.'
+    : decision === 'REVISE'
+    ? 'REVISE — ' + productName + ' needs fixes before launch.'
+    : 'REJECT — ' + productName + ' needs rebuild.';
+  logActivity('quinn', activityMsg, decision === 'APPROVED' ? 'task_complete' : 'info');
+  gitPush('Quinn: ' + productName + ' — ' + decision);
+  console.log('[Quinn] ' + decision + ': ' + productName);
+  return { decision: decision, review: review };
+}
+
+async function runQuinnReviewBackground(taskId, productName) {
+  try {
+    if (taskId) db.prepare('UPDATE tasks SET status = ?, updated = CURRENT_TIMESTAMP WHERE id = ?').run('running', taskId);
+    var result = await runQuinnReview(productName);
+    if (taskId) db.prepare('UPDATE tasks SET status = ?, output = ?, updated = CURRENT_TIMESTAMP WHERE id = ?').run('done', result.decision + ': ' + result.review.substring(0, 500), taskId);
+  } catch(e) {
+    if (taskId) db.prepare('UPDATE tasks SET status = ?, output = ?, updated = CURRENT_TIMESTAMP WHERE id = ?').run('error', e.message, taskId);
+    logActivity('quinn', 'Review failed: ' + e.message, 'error');
+    console.error('[Quinn] Failed:', e.message);
+  }
 }
 
 // Daily briefing — haiku (cheap, structured output)
@@ -959,6 +1044,16 @@ app.post('/marketing', function(req, res) {
   res.json({ task_id: taskId, status: 'queued' });
 });
 
+// POST /review — Quinn QC review
+app.post('/review', function(req, res) {
+  var productName = req.body.product_name;
+  if (!productName) return res.status(400).json({ error: 'product_name required' });
+  var insert = db.prepare('INSERT INTO tasks (title, status) VALUES (?, ?)').run('Quinn Review: ' + productName, 'queued');
+  var taskId = insert.lastInsertRowid;
+  runQuinnReviewBackground(taskId, productName);
+  res.json({ task_id: taskId, status: 'queued', message: 'Quinn is reviewing the package for ' + productName });
+});
+
 // Task endpoints
 app.get('/task/:id',  function(req, res) { var t = db.prepare('SELECT * FROM tasks WHERE id = ?').get(req.params.id); if (!t) return res.status(404).json({ error: 'Not found' }); res.json(t); });
 app.get('/tasks',     function(req, res) { res.json(db.prepare('SELECT id, title, status, created, updated FROM tasks ORDER BY id DESC LIMIT 20').all()); });
@@ -1016,7 +1111,7 @@ app.get('/health', function(req, res) {
   var todayCost = readCostLog().filter(function(e) { return e.ts.startsWith(new Date().toISOString().split('T')[0]); }).reduce(function(s,e){return s+e.cost;},0);
   res.json({
     status: 'Vex is online', version: '5.1',
-    agents: { vex: 'active', maya: 'active (Mode 1+2, 7-day cache)', iris: process.env.OPENAI_API_KEY ? 'active (DALL-E 3)' : 'no api key', rex: 'active', curt: 'wandering' },
+    agents: { vex: 'active', maya: 'active (Mode 1+2, 7-day cache)', iris: process.env.OPENAI_API_KEY ? 'active (DALL-E 3)' : 'no api key', rex: 'active', quinn: 'active (QC — auto-triggers after Rex)', curt: 'wandering' },
     vault: fs.existsSync(path.join(VAULT, '_index.md')) ? 'connected' : 'disconnected',
     memory: mem + ' exchanges', reports: rpts + ' filed', tasks_active: pending, product_launches: launches,
     cost_today: '$' + todayCost.toFixed(4),
