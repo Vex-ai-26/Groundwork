@@ -40,6 +40,8 @@ db.exec('CREATE TABLE IF NOT EXISTS conversations (id INTEGER PRIMARY KEY AUTOIN
 db.exec('CREATE TABLE IF NOT EXISTS reports (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT NOT NULL, agent TEXT DEFAULT "maya", content TEXT, filepath TEXT, created DATETIME DEFAULT CURRENT_TIMESTAMP)');
 db.exec('CREATE TABLE IF NOT EXISTS tasks (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT NOT NULL, status TEXT DEFAULT "queued", output TEXT, created DATETIME DEFAULT CURRENT_TIMESTAMP, updated DATETIME DEFAULT CURRENT_TIMESTAMP)');
 db.exec('CREATE TABLE IF NOT EXISTS product_launches (id INTEGER PRIMARY KEY AUTOINCREMENT, product_name TEXT NOT NULL, status TEXT DEFAULT "queued", maya_task_id INTEGER, iris_status TEXT DEFAULT "pending", rex_status TEXT DEFAULT "pending", vault_path TEXT, created DATETIME DEFAULT CURRENT_TIMESTAMP, updated DATETIME DEFAULT CURRENT_TIMESTAMP)');
+db.exec('CREATE TABLE IF NOT EXISTS activity_log (id INTEGER PRIMARY KEY AUTOINCREMENT, agent TEXT NOT NULL, message TEXT NOT NULL, type TEXT DEFAULT "info", timestamp DATETIME DEFAULT CURRENT_TIMESTAMP)');
+db.exec('CREATE TABLE IF NOT EXISTS todos (id INTEGER PRIMARY KEY AUTOINCREMENT, text TEXT NOT NULL, added_by TEXT DEFAULT "sam", status TEXT DEFAULT "active", created DATETIME DEFAULT CURRENT_TIMESTAMP, completed DATETIME)');
 
 // ─────────────────────────────────────────────
 // SECTION 3: PATHS & FOLDER INIT
@@ -467,9 +469,19 @@ function checkMayaCache(query) {
 // ─────────────────────────────────────────────
 // SECTION 13: AGENT FUNCTIONS
 // ─────────────────────────────────────────────
+function logActivity(agent, message, type) {
+  type = type || 'info';
+  try {
+    db.prepare('INSERT INTO activity_log (agent, message, type) VALUES (?, ?, ?)').run(agent, message, type);
+    // Prune to 200 entries
+    db.prepare('DELETE FROM activity_log WHERE id NOT IN (SELECT id FROM activity_log ORDER BY id DESC LIMIT 200)').run();
+  } catch(e) { console.error('[logActivity]', e.message); }
+}
+
 function gitPush(label) {
   try {
     execSync('cd "' + path.join(__dirname, '..') + '" && git add . && git commit -m "' + label.replace(/"/g, "'") + '" && git push', { stdio: 'pipe' });
+    logActivity('system', 'Vault synced to GitHub: ' + label, 'git_push');
   } catch(e) {}
 }
 
@@ -598,6 +610,7 @@ async function runMayaMode2(productName, context, taskId) {
 // Iris — DALL-E 3 (only when explicitly triggered)
 async function runIrisBackground(productName, photoBriefs, slug) {
   if (!process.env.OPENAI_API_KEY) { console.error('[Iris] No OPENAI_API_KEY — skipping image generation'); return; }
+  logActivity('iris', 'Starting image generation: ' + productName, 'task_start');
   console.log('[Iris] Generating images: ' + productName);
   var imageDir = path.join(VAULT, 'products', 'templates', slug, 'images');
   fs.mkdirSync(imageDir, { recursive: true });
@@ -624,12 +637,14 @@ async function runIrisBackground(productName, photoBriefs, slug) {
 
   db.prepare('UPDATE product_launches SET iris_status = ?, updated = CURRENT_TIMESTAMP WHERE product_name = ?').run('complete', productName);
   if (saved.length > 0) writeVaultIndex('products/templates/' + slug + '/images/', productName + ' images photos', 'Iris DALL-E 3: ' + saved.join(', '));
+  logActivity('iris', 'Images complete: ' + productName + ' — ' + saved.length + ' saved', 'task_complete');
   gitPush('Iris: ' + productName);
   console.log('[Iris] Complete: ' + saved.length + ' images for ' + productName);
 }
 
 // Rex — haiku for weekly report, sonnet for launch package
 async function runRexBackground(productName, listingCopy) {
+  logActivity('rex', 'Starting marketing package: ' + productName, 'task_start');
   console.log('[Rex] Marketing package: ' + productName);
   var slug = productName.toLowerCase().replace(/[^a-z0-9]+/g, '-');
   var dir = path.join(VAULT, 'marketing', slug);
@@ -657,6 +672,7 @@ async function runRexBackground(productName, listingCopy) {
   writeVaultIndex('marketing/' + slug + '/', productName + ' marketing reddit pinterest seo', 'Rex: Reddit, Pinterest, SEO, 7-day promo');
   db.prepare('UPDATE product_launches SET rex_status = ?, updated = CURRENT_TIMESTAMP WHERE product_name = ?').run('complete', productName);
   db.prepare('INSERT INTO reports (title, agent, content, filepath) VALUES (?, ?, ?, ?)').run('Marketing: ' + productName, 'rex', 'Package complete.', 'vault/marketing/' + slug);
+  logActivity('rex', 'Marketing package complete: ' + productName, 'task_complete');
   gitPush('Rex: ' + productName);
   console.log('[Rex] Complete: ' + productName);
 }
@@ -710,10 +726,15 @@ async function runRexWeeklyReport() {
 // ─────────────────────────────────────────────
 async function runTaskBackground(taskId, query) {
   try {
+    logActivity('maya', 'Starting research: ' + query, 'task_start');
     db.prepare('UPDATE tasks SET status = ?, updated = CURRENT_TIMESTAMP WHERE id = ?').run('running', taskId);
     var result = await runMayaMode1(query);
+    var date = new Date().toISOString().split('T')[0];
+    var filename = date + '-maya-' + query.toLowerCase().replace(/[^a-z0-9]+/g, '-').substring(0, 40) + '.md';
+    logActivity('maya', 'Report saved: ' + filename, 'task_complete');
     db.prepare('UPDATE tasks SET status = ?, output = ?, updated = CURRENT_TIMESTAMP WHERE id = ?').run('done', result.substring(0, 2000), taskId);
   } catch(e) {
+    logActivity('system', 'Maya task failed: ' + e.message, 'error');
     db.prepare('UPDATE tasks SET status = ?, output = ?, updated = CURRENT_TIMESTAMP WHERE id = ?').run('error', e.message, taskId);
     console.error('[Task ' + taskId + '] Failed:', e.message);
   }
@@ -721,10 +742,13 @@ async function runTaskBackground(taskId, query) {
 
 async function runMode2Background(taskId, productName, context) {
   try {
+    logActivity('maya', 'Starting Mode 2 launch: ' + productName, 'task_start');
     db.prepare('UPDATE tasks SET status = ?, updated = CURRENT_TIMESTAMP WHERE id = ?').run('running', taskId);
     await runMayaMode2(productName, context, taskId);
+    logActivity('maya', 'Mode 2 complete: ' + productName + ' — vault/products/templates/' + productName.toLowerCase().replace(/[^a-z0-9]+/g,'-'), 'task_complete');
     db.prepare('UPDATE tasks SET status = ?, output = ?, updated = CURRENT_TIMESTAMP WHERE id = ?').run('done', 'Complete: vault/products/templates/' + productName.toLowerCase().replace(/[^a-z0-9]+/g,'-'), taskId);
   } catch(e) {
+    logActivity('system', 'Maya Mode 2 failed: ' + e.message, 'error');
     db.prepare('UPDATE tasks SET status = ?, output = ?, updated = CURRENT_TIMESTAMP WHERE id = ?').run('error', e.message, taskId);
     console.error('[Launch ' + taskId + '] Failed:', e.message);
   }
@@ -1009,6 +1033,128 @@ app.get('/vault-check', function(req, res) {
     walk(VAULT, '');
     res.json({ connected: true, files: files.length, list: files });
   } catch(e) { res.status(500).json({ connected: false, error: e.message }); }
+});
+
+// ─────────────────────────────────────────────
+// SECTION 15b: NEW ENDPOINTS
+// ─────────────────────────────────────────────
+
+// GET /brief — latest daily briefing from vault/daily/
+app.get('/brief', function(req, res) {
+  try {
+    var dailyDir = path.join(VAULT, 'daily');
+    if (!fs.existsSync(dailyDir)) return res.json({ briefing: 'No briefing yet.', date: null, timestamp: null });
+    var files = fs.readdirSync(dailyDir).filter(function(f) { return f.endsWith('.md'); }).sort().reverse();
+    if (files.length === 0) return res.json({ briefing: 'No briefing yet.', date: null, timestamp: null });
+    var latest = files[0];
+    var content = fs.readFileSync(path.join(dailyDir, latest), 'utf8');
+    var date = latest.replace('.md', '');
+    var stat = fs.statSync(path.join(dailyDir, latest));
+    res.json({ briefing: content, date: date, timestamp: stat.mtime.toISOString() });
+  } catch(e) { res.status(500).json({ error: e.message }); }
+});
+
+// GET /activity — last 100 activity log entries
+app.get('/activity', function(req, res) {
+  try {
+    var rows = db.prepare('SELECT * FROM activity_log ORDER BY id DESC LIMIT 100').all().reverse();
+    res.json(rows);
+  } catch(e) { res.status(500).json({ error: e.message }); }
+});
+
+// POST /activity — log an activity entry
+app.post('/activity', function(req, res) {
+  try {
+    var agent = req.body.agent || 'system';
+    var message = req.body.message || '';
+    var type = req.body.type || 'info';
+    logActivity(agent, message, type);
+    res.json({ success: true });
+  } catch(e) { res.status(500).json({ error: e.message }); }
+});
+
+// GET /vault/recent — last 8 vault files by mtime
+app.get('/vault/recent', function(req, res) {
+  try {
+    var allFiles = [];
+    function walkVault(dir, base) {
+      try {
+        fs.readdirSync(dir).forEach(function(name) {
+          if (name.startsWith('.')) return;
+          if (name === '_index.md' || name === 'index.md') return;
+          var full = path.join(dir, name);
+          var rel = path.join(base, name);
+          try {
+            var stat = fs.statSync(full);
+            if (stat.isDirectory()) { walkVault(full, rel); }
+            else if (name.endsWith('.md')) { allFiles.push({ filepath: rel.replace(/\\/g, '/'), name: name, mtime: stat.mtime }); }
+          } catch(e) {}
+        });
+      } catch(e) {}
+    }
+    walkVault(VAULT, '');
+    allFiles.sort(function(a, b) { return b.mtime - a.mtime; });
+    var top8 = allFiles.slice(0, 8).map(function(f) {
+      var folder = f.filepath.split('/')[0];
+      var agentMap = { research: 'maya', marketing: 'rex', products: 'maya', daily: 'vex', decisions: 'vex', company: 'vex' };
+      return { filepath: f.filepath, name: f.name, agent: agentMap[folder] || 'vex', mtime: f.mtime.toISOString() };
+    });
+    res.json(top8);
+  } catch(e) { res.status(500).json({ error: e.message }); }
+});
+
+// GET /vault/file?path= — return content of a vault file
+app.get('/vault/file', function(req, res) {
+  try {
+    var filePath = req.query.path;
+    if (!filePath) return res.status(400).json({ error: 'path required' });
+    var fullPath = path.resolve(path.join(VAULT, filePath));
+    if (!fullPath.startsWith(path.resolve(VAULT))) return res.status(403).json({ error: 'Access denied' });
+    if (!fs.existsSync(fullPath)) return res.status(404).json({ error: 'File not found' });
+    var content = fs.readFileSync(fullPath, 'utf8');
+    res.json({ content: content, filepath: filePath });
+  } catch(e) { res.status(500).json({ error: e.message }); }
+});
+
+// GET /todo — all todos
+app.get('/todo', function(req, res) {
+  try {
+    var rows = db.prepare('SELECT * FROM todos ORDER BY created DESC LIMIT 50').all();
+    res.json(rows);
+  } catch(e) { res.status(500).json({ error: e.message }); }
+});
+
+// POST /todo — add todo
+app.post('/todo', function(req, res) {
+  try {
+    var text = req.body.text;
+    if (!text) return res.status(400).json({ error: 'text required' });
+    var addedBy = req.body.added_by || 'sam';
+    var result = db.prepare('INSERT INTO todos (text, added_by) VALUES (?, ?)').run(text, addedBy);
+    res.json({ success: true, id: result.lastInsertRowid });
+  } catch(e) { res.status(500).json({ error: e.message }); }
+});
+
+// PATCH /todo/:id — update todo status
+app.patch('/todo/:id', function(req, res) {
+  try {
+    var status = req.body.status;
+    if (!status) return res.status(400).json({ error: 'status required' });
+    if (status === 'completed') {
+      db.prepare('UPDATE todos SET status = ?, completed = CURRENT_TIMESTAMP WHERE id = ?').run(status, req.params.id);
+    } else {
+      db.prepare('UPDATE todos SET status = ?, completed = NULL WHERE id = ?').run(status, req.params.id);
+    }
+    res.json({ success: true });
+  } catch(e) { res.status(500).json({ error: e.message }); }
+});
+
+// DELETE /todo/:id — delete todo
+app.delete('/todo/:id', function(req, res) {
+  try {
+    db.prepare('DELETE FROM todos WHERE id = ?').run(req.params.id);
+    res.json({ success: true });
+  } catch(e) { res.status(500).json({ error: e.message }); }
 });
 
 // ─────────────────────────────────────────────
