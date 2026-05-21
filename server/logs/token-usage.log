@@ -73,3 +73,10 @@
 {"ts":"2026-05-20T22:36:58.881Z","agent":"vex","model":"claude-sonnet-4-5","in":2714,"out":45,"cost":0.008817}
 {"ts":"2026-05-20T22:37:19.501Z","agent":"vex","model":"claude-sonnet-4-5","in":2463,"out":41,"cost":0.008004}
 {"ts":"2026-05-20T22:38:25.212Z","agent":"vex","model":"claude-sonnet-4-5","in":2356,"out":36,"cost":0.007608}
+{"ts":"2026-05-21T00:21:43.560Z","agent":"vex","model":"claude-sonnet-4-5","in":2944,"out":40,"cost":0.009432}
+{"ts":"2026-05-21T00:23:43.402Z","agent":"vex","model":"claude-sonnet-4-5","in":4130,"out":59,"cost":0.013275}
+{"ts":"2026-05-21T00:24:57.569Z","agent":"vex","model":"claude-sonnet-4-5","in":4155,"out":168,"cost":0.014985}
+{"ts":"2026-05-21T00:26:40.107Z","agent":"vex","model":"claude-sonnet-4-5","in":5484,"out":80,"cost":0.017652}
+{"ts":"2026-05-21T00:27:39.473Z","agent":"vex","model":"claude-sonnet-4-5","in":3136,"out":61,"cost":0.010323}
+{"ts":"2026-05-21T00:28:43.604Z","agent":"vex","model":"claude-sonnet-4-5","in":2738,"out":44,"cost":0.008874}
+{"ts":"2026-05-21T00:29:23.049Z","agent":"vex","model":"claude-sonnet-4-5","in":3169,"out":28,"cost":0.009927}
