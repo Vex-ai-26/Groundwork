@@ -457,11 +457,19 @@ function checkMayaCache(query) {
   var normalized = query.toLowerCase().replace(/[^a-z0-9 ]/g, '').trim();
   var cutoff = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
   var cached = db.prepare("SELECT title, content, created FROM reports WHERE agent = 'maya' AND created > ? ORDER BY created DESC").all(cutoff);
-  var queryWords = normalized.split(' ').filter(function(w) { return w.length > 3; });
+  // Only match words longer than 4 chars so short common words don't trigger hits
+  var queryWords = normalized.split(/\s+/).filter(function(w) { return w.length > 4; });
+  if (queryWords.length === 0) return null;
   for (var r of cached) {
-    var rNorm = r.title.toLowerCase().replace(/[^a-z0-9 ]/g, '');
-    var hits = queryWords.filter(function(w) { return rNorm.includes(w); }).length;
-    if (hits >= Math.min(2, queryWords.length)) return r;
+    // Split cached title into discrete words — whole-word match only, not substring
+    var titleWords = r.title.toLowerCase().replace(/[^a-z0-9 ]/g, '').split(/\s+/).filter(function(w) { return w.length > 4; });
+    var hits = queryWords.filter(function(w) { return titleWords.includes(w); }).length;
+    // Need at least 50% of query words to match, with a floor of 4 words
+    var threshold = Math.max(4, Math.ceil(queryWords.length * 0.5));
+    if (hits >= threshold) {
+      console.log('[Maya Cache] Hit (' + hits + '/' + queryWords.length + ' words matched): ' + r.title.substring(0, 60));
+      return r;
+    }
   }
   return null;
 }
