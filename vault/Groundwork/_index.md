@@ -33,3 +33,4 @@ _Managed by Vex. Updated automatically when any file is written to the vault._
 | 2026-05-21 13:21 | marketing/bill-payment-tracker/ | Bill Payment Tracker marketing reddit pinterest seo | Rex: Reddit, Pinterest, SEO, 7-day promo |
 | 2026-05-21 13:21 | marketing/monthly-budget-planner/ | Monthly Budget Planner marketing reddit pinterest seo | Rex: Reddit, Pinterest, SEO, 7-day promo |
 | 2026-05-21 13:21 | marketing/net-worth-calculator/ | Net Worth Calculator marketing reddit pinterest seo | Rex: Reddit, Pinterest, SEO, 7-day promo |
+| 2026-05-21 13:21 | marketing/savings-goal-tracker/ | Savings Goal Tracker marketing reddit pinterest seo | Rex: Reddit, Pinterest, SEO, 7-day promo |
