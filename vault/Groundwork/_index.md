@@ -42,3 +42,4 @@ _Managed by Vex. Updated automatically when any file is written to the vault._
 | 2026-05-21 22:43 | [[2026-05-21-2026-05-21-full-automation-roadmap-idea-to-etsy]] | automation, development, etsy, workflow | Complete step-by-step roadmap to automate Vex from product idea to live Etsy listing. Includes all tech stack decisions, API integrations, Claude Code prompts, and webhook architecture. Sam's role: approve only. |
 | 2026-05-22 10:00 | [[2026-05-22]] | daily briefing 2026-05-22 | Morning briefing for 2026-05-22 |
 | 2026-05-23 10:00 | [[2026-05-23]] | daily briefing 2026-05-23 | Morning briefing for 2026-05-23 |
+| 2026-05-24 10:00 | [[2026-05-24]] | daily briefing 2026-05-24 | Morning briefing for 2026-05-24 |
