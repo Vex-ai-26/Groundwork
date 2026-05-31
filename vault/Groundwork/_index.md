@@ -50,3 +50,4 @@ _Managed by Vex. Updated automatically when any file is written to the vault._
 | 2026-05-28 10:01 | [[2026-05-28]] | daily briefing 2026-05-28 | Morning briefing for 2026-05-28 |
 | 2026-05-29 10:00 | [[2026-05-29]] | daily briefing 2026-05-29 | Morning briefing for 2026-05-29 |
 | 2026-05-30 10:00 | [[2026-05-30]] | daily briefing 2026-05-30 | Morning briefing for 2026-05-30 |
+| 2026-05-31 10:00 | [[2026-05-31]] | daily briefing 2026-05-31 | Morning briefing for 2026-05-31 |
