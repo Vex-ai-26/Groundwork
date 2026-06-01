@@ -52,3 +52,4 @@ _Managed by Vex. Updated automatically when any file is written to the vault._
 | 2026-05-30 10:00 | [[2026-05-30]] | daily briefing 2026-05-30 | Morning briefing for 2026-05-30 |
 | 2026-05-31 10:00 | [[2026-05-31]] | daily briefing 2026-05-31 | Morning briefing for 2026-05-31 |
 | 2026-06-01 10:00 | [[2026-06-01]] | daily briefing 2026-06-01 | Morning briefing for 2026-06-01 |
+| 2026-06-01 12:00 | [[2026-06-01-rex-weekly]] | rex weekly report | Rex weekly: 2026-06-01 |

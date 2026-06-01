@@ -196,3 +196,4 @@
 {"ts":"2026-05-30T10:00:22.092Z","agent":"vex_briefing","model":"claude-haiku-4-5-20251001","in":334,"out":321,"cost":0.001551}
 {"ts":"2026-05-31T10:00:34.043Z","agent":"vex_briefing","model":"claude-haiku-4-5-20251001","in":334,"out":350,"cost":0.001667}
 {"ts":"2026-06-01T10:00:45.388Z","agent":"vex_briefing","model":"claude-haiku-4-5-20251001","in":334,"out":333,"cost":0.001599}
+{"ts":"2026-06-01T12:00:46.280Z","agent":"rex_weekly","model":"claude-haiku-4-5-20251001","in":233,"out":316,"cost":0.00145}
